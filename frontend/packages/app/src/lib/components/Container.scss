@@ -3,6 +3,13 @@
   flex-direction: column;
   box-sizing: border-box;
 
+  &.fill {
+    * {
+      width: 100%;
+      box-sizing: border-box;
+    }
+  }
+
   &.center {
     width: 100%;
     align-items: center;
@@ -26,6 +33,14 @@
 
     width: 100%;
     align-items: center;
+    justify-content: normal;
+  }
+
+  &.startHorizontal {
+    flex-direction: row;
+
+    width: 100%;
+    align-items: start;
     justify-content: normal;
   }
 

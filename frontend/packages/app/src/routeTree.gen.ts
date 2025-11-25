@@ -18,6 +18,8 @@ import { Route as DriveRouteImport } from './routes/drive'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as SplatRouteImport } from './routes/$'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as SettingsIndexRouteImport } from './routes/settings/index'
+import { Route as SettingsAccountRouteImport } from './routes/settings/account'
 import { Route as NoteNoteIdRouteImport } from './routes/note/$noteId'
 
 const StyletestRoute = StyletestRouteImport.update({
@@ -65,6 +67,16 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SettingsIndexRoute = SettingsIndexRouteImport.update({
+  id: '/settings/',
+  path: '/settings/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SettingsAccountRoute = SettingsAccountRouteImport.update({
+  id: '/settings/account',
+  path: '/settings/account',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const NoteNoteIdRoute = NoteNoteIdRouteImport.update({
   id: '/note/$noteId',
   path: '/note/$noteId',
@@ -82,6 +94,8 @@ export interface FileRoutesByFullPath {
   '/register': typeof RegisterRoute
   '/styletest': typeof StyletestRoute
   '/note/$noteId': typeof NoteNoteIdRoute
+  '/settings/account': typeof SettingsAccountRoute
+  '/settings': typeof SettingsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -94,6 +108,8 @@ export interface FileRoutesByTo {
   '/register': typeof RegisterRoute
   '/styletest': typeof StyletestRoute
   '/note/$noteId': typeof NoteNoteIdRoute
+  '/settings/account': typeof SettingsAccountRoute
+  '/settings': typeof SettingsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -107,6 +123,8 @@ export interface FileRoutesById {
   '/register': typeof RegisterRoute
   '/styletest': typeof StyletestRoute
   '/note/$noteId': typeof NoteNoteIdRoute
+  '/settings/account': typeof SettingsAccountRoute
+  '/settings/': typeof SettingsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -121,6 +139,8 @@ export interface FileRouteTypes {
     | '/register'
     | '/styletest'
     | '/note/$noteId'
+    | '/settings/account'
+    | '/settings'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -133,6 +153,8 @@ export interface FileRouteTypes {
     | '/register'
     | '/styletest'
     | '/note/$noteId'
+    | '/settings/account'
+    | '/settings'
   id:
     | '__root__'
     | '/'
@@ -145,6 +167,8 @@ export interface FileRouteTypes {
     | '/register'
     | '/styletest'
     | '/note/$noteId'
+    | '/settings/account'
+    | '/settings/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -158,6 +182,8 @@ export interface RootRouteChildren {
   RegisterRoute: typeof RegisterRoute
   StyletestRoute: typeof StyletestRoute
   NoteNoteIdRoute: typeof NoteNoteIdRoute
+  SettingsAccountRoute: typeof SettingsAccountRoute
+  SettingsIndexRoute: typeof SettingsIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -225,6 +251,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/settings/': {
+      id: '/settings/'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof SettingsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/settings/account': {
+      id: '/settings/account'
+      path: '/settings/account'
+      fullPath: '/settings/account'
+      preLoaderRoute: typeof SettingsAccountRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/note/$noteId': {
       id: '/note/$noteId'
       path: '/note/$noteId'
@@ -246,6 +286,8 @@ const rootRouteChildren: RootRouteChildren = {
   RegisterRoute: RegisterRoute,
   StyletestRoute: StyletestRoute,
   NoteNoteIdRoute: NoteNoteIdRoute,
+  SettingsAccountRoute: SettingsAccountRoute,
+  SettingsIndexRoute: SettingsIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

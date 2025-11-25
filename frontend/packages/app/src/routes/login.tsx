@@ -80,7 +80,7 @@ function RouteComponent() {
                                             id={field.name}
                                             name={field.name}
                                             placeholder={"Username"}
-                                            type={"username"}
+                                            type={"text"}
                                             value={field.state.value}
                                             onBlur={field.handleBlur}
                                             onChange={(e) => field.handleChange(e.target.value)}
