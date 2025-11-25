@@ -23,7 +23,8 @@ function Timeline(
             random++
             timeline.push(
                 <Component data={item}
-                           key={"TimelineChild-" + Component.name + "-" + (item?.id ? item?.id : "r" + random)}></Component>
+                           key={"TimelineChild-" + Component.name + "-" + (item?.id ? item?.id : "r" + random)}>
+                </Component>
             )
         })
     }

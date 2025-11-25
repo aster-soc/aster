@@ -267,7 +267,7 @@ function Note(
                     </span>
                 </Container>
                 <Container align={"right"}>
-                    <Container gap={"sm"} onClick={() => navigate({to: `/note/${data.id}`})}>
+                    <Container gap={"sm"} onClick={() => navigate({to: `/note/${note.id}`})}>
                         <DateTime date={note?.createdAt} short={true}/>
                         <Visibility visibility={note?.visibility}/>
                     </Container>

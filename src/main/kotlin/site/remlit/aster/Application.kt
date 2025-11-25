@@ -38,7 +38,6 @@ import site.remlit.aster.service.PluginService
 import site.remlit.aster.service.SetupService
 import site.remlit.aster.util.jsonConfig
 import site.remlit.aster.util.setJsonConfig
-import java.util.concurrent.TimeUnit
 
 internal fun main(args: Array<String>) {
 	if (args.isNotEmpty() && !args[0].startsWith("-")) {
@@ -50,7 +49,8 @@ internal fun main(args: Array<String>) {
 
 	ApplicationBeginStartEvent().call()
 
-	val server = embeddedServer(Netty, Configuration.port, Configuration.host, module = Application::module)
+	val server =
+		embeddedServer(Netty, Configuration.port, Configuration.host, module = Application::module)
 
 	Runtime.getRuntime().addShutdownHook(Thread {
 		Thread.currentThread().name = "ShutdownMain"

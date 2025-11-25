@@ -51,4 +51,12 @@
   &.gap-xl {
     gap: 12px;
   }
+
+  &.border-top {
+    border-top: 1px solid var(--bg-3);
+  }
+
+  &.border-bottom {
+    border-bottom: 1px solid var(--bg-3);
+  }
 }

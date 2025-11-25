@@ -24,7 +24,7 @@ kotlin {
 	jvm()
 	jvmToolchain(21)
 
-	js {
+	js(IR) {
 		nodejs()
 		useEsModules()
 		generateTypeScriptDefinitions()

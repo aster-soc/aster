@@ -7,8 +7,10 @@ import io.ktor.server.routing.*
 import io.ktor.server.util.*
 import org.jetbrains.exposed.v1.core.and
 import org.jetbrains.exposed.v1.core.eq
+import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 import site.remlit.aster.common.model.User
 import site.remlit.aster.common.model.generated.PartialUser
+import site.remlit.aster.db.entity.UserEntity
 import site.remlit.aster.db.table.UserTable
 import site.remlit.aster.event.user.UserEditEvent
 import site.remlit.aster.model.ApiException
@@ -74,39 +76,35 @@ internal object UserRoutes {
 					if (user.id != authenticatedUser.id && !RoleService.isModOrAdmin(authenticatedUser.id.toString()))
 						throw ApiException(HttpStatusCode.BadRequest, "You don't have permission to edit this users")
 
-					val originalHashCode = user.hashCode()
 					val partial = call.receive<PartialUser>()
 
-					// todo: these need to be in transaction
-					user.displayName = sanitizeOrNull { partial.displayName }
-					user.bio = sanitizeOrNull { partial.bio }
-					user.location = sanitizeOrNull { partial.location }
-					user.birthday = sanitizeOrNull { partial.birthday }
+					val newUser =
+						transaction {
+							UserEntity.findByIdAndUpdate(user.id.toString()) {
+								it.displayName = sanitizeOrNull { partial.displayName }
+								it.bio = sanitizeOrNull { partial.bio }
+								it.location = sanitizeOrNull { partial.location }
+								it.birthday = sanitizeOrNull { partial.birthday }
 
-					user.avatar = sanitizeOrNull { partial.avatar }
-					user.avatarAlt = sanitizeOrNull { partial.avatarAlt }
-					user.banner = sanitizeOrNull { partial.banner }
-					user.bannerAlt = sanitizeOrNull { partial.bannerAlt }
+								it.avatar = sanitizeOrNull { partial.avatar }
+								it.avatarAlt = sanitizeOrNull { partial.avatarAlt }
+								it.banner = sanitizeOrNull { partial.banner }
+								it.bannerAlt = sanitizeOrNull { partial.bannerAlt }
 
-					user.locked = partial.locked ?: false
-					user.automated = partial.automated ?: false
-					user.discoverable = partial.discoverable ?: false
-					user.indexable = partial.indexable ?: false
-					user.sensitive = partial.sensitive ?: false
+								it.locked = partial.locked ?: false
+								it.automated = partial.automated ?: false
+								it.discoverable = partial.discoverable ?: false
+								it.indexable = partial.indexable ?: false
+								it.sensitive = partial.sensitive ?: false
 
-					user.isCat = partial.isCat ?: false
-					user.speakAsCat = partial.speakAsCat ?: false
+								it.isCat = partial.isCat ?: false
+								it.speakAsCat = partial.speakAsCat ?: false
 
-					if (user.hashCode() == originalHashCode)
-						return@post call.respond(HttpStatusCode.OK, user)
+								it.updatedAt = TimeService.now()
+							} ?: throw ApiException(HttpStatusCode.NotFound)
+						}
 
-					user.updatedAt = TimeService.now()
-
-					// todo: overkill?
-					user.flush()
-					user.refresh()
-
-					val model = User.fromEntity(user)
+					val model = User.fromEntity(newUser)
 					UserEditEvent(model).call()
 
 					return@post call.respond(HttpStatusCode.OK, model)
