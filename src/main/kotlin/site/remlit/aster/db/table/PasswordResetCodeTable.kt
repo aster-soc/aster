@@ -10,7 +10,7 @@ object PasswordResetCodeTable : IdTable<String>("password_reset_code") {
 
 	val code = varchar("code", length = 275).uniqueIndex("unique_password_reset_code_code")
 
-	val user = optReference("user", UserTable.id, onDelete = ReferenceOption.CASCADE)
+	val user = reference("user", UserTable.id, onDelete = ReferenceOption.CASCADE)
 	val creator = reference("creator", UserTable.id, onDelete = ReferenceOption.CASCADE)
 
 	val createdAt = datetime("createdAt").defaultExpression(CurrentDateTime)

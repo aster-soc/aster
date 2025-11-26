@@ -70,18 +70,15 @@ object PasswordResetService : Service {
 	@JvmStatic
 	fun resetPassword(
 		code: String,
-		user: UserEntity,
 		password: String,
 	) {
 		val entity = getCode(code)
 			?: throw IllegalArgumentException("Code not found")
 
-		transaction {
-			if (
-				entity.user?.id != user.id ||
-				entity.usedAt != null
-			) throw IllegalArgumentException("Code not found")
-		}
+		if (entity.usedAt != null)
+			throw IllegalArgumentException("Code not found")
+
+		val user = transaction { entity.user }
 
 		if (password.length < PASSWORD_MIN_LENGTH)
 			throw IllegalArgumentException("Password must be at least $PASSWORD_MIN_LENGTH characters")

@@ -10,7 +10,7 @@ class PasswordResetCodeEntity(id: EntityID<String>) : Entity<String>(id) {
 
 	var code by PasswordResetCodeTable.code
 
-	var user by UserEntity optionalReferencedOn PasswordResetCodeTable.user
+	var user by UserEntity referencedOn PasswordResetCodeTable.user
 	var creator by UserEntity referencedOn PasswordResetCodeTable.creator
 
 	var createdAt by PasswordResetCodeTable.createdAt
