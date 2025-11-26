@@ -18,7 +18,7 @@ function Loading(
             <span className={"spinner"}>
                 <IconLoader2 size={size}/>
             </span>
-            <div className={"note" + (ticks >= 5 ? " show" : "")}>
+            <div className={"notice" + (ticks >= 5 ? " show" : "")}>
                 <i>This is taking longer than it should...</i>
             </div>
         </div>

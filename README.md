@@ -1,4 +1,10 @@
-# Aster
+<h1>
+    <picture>
+        <source media="(prefers-color-scheme: dark)" srcset="frontend/packages/app/public/wmark-dark.svg">
+        <source media="(prefers-color-scheme: light)" srcset="frontend/packages/app/public/wmark-light.svg">
+        <img height="50" alt="A slightly tilted star with a subtle pink to purple gradient, with the text Aster next to it" src="frontend/packages/app/public/wmark-light.svg">
+    </picture>
+</h1>
 
 Decentralized social software using ActivityPub, written in Kotlin.
 

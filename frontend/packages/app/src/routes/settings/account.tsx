@@ -1,6 +1,6 @@
 import {createFileRoute, useNavigate} from '@tanstack/react-router'
 import PageHeader from "../../lib/components/PageHeader.tsx";
-import {IconDeviceDesktop, IconSettings, IconUser} from "@tabler/icons-react";
+import {IconDeviceDesktop, IconLogout, IconSettings, IconUser} from "@tabler/icons-react";
 import Tab from "../../lib/components/Tab.tsx";
 import PageWrapper from "../../lib/components/PageWrapper.tsx";
 import Container from "../../lib/components/Container.tsx";
@@ -216,12 +216,19 @@ function RouteComponent() {
             </PageHeader>
             <PageWrapper padding={"none"} center={false}>
                 <Container align={"horizontal"} padding={"0 12px"} border={"bottom"}>
-                    <Tab
-                        selected={tab === 0}
-                        onClick={() => setTab(0)}
-                    >
-                        General
-                    </Tab>
+                    <Container align={"left"}>
+                        <Tab
+                            selected={tab === 0}
+                            onClick={() => setTab(0)}
+                        >
+                            General
+                        </Tab>
+                    </Container>
+
+                    <Button danger to={"/logout"}>
+                        <IconLogout size={18}/>
+                        Logout
+                    </Button>
                 </Container>
                 <Container gap={"md"} padding={"12px"}>
                     {renderTab()}
