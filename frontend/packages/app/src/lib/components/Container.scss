@@ -51,6 +51,13 @@
     width: 100%;
   }
 
+  &.horizontalRight {
+    align-items: center;
+    justify-content: right;
+    flex-direction: row;
+    width: 100%;
+  }
+
   &.gap-sm {
     gap: 4px;
   }

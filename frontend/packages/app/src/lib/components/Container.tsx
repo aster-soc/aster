@@ -5,7 +5,7 @@ function Container(
     {gap, align, border, padding, clazz, fill, children, ...props}:
     {
         gap?: "sm" | "md" | "lg" | "xl" | undefined,
-        align?: 'center' | 'left' | 'right' | 'horizontal' | 'horizontalCenter' | 'startHorizontal',
+        align?: 'center' | 'left' | 'right' | 'horizontal' | 'horizontalCenter' | 'horizontalRight' | 'startHorizontal',
         border?: "top" | "bottom" | undefined,
         padding?: string | undefined,
         clazz?: string,

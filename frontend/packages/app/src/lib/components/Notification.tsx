@@ -13,6 +13,7 @@ import {
     IconUserCheck,
     IconUserPlus
 } from "@tabler/icons-react";
+import NoteSimple from "./NoteSimple.tsx";
 
 function Notification(
     {data}:
@@ -106,20 +107,20 @@ function Notification(
         // @ts-ignore this isn't actually an enum
         switch (data.type as string) {
             case "like":
-                return <>
-                    <p>TODO: Small note</p>
-                </>
+                return data.note ? <>
+                    <NoteSimple data={data.note}/>
+                </> : null
             case "react":
-                return <>
-                    <p>TODO: Small note</p>
-                </>
+                return data.note ? <>
+                    <NoteSimple data={data.note}/>
+                </> : null
             case "mention":
-                return <>
-                    <p>TODO: Small note</p>
-                </>
+                return data.note ? <>
+                    <NoteSimple data={data.note}/>
+                </> : null
             case "bite":
                 return data.note ? <>
-                    <p>TODO: Small note</p>
+                    <NoteSimple data={data.note}/>
                 </> : null
             default:
                 return null

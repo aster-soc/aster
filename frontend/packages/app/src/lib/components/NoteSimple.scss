@@ -1,0 +1,11 @@
+.noteSimple {
+  border: 1px solid var(--bg-3);
+  border-radius: var(--br-md);
+  padding: 10px;
+
+  transition: .1s;
+
+  &:hover {
+    background-color: var(--bg-3-50);
+  }
+}
