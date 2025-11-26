@@ -68,7 +68,7 @@ object PasswordResetService : Service {
 	 * @param password User's new password
 	 * */
 	@JvmStatic
-	fun useCode(
+	fun resetPassword(
 		code: String,
 		user: UserEntity,
 		password: String,
