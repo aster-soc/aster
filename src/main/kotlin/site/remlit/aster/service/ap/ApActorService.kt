@@ -2,6 +2,7 @@ package site.remlit.aster.service.ap
 
 import io.ktor.http.*
 import kotlinx.datetime.LocalDateTime
+import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 import org.slf4j.LoggerFactory
@@ -9,6 +10,7 @@ import site.remlit.aster.common.model.User
 import site.remlit.aster.common.model.generated.PartialUser
 import site.remlit.aster.db.entity.UserEntity
 import site.remlit.aster.model.Service
+import site.remlit.aster.model.ap.ApImage
 import site.remlit.aster.service.FormatService
 import site.remlit.aster.service.IdentifierService
 import site.remlit.aster.service.InstanceService
@@ -20,6 +22,7 @@ import site.remlit.aster.util.extractBoolean
 import site.remlit.aster.util.extractObject
 import site.remlit.aster.util.extractString
 import site.remlit.aster.util.ifFails
+import site.remlit.aster.util.jsonConfig
 import site.remlit.aster.util.model.fromEntity
 
 /**
@@ -103,6 +106,12 @@ object ApActorService : Service {
 
 		val summary = extractedMisskeySummary ?: extractedSummary
 
+        val extractedIcon = extractString { json["icon"] }
+        val extractedImage = extractString { json["image"] }
+
+        val icon = if (extractedIcon != null) jsonConfig.decodeFromString<ApImage>(extractedIcon) else null
+        val image = if (extractedImage != null) jsonConfig.decodeFromString<ApImage>(extractedImage) else null
+
 		val extractedPublicKey = extractString {
 			extractObject { json["publicKey"] }?.get("publicKeyPem")
 		}
@@ -134,10 +143,10 @@ object ApActorService : Service {
 			birthday = null,
 			location = null,
 
-			avatar = null,
-			avatarAlt = null,
-			banner = null,
-			bannerAlt = null,
+			avatar = icon?.src,
+			avatarAlt = icon?.summary ?: icon?.name,
+			banner = image?.src,
+			bannerAlt = image?.summary ?: image?.name,
 
 			inbox = inbox,
 			outbox = extractString { json["outbox"] },

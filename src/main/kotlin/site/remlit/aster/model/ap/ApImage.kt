@@ -8,5 +8,5 @@ data class ApImage(
 	val src: String,
 	val sensitive: Boolean = false,
 	val name: String? = null,
-	val alt: String? = null,
+	val summary: String? = null,
 ) : ApObject

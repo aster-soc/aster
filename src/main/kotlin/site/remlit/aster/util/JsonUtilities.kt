@@ -14,7 +14,7 @@ import kotlinx.serialization.json.jsonPrimitive
  *
  * @return Extracted string or null
  * */
-fun extractString(item: () -> JsonElement?): String? =
+inline fun extractString(item: () -> JsonElement?): String? =
 	when (val item = item()) {
 		is JsonArray -> item.first().jsonPrimitive.toString()
 		is JsonPrimitive -> item.jsonPrimitive.contentOrNull
@@ -26,7 +26,7 @@ fun extractString(item: () -> JsonElement?): String? =
  *
  * @return Extracted boolean or null
  * */
-fun extractBoolean(item: () -> JsonElement?): Boolean? =
+inline fun extractBoolean(item: () -> JsonElement?): Boolean? =
 	when (val item = item()) {
 		is JsonArray -> item.first().jsonPrimitive.booleanOrNull
 		is JsonPrimitive -> item.jsonPrimitive.booleanOrNull
@@ -38,11 +38,11 @@ fun extractBoolean(item: () -> JsonElement?): Boolean? =
  *
  * @return Extracted JsonArray or null
  * */
-fun extractArray(item: () -> JsonElement?): JsonArray? = item() as? JsonArray
+inline fun extractArray(item: () -> JsonElement?): JsonArray? = item() as? JsonArray
 
 /**
  * Extracts a JsonObject from a JsonElement
  *
  * @return Extracted JsonObject or null
  * */
-fun extractObject(item: () -> JsonElement?): JsonObject? = item()?.jsonObject
+inline fun extractObject(item: () -> JsonElement?): JsonObject? = item()?.jsonObject
