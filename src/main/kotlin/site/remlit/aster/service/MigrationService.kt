@@ -17,6 +17,7 @@ import site.remlit.aster.db.table.InviteTable
 import site.remlit.aster.db.table.NoteLikeTable
 import site.remlit.aster.db.table.NoteTable
 import site.remlit.aster.db.table.NotificationTable
+import site.remlit.aster.db.table.PasswordResetCodeTable
 import site.remlit.aster.db.table.PolicyTable
 import site.remlit.aster.db.table.RelationshipTable
 import site.remlit.aster.db.table.RoleTable
@@ -104,6 +105,7 @@ object MigrationService : Service {
 				NoteTable,
 				NoteLikeTable,
 				NotificationTable,
+				PasswordResetCodeTable,
 				PolicyTable,
 				RelationshipTable,
 				RoleTable,

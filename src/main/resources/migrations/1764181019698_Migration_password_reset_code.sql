@@ -1,0 +1,3 @@
+CREATE TABLE IF NOT EXISTS password_reset_code (id VARCHAR(125) PRIMARY KEY, code VARCHAR(275) NOT NULL, "user" VARCHAR(125) NULL, creator VARCHAR(125) NOT NULL, "createdAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL, "usedAt" TIMESTAMP NULL, CONSTRAINT fk_password_reset_code_user__id FOREIGN KEY ("user") REFERENCES "user"(id) ON DELETE CASCADE ON UPDATE RESTRICT, CONSTRAINT fk_password_reset_code_creator__id FOREIGN KEY (creator) REFERENCES "user"(id) ON DELETE CASCADE ON UPDATE RESTRICT);
+ALTER TABLE password_reset_code ADD CONSTRAINT unique_password_reset_code_id UNIQUE (id);
+ALTER TABLE password_reset_code ADD CONSTRAINT unique_password_reset_code_code UNIQUE (code);
