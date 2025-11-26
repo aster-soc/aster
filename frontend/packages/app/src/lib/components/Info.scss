@@ -1,59 +1,59 @@
 .info {
-	display: flex;
-	align-items: center;
+  display: flex;
+  align-items: center;
 
-	padding: 10px 12px;
-	border-radius: var(--br-md);
+  padding: 10px 12px;
+  border-radius: var(--br-md);
 
-	width: 100%;
-	box-sizing: border-box;
-	box-shadow: var(--funky-effect);
+  width: 100%;
+  box-sizing: border-box;
+  box-shadow: var(--funky-effect);
 
-	color: var(--tx-2);
-	background-color: var(--bg-3);
+  color: var(--tx-2);
+  background-color: var(--bg-3);
 
-	&.primary {
-		color: var(--ac-1);
-		background-color: var(--ac-1-50);
-	}
+  &.primary {
+    color: var(--ac-1);
+    background-color: var(--ac-1-50);
+  }
 
-	&.success {
-		color: var(--success);
-		background-color: var(--success-50);
-	}
+  &.success {
+    color: var(--success);
+    background-color: var(--success-50);
+  }
 
-	&.warn {
-		color: var(--warn);
-		background-color: var(--warn-50);
-	}
+  &.warn {
+    color: var(--warn);
+    background-color: var(--warn-50);
+  }
 
-	&.danger {
-		color: var(--danger);
-		background-color: var(--danger-50);
-	}
+  &.danger {
+    color: var(--danger);
+    background-color: var(--danger-50);
+  }
 
-	&.text {
-		box-shadow: none;
-		background: transparent;
-		padding: 0;
-	}
+  &.text {
+    box-shadow: none;
+    background: transparent;
+    padding: 0;
+  }
 
-	gap: 6px;
+  gap: 6px;
 
-	.icon {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-	}
+  .icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
 
-	.content {
-		flex-grow: 1;
-		width: 100%;
-	}
+  .content {
+    flex-grow: 1;
+    width: 100%;
+  }
 
-	.dismiss {
-		display: flex;
-		align-items: center;
-		justify-content: flex-end;
-	}
+  .dismiss {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+  }
 }
