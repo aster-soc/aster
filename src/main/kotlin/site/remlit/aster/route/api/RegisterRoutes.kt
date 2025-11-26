@@ -27,6 +27,8 @@ import site.remlit.aster.service.KeypairService
 import site.remlit.aster.service.UserService
 import site.remlit.aster.service.ValidationService
 import site.remlit.aster.service.ap.ApIdService
+import site.remlit.aster.util.PASSWORD_HASH_COST
+import site.remlit.aster.util.PASSWORD_MIN_LENGTH
 import site.remlit.aster.util.model.fromEntity
 
 internal object RegisterRoutes {
@@ -101,8 +103,12 @@ internal object RegisterRoutes {
 				//			return@post
 				//		}
 
+
+				if (body.password.length < PASSWORD_MIN_LENGTH)
+					throw IllegalArgumentException("Password must be at least $PASSWORD_MIN_LENGTH characters")
+
 				val id = IdentifierService.generate()
-				val hashedPassword = BCrypt.withDefaults().hashToString(12, body.password.toCharArray())
+				val hashedPassword = BCrypt.withDefaults().hashToString(PASSWORD_HASH_COST, body.password.toCharArray())
 
 				val keypair = KeypairService.generate()
 
