@@ -24,10 +24,8 @@ function RouteComponent() {
         },
         onSubmit: async (values) => {
             console.log(values);
-            await passwordReset(values.value.code, values.value.password).then((result) => {
-                if (result) {
-                    setSuccess(true)
-                }
+            await passwordReset(values.value.code, values.value.password).then(() => {
+                setSuccess(true)
             })
         }
     });

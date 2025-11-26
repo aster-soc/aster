@@ -307,4 +307,27 @@ object NotificationService : Service {
 		from: UserEntity,
 		note: Note? = null,
 	) = create(NotificationType.Bite, to, from, note)
+
+	/**
+	 * Delete a notification
+	 *
+	 * @param where Query to find notification
+	 * */
+	@JvmStatic
+	fun delete(where: Op<Boolean>) = transaction {
+		val entity = NotificationEntity
+			.find { where }
+			.singleOrNull()
+			?.load(
+				NotificationEntity::to,
+				NotificationEntity::from,
+				NotificationEntity::note,
+				NotificationEntity::relationship
+			)
+		if (entity == null) return@transaction
+
+		// notif delete event
+		entity.delete()
+	}
+
 }

@@ -15,11 +15,13 @@ import site.remlit.aster.common.model.Note
 import site.remlit.aster.common.model.SmallNote
 import site.remlit.aster.common.model.User
 import site.remlit.aster.common.model.Visibility
+import site.remlit.aster.common.model.type.NotificationType
 import site.remlit.aster.db.entity.NoteEntity
 import site.remlit.aster.db.entity.NoteLikeEntity
 import site.remlit.aster.db.entity.UserEntity
 import site.remlit.aster.db.table.NoteLikeTable
 import site.remlit.aster.db.table.NoteTable
+import site.remlit.aster.db.table.NotificationTable
 import site.remlit.aster.db.table.UserTable
 import site.remlit.aster.event.note.NoteCreateEvent
 import site.remlit.aster.event.note.NoteDeleteEvent
@@ -256,15 +258,34 @@ object NoteService : Service {
 
 		if (existing != null) {
 			transaction { existing.delete() }
+
+			if (note.user.host == null)
+				NotificationService.delete(
+					NotificationTable.type eq NotificationType.Like and
+							(NotificationTable.note eq note.id),
+				)
+
 			NoteUnlikeEvent(note, user).call()
 			return
 		}
 
+
 		transaction {
+			val userEntity = UserEntity[user.id]
+			val noteEntity = NoteEntity[note.id]
+
 			NoteLikeEntity.new(IdentifierService.generate()) {
-				this.user = UserEntity[user.id]
-				this.note = NoteEntity[note.id]
+				this.user = userEntity
+				this.note = noteEntity
 			}
+
+			if (note.user.host == null)
+				NotificationService.create(
+					NotificationType.Like,
+					noteEntity.user,
+					userEntity,
+					note
+				)
 		}
 
 		NoteLikeEvent(note, user).call()
