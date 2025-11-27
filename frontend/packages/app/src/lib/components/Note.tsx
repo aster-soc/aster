@@ -32,7 +32,7 @@ import repeatNote from "../api/note/repeat.ts";
 
 function Note(
     {data, detailed = false}:
-    { data: Common.Note, detailed: boolean }
+    { data: Common.Note, detailed?: boolean }
 ) {
     const navigate = useNavigate();
     let [show, setShow] = React.useState(true)

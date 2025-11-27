@@ -1,0 +1,10 @@
+.userCard {
+  padding: 12px;
+  border-radius: var(--br-lg);
+
+  transition: .1s background-color;
+
+  &:hover {
+    background-color: var(--bg-3-50);
+  }
+}
