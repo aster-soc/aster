@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as StyletestRouteImport } from './routes/styletest'
+import { Route as SearchRouteImport } from './routes/search'
 import { Route as RegisterRouteImport } from './routes/register'
 import { Route as NotificationsRouteImport } from './routes/notifications'
 import { Route as LogoutRouteImport } from './routes/logout'
@@ -26,6 +27,11 @@ import { Route as NoteNoteIdRouteImport } from './routes/note/$noteId'
 const StyletestRoute = StyletestRouteImport.update({
   id: '/styletest',
   path: '/styletest',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SearchRoute = SearchRouteImport.update({
+  id: '/search',
+  path: '/search',
   getParentRoute: () => rootRouteImport,
 } as any)
 const RegisterRoute = RegisterRouteImport.update({
@@ -99,6 +105,7 @@ export interface FileRoutesByFullPath {
   '/logout': typeof LogoutRoute
   '/notifications': typeof NotificationsRoute
   '/register': typeof RegisterRoute
+  '/search': typeof SearchRoute
   '/styletest': typeof StyletestRoute
   '/note/$noteId': typeof NoteNoteIdRoute
   '/settings/account': typeof SettingsAccountRoute
@@ -114,6 +121,7 @@ export interface FileRoutesByTo {
   '/logout': typeof LogoutRoute
   '/notifications': typeof NotificationsRoute
   '/register': typeof RegisterRoute
+  '/search': typeof SearchRoute
   '/styletest': typeof StyletestRoute
   '/note/$noteId': typeof NoteNoteIdRoute
   '/settings/account': typeof SettingsAccountRoute
@@ -130,6 +138,7 @@ export interface FileRoutesById {
   '/logout': typeof LogoutRoute
   '/notifications': typeof NotificationsRoute
   '/register': typeof RegisterRoute
+  '/search': typeof SearchRoute
   '/styletest': typeof StyletestRoute
   '/note/$noteId': typeof NoteNoteIdRoute
   '/settings/account': typeof SettingsAccountRoute
@@ -147,6 +156,7 @@ export interface FileRouteTypes {
     | '/logout'
     | '/notifications'
     | '/register'
+    | '/search'
     | '/styletest'
     | '/note/$noteId'
     | '/settings/account'
@@ -162,6 +172,7 @@ export interface FileRouteTypes {
     | '/logout'
     | '/notifications'
     | '/register'
+    | '/search'
     | '/styletest'
     | '/note/$noteId'
     | '/settings/account'
@@ -177,6 +188,7 @@ export interface FileRouteTypes {
     | '/logout'
     | '/notifications'
     | '/register'
+    | '/search'
     | '/styletest'
     | '/note/$noteId'
     | '/settings/account'
@@ -193,6 +205,7 @@ export interface RootRouteChildren {
   LogoutRoute: typeof LogoutRoute
   NotificationsRoute: typeof NotificationsRoute
   RegisterRoute: typeof RegisterRoute
+  SearchRoute: typeof SearchRoute
   StyletestRoute: typeof StyletestRoute
   NoteNoteIdRoute: typeof NoteNoteIdRoute
   SettingsAccountRoute: typeof SettingsAccountRoute
@@ -206,6 +219,13 @@ declare module '@tanstack/react-router' {
       path: '/styletest'
       fullPath: '/styletest'
       preLoaderRoute: typeof StyletestRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/search': {
+      id: '/search'
+      path: '/search'
+      fullPath: '/search'
+      preLoaderRoute: typeof SearchRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/register': {
@@ -305,6 +325,7 @@ const rootRouteChildren: RootRouteChildren = {
   LogoutRoute: LogoutRoute,
   NotificationsRoute: NotificationsRoute,
   RegisterRoute: RegisterRoute,
+  SearchRoute: SearchRoute,
   StyletestRoute: StyletestRoute,
   NoteNoteIdRoute: NoteNoteIdRoute,
   SettingsAccountRoute: SettingsAccountRoute,

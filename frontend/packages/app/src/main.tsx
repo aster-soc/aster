@@ -8,10 +8,6 @@ const rootElement = document.getElementById('root')!
 if (!rootElement.innerHTML) {
     const root = createRoot(rootElement)
 
-    function noAuth() {
-
-    }
-
     root.render(
         <StrictMode>
             <RouterProvider router={router}/>

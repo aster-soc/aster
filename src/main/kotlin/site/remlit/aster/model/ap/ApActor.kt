@@ -61,13 +61,13 @@ data class ApActor(
 					src = user.avatar!!,
 					sensitive = user.sensitive,
 					name = user.avatarAlt,
-					alt = user.avatarAlt
+					summary = user.avatarAlt
 				) else null,
 				image = if (user.banner != null) ApImage(
 					src = user.banner!!,
 					sensitive = user.sensitive,
 					name = user.bannerAlt,
-					alt = user.bannerAlt
+					summary = user.bannerAlt
 				) else null,
 
 				summary = user.bio,

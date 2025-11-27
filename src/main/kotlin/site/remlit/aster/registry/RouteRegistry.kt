@@ -22,12 +22,14 @@ import site.remlit.aster.route.ap.NodeInfoRoutes
 import site.remlit.aster.route.ap.OutboxRoutes
 import site.remlit.aster.route.ap.WebfingerRoutes
 import site.remlit.aster.route.api.DriveRoutes
+import site.remlit.aster.route.api.FollowRequestRoutes
 import site.remlit.aster.route.api.LoginRoutes
 import site.remlit.aster.route.api.MetaRoutes
 import site.remlit.aster.route.api.NoteRoutes
 import site.remlit.aster.route.api.NotificationRoutes
 import site.remlit.aster.route.api.PasswordResetRoutes
 import site.remlit.aster.route.api.RegisterRoutes
+import site.remlit.aster.route.api.SearchRoutes
 import site.remlit.aster.route.api.TimelineRoutes
 import site.remlit.aster.route.api.UserRoutes
 import site.remlit.aster.route.api.mod.InviteRoutes
@@ -96,12 +98,14 @@ object RouteRegistry {
 		PolicyRoutes.register()
 
 		DriveRoutes.register()
+		FollowRequestRoutes.register()
 		LoginRoutes.register()
 		MetaRoutes.register()
 		NoteRoutes.register()
 		NotificationRoutes.register()
 		PasswordResetRoutes.register()
 		RegisterRoutes.register()
+		SearchRoutes.register()
 		TimelineRoutes.register()
 		UserRoutes.register()
 
