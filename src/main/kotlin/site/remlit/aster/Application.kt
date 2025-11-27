@@ -49,8 +49,7 @@ internal fun main(args: Array<String>) {
 
 	ApplicationBeginStartEvent().call()
 
-	val server =
-		embeddedServer(Netty, Configuration.port, Configuration.host, module = Application::module)
+	val server = embeddedServer(Netty, Configuration.port, Configuration.host, module = Application::module)
 
 	Runtime.getRuntime().addShutdownHook(Thread {
 		Thread.currentThread().name = "ShutdownMain"

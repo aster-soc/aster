@@ -32,8 +32,10 @@ import site.remlit.aster.route.api.RegisterRoutes
 import site.remlit.aster.route.api.SearchRoutes
 import site.remlit.aster.route.api.TimelineRoutes
 import site.remlit.aster.route.api.UserRoutes
-import site.remlit.aster.route.api.mod.InviteRoutes
-import site.remlit.aster.route.api.mod.PolicyRoutes
+import site.remlit.aster.route.api.EmojiRoutes
+import site.remlit.aster.route.api.InviteRoutes
+import site.remlit.aster.route.api.PolicyRoutes
+import site.remlit.aster.route.api.ReportRoutes
 
 /**
  * Registry for keeping track of built-in and plugin routes.
@@ -94,17 +96,18 @@ object RouteRegistry {
 		OutboxRoutes.register()
 		WebfingerRoutes.register()
 
-		InviteRoutes.register()
-		PolicyRoutes.register()
-
 		DriveRoutes.register()
+        EmojiRoutes.register()
 		FollowRequestRoutes.register()
+        InviteRoutes.register()
 		LoginRoutes.register()
 		MetaRoutes.register()
 		NoteRoutes.register()
 		NotificationRoutes.register()
 		PasswordResetRoutes.register()
+        PolicyRoutes.register()
 		RegisterRoutes.register()
+        ReportRoutes.register()
 		SearchRoutes.register()
 		TimelineRoutes.register()
 		UserRoutes.register()

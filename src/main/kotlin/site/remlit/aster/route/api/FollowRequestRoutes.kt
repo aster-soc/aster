@@ -6,7 +6,7 @@ import io.ktor.server.routing.*
 import site.remlit.aster.registry.RouteRegistry
 import site.remlit.aster.util.authentication
 
-object FollowRequestRoutes {
+internal object FollowRequestRoutes {
 	fun register() =
 		RouteRegistry.registerRoute {
 			authentication(

@@ -1,4 +1,4 @@
-package site.remlit.aster.route.api.mod
+package site.remlit.aster.route.api
 
 import io.ktor.http.*
 import io.ktor.server.request.*
