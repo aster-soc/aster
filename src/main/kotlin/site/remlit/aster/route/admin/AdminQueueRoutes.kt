@@ -3,19 +3,25 @@ package site.remlit.aster.route.admin
 import io.ktor.http.*
 import io.ktor.server.html.*
 import io.ktor.server.routing.*
+import io.ktor.server.util.*
 import kotlinx.html.a
+import kotlinx.html.b
 import kotlinx.html.body
 import kotlinx.html.classes
+import kotlinx.html.code
 import kotlinx.html.div
+import kotlinx.html.h1
 import kotlinx.html.h2
 import kotlinx.html.head
 import kotlinx.html.li
+import kotlinx.html.p
 import kotlinx.html.span
 import kotlinx.html.styleLink
 import kotlinx.html.title
 import kotlinx.html.ul
 import org.jetbrains.exposed.v1.core.eq
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
+import site.remlit.aster.common.model.User
 import site.remlit.aster.common.model.type.RoleType
 import site.remlit.aster.db.entity.DeliverQueueEntity
 import site.remlit.aster.db.entity.InboxQueueEntity
@@ -23,7 +29,9 @@ import site.remlit.aster.db.table.DeliverQueueTable
 import site.remlit.aster.db.table.InboxQueueTable
 import site.remlit.aster.model.QueueStatus
 import site.remlit.aster.registry.RouteRegistry
+import site.remlit.aster.service.QueueService
 import site.remlit.aster.util.authentication
+import site.remlit.aster.util.model.fromEntity
 import site.remlit.aster.util.webcomponent.adminHeader
 import site.remlit.aster.util.webcomponent.adminMain
 
@@ -99,7 +107,7 @@ internal object AdminQueueRoutes {
 												for (job in inboxPending) {
 													li {
 														a {
-															href = "/job/${job.id}"
+															href = "/admin/queues/inbox/job/${job.id}"
 															+"${job.id} ${job.sender?.host}"
 														}
 													}
@@ -115,7 +123,7 @@ internal object AdminQueueRoutes {
 												for (job in inboxCompleted) {
 													li {
 														a {
-															href = "/job/${job.id}"
+															href = "/admin/queues/inbox/job/${job.id}"
 															+"${job.id} ${job.sender?.host}"
 														}
 													}
@@ -131,7 +139,7 @@ internal object AdminQueueRoutes {
 												for (job in inboxFailed) {
 													li {
 														a {
-															href = "/job/${job.id}"
+															href = "/admin/queues/inbox/job/${job.id}"
 															+"${job.id} ${job.sender?.host}"
 														}
 													}
@@ -151,7 +159,7 @@ internal object AdminQueueRoutes {
 												for (job in deliverPending) {
 													li {
 														a {
-															href = "/job/${job.id}"
+															href = "/admin/queues/deliver/job/${job.id}"
 															+"${job.id} ${job.sender?.host}"
 														}
 													}
@@ -167,7 +175,7 @@ internal object AdminQueueRoutes {
 												for (job in deliverCompleted) {
 													li {
 														a {
-															href = "/job/${job.id}"
+															href = "/admin/queues/deliver/job/${job.id}"
 															+"${job.id} ${job.sender?.host}"
 														}
 													}
@@ -183,7 +191,7 @@ internal object AdminQueueRoutes {
 												for (job in deliverFailed) {
 													li {
 														a {
-															href = "/admin/queues/job/${job.id}"
+															href = "/admin/queues/deliver/job/${job.id}"
 															+"${job.id} ${job.sender?.host}"
 														}
 													}
@@ -194,6 +202,106 @@ internal object AdminQueueRoutes {
 								}
 							}
 						}
+					}
+				}
+
+				get("/admin/queues/{queue}/job/{id}") {
+					val queue = call.parameters.getOrFail("queue")
+					val id = call.parameters.getOrFail("id")
+
+					when (queue) {
+						"inbox" -> {
+							val job = QueueService
+								.getInboxJob(InboxQueueTable.id eq id)
+
+							if (job == null) throw IllegalArgumentException("Job not found")
+
+							call.respondHtml {
+								head {
+									title { +"Job $id" }
+									styleLink("/admin/assets/index.css")
+								}
+								body {
+									adminHeader("")
+									adminMain {
+										transaction {
+											h1 { +id }
+
+											if (job.sender != null) {
+												b { +"Sender" }
+												p { +"${User.fromEntity(job.sender!!)}" }
+											}
+
+											b { +"Status" }
+											p { +"${job.status}" }
+
+											b { +"Content" }
+											p {
+												code { +String(job.content.bytes) }
+											}
+
+											b { +"Created at" }
+											p { +"${job.createdAt}" }
+
+											b { +"Retry at" }
+											p { +"${job.retryAt}" }
+
+											b { +"Retries" }
+											p { +"${job.retries}" }
+										}
+									}
+								}
+							}
+						}
+
+						"deliver" -> {
+							val job = QueueService
+								.getDeliverJob(DeliverQueueTable.id eq id)
+
+							if (job == null) throw IllegalArgumentException("Job not found")
+
+							call.respondHtml {
+								head {
+									title { +"Job $id" }
+									styleLink("/admin/assets/index.css")
+								}
+								body {
+									adminHeader("")
+									adminMain {
+										transaction {
+											h1 { +id }
+
+											if (job.sender != null) {
+												b { +"Sender" }
+												p { +"${User.fromEntity(job.sender!!)}" }
+											}
+
+											b { +"Inbox" }
+											p { +job.inbox }
+
+											b { +"Status" }
+											p { +"${job.status}" }
+
+											b { +"Content" }
+											p {
+												code { +String(job.content.bytes) }
+											}
+
+											b { +"Created at" }
+											p { +"${job.createdAt}" }
+
+											b { +"Retry at" }
+											p { +"${job.retryAt}" }
+
+											b { +"Retries" }
+											p { +"${job.retries}" }
+										}
+									}
+								}
+							}
+						}
+
+						else -> throw IllegalArgumentException("Queue not found")
 					}
 				}
 			}

@@ -6,9 +6,9 @@ pluginManagement {
 		application
 		`maven-publish`
 
-		kotlin("jvm") version "2.3.0-RC"
-		kotlin("multiplatform") version "2.3.0-RC"
-		kotlin("plugin.serialization") version "2.3.0-RC"
+		kotlin("jvm") version "2.2.21"
+		kotlin("multiplatform") version "2.2.21"
+		kotlin("plugin.serialization") version "2.2.21"
 
 		id("io.ktor.plugin") version "3.3.2"
 		id("com.gradleup.shadow") version "8.3.0"

@@ -9,6 +9,7 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.annotations.ApiStatus
+import org.jetbrains.exposed.v1.core.Op
 import org.jetbrains.exposed.v1.core.and
 import org.jetbrains.exposed.v1.core.eq
 import org.jetbrains.exposed.v1.core.lessEq
@@ -83,6 +84,36 @@ object QueueService : Service {
 
 		logger.info("Initialized inbox and deliver queues")
 	}
+
+	// getters
+
+	/**
+	 * Gets an inbox job.
+	 *
+	 * @param where Query to find inbox job
+	 *
+	 * @return Inbox job
+	 * */
+	fun getInboxJob(where: Op<Boolean>): InboxQueueEntity? =
+		transaction {
+			InboxQueueEntity
+				.find { where }
+				.singleOrNull()
+		}
+
+	/**
+	 * Gets a deliver job.
+	 *
+	 * @param where Query to find deliver job
+	 *
+	 * @return Deliver job
+	 * */
+	fun getDeliverJob(where: Op<Boolean>): DeliverQueueEntity? =
+		transaction {
+			DeliverQueueEntity
+				.find { where }
+				.singleOrNull()
+		}
 
 	// queue checkers
 
