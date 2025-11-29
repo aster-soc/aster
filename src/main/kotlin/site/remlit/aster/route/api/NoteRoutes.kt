@@ -136,6 +136,23 @@ internal object NoteRoutes {
 				}
 
 				post("/api/note/{id}/bookmark") {
+					val authenticatedUser = call.attributes[authenticatedUserKey]
+					val note = NoteService.getById(call.parameters.getOrFail("id"))
+
+					if (
+						note == null ||
+						!note.user.activated ||
+						note.user.suspended ||
+						VisibilityService.canISee(
+							note.visibility,
+							note.user.id,
+							note.to,
+							authenticatedUser.id.toString()
+						)
+					) throw ApiException(HttpStatusCode.NotFound, "Note not found.")
+
+					NoteService.bookmark(User.fromEntity(authenticatedUser), note.id)
+
 					throw ApiException(HttpStatusCode.NotImplemented)
 				}
 
