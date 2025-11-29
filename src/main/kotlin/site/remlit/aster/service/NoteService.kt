@@ -16,17 +16,21 @@ import site.remlit.aster.common.model.SmallNote
 import site.remlit.aster.common.model.User
 import site.remlit.aster.common.model.Visibility
 import site.remlit.aster.common.model.type.NotificationType
+import site.remlit.aster.db.entity.NoteBookmarkEntity
 import site.remlit.aster.db.entity.NoteEntity
 import site.remlit.aster.db.entity.NoteLikeEntity
 import site.remlit.aster.db.entity.UserEntity
+import site.remlit.aster.db.table.NoteBookmarkTable
 import site.remlit.aster.db.table.NoteLikeTable
 import site.remlit.aster.db.table.NoteTable
 import site.remlit.aster.db.table.NotificationTable
 import site.remlit.aster.db.table.UserTable
+import site.remlit.aster.event.note.NoteBookmarkEvent
 import site.remlit.aster.event.note.NoteCreateEvent
 import site.remlit.aster.event.note.NoteDeleteEvent
 import site.remlit.aster.event.note.NoteLikeEvent
 import site.remlit.aster.event.note.NoteRepeatEvent
+import site.remlit.aster.event.note.NoteUnbookmarkEvent
 import site.remlit.aster.event.note.NoteUnlikeEvent
 import site.remlit.aster.exception.InsertFailureException
 import site.remlit.aster.model.Configuration
@@ -289,6 +293,55 @@ object NoteService : Service {
 		}
 
 		NoteLikeEvent(note, user).call()
+	}
+
+	/**
+	 * Bookmark a note as a user, or removes a bookmark if it's already there
+	 *
+	 * @param user User bookmarking the note
+	 * @param noteId ID of the target note
+	 *
+	 * @since 2025.11.4.0-SNAPSHOT
+	 * */
+	@JvmStatic
+	fun bookmark(
+		user: User,
+		noteId: String,
+	) {
+		val note = getById(noteId)
+			?: throw IllegalArgumentException("Note not found")
+
+		if (!VisibilityService.canISee(note.visibility, note.user.id, note.to, user.id))
+			throw IllegalArgumentException("Note not found")
+
+		val existing = transaction {
+			NoteBookmarkEntity
+				.find {
+					NoteBookmarkTable.note eq note.id and
+							(NoteBookmarkTable.user eq user.id)
+				}
+				.singleOrNull()
+		}
+
+		if (existing != null) {
+			transaction { existing.delete() }
+
+			NoteUnbookmarkEvent(note, user).call()
+			return
+		}
+
+
+		transaction {
+			val userEntity = UserEntity[user.id]
+			val noteEntity = NoteEntity[note.id]
+
+			NoteBookmarkEntity.new(IdentifierService.generate()) {
+				this.user = userEntity
+				this.note = noteEntity
+			}
+		}
+
+		NoteBookmarkEvent(note, user).call()
 	}
 
 	/**
