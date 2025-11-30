@@ -1,0 +1,1 @@
+ALTER TABLE password_reset_code ALTER COLUMN "user" TYPE VARCHAR(125), ALTER COLUMN "user" SET NOT NULL;

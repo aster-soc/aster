@@ -29,6 +29,7 @@ import Dropdown, {DropdownDivider, DropdownItem, type DropdownNode} from "./drop
 import Mfm from "./Mfm.tsx";
 import deleteNote from "../api/note/delete.ts";
 import repeatNote from "../api/note/repeat.ts";
+import bookmark from "../api/note/bookmark.ts";
 
 function Note(
     {data, detailed = false}:
@@ -208,6 +209,7 @@ function Note(
                 'Bookmark note',
                 undefined,
                 () => {
+                    bookmark(note.id)
                 }
             ),
             new DropdownItem(

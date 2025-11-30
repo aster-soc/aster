@@ -144,17 +144,17 @@ internal object NoteRoutes {
 						note == null ||
 						!note.user.activated ||
 						note.user.suspended ||
-						VisibilityService.canISee(
+						!(VisibilityService.canISee(
 							note.visibility,
 							note.user.id,
 							note.to,
 							authenticatedUser.id.toString()
-						)
+						))
 					) throw ApiException(HttpStatusCode.NotFound, "Note not found.")
 
 					BookmarkService.create(User.fromEntity(authenticatedUser), note.id)
 
-					throw ApiException(HttpStatusCode.NotImplemented)
+					call.respond(HttpStatusCode.OK)
 				}
 
 				post("/api/note/{id}/bite") {
@@ -165,12 +165,12 @@ internal object NoteRoutes {
 						note == null ||
 						!note.user.activated ||
 						note.user.suspended ||
-						VisibilityService.canISee(
+						!(VisibilityService.canISee(
 							note.visibility,
 							note.user.id,
 							note.to,
 							authenticatedUser.id.toString()
-						)
+						))
 					) throw ApiException(HttpStatusCode.NotFound, "Note not found.")
 
 					if (note.user.id == authenticatedUser.id.toString())
@@ -178,7 +178,7 @@ internal object NoteRoutes {
 
 					NotificationService.bite(UserEntity[note.user.id], authenticatedUser, note)
 
-					throw ApiException(HttpStatusCode.OK)
+					call.respond(HttpStatusCode.OK)
 				}
 
 				/* Hide post and all replies to it, use conversation to determine replies */
