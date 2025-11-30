@@ -12,6 +12,7 @@ import site.remlit.aster.db.entity.UserEntity
 import site.remlit.aster.model.ApiException
 import site.remlit.aster.model.Configuration
 import site.remlit.aster.registry.RouteRegistry
+import site.remlit.aster.service.BookmarkService
 import site.remlit.aster.service.IdentifierService
 import site.remlit.aster.service.NoteService
 import site.remlit.aster.service.NotificationService
@@ -151,7 +152,7 @@ internal object NoteRoutes {
 						)
 					) throw ApiException(HttpStatusCode.NotFound, "Note not found.")
 
-					NoteService.bookmark(User.fromEntity(authenticatedUser), note.id)
+					BookmarkService.create(User.fromEntity(authenticatedUser), note.id)
 
 					throw ApiException(HttpStatusCode.NotImplemented)
 				}
