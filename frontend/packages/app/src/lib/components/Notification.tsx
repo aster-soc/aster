@@ -22,7 +22,7 @@ function Notification(
     }
 ) {
     function renderName() {
-        return <a href={"/@" + Common.renderHandle(data.from)}>
+        return <a href={"/" + Common.renderHandle(data.from)}>
             {data.from.displayName ?? data.from.username}
         </a>
     }
