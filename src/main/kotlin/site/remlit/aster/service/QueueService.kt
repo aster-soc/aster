@@ -71,13 +71,13 @@ object QueueService : Service {
 	fun initialize() {
 		inboxScope.launch {
 			while (true) {
-				delay(2.seconds)
+				delay(1.seconds)
 				summonInboxConsumersIfNeeded()
 			}
 		}
 		deliverScope.launch {
 			while (true) {
-				delay(2.seconds)
+				delay(1.seconds)
 				summonDeliverConsumersIfNeeded()
 			}
 		}

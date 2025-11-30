@@ -15,7 +15,7 @@ style:
     allowedNames: 'ignored|expected|serialVersionUID|logger'
 complexity:
   LongMethod:
-    excludes: [ '**/route/**', '**/service/ap/**' ]
+    active: false
   TooManyFunctions:
     thresholdInObjects: 20
   NestedBlockDepth:
