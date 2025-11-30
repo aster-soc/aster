@@ -77,13 +77,8 @@ function Note(
 
     function renderHandle() {
         return (
-            <span className={"username"}>@{note?.user?.username}{note?.user?.host !== null ? (
-                <span className={"host"}>@{note?.user?.host}</span>) : null}</span>
+            <span className={"username"}>{Common.renderHandle(note.user)}</span>
         )
-    }
-
-    function renderAt() {
-        return `@${note?.user?.username}${note?.user?.host ? ("@" + note?.user?.host) : ""}`
     }
 
     function renderContentWarning() {
@@ -246,7 +241,7 @@ function Note(
 
     return show ? (
         <article className={"note highlightable"} tabIndex={0}
-                 aria-label={`Note by ${renderAt()}${note?.content ? ", " + note?.content : ""}`}>
+                 aria-label={`Note by ${Common.renderHandle(note.user)}${note?.content ? ", " + note?.content : ""}`}>
             {repeater != null ? (
                 <Container align={"horizontal"} gap={"md"} clazz={"repeatHeader"}>
                     <IconRepeat size={18} color={"var(--tx-3)"}/>
@@ -262,7 +257,7 @@ function Note(
                 <Container align={"left"}>
                     <span
                         className={"names"}
-                        onClick={() => navigate({to: `/${renderAt()}`})}
+                        onClick={() => navigate({to: `/${Common.renderHandle(note.user)}`})}
                     >
                         <p className={"displayName"}>{note?.user?.displayName ?? note?.user?.username}</p>
                         <p className={"handle"}>{renderHandle()}</p>

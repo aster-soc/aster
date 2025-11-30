@@ -1,0 +1,2 @@
+ALTER TABLE report ADD "resolvedBy" VARCHAR(125) NULL;
+ALTER TABLE report ADD CONSTRAINT fk_report_resolvedby__id FOREIGN KEY ("resolvedBy") REFERENCES "user"(id) ON DELETE CASCADE ON UPDATE RESTRICT;

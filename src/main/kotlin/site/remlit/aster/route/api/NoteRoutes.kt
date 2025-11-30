@@ -5,9 +5,10 @@ import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.server.util.*
-import kotlinx.serialization.Serializable
 import site.remlit.aster.common.model.User
 import site.remlit.aster.common.model.Visibility
+import site.remlit.aster.common.model.request.CreateNoteRequest
+import site.remlit.aster.common.model.request.ReportRequest
 import site.remlit.aster.db.entity.UserEntity
 import site.remlit.aster.model.ApiException
 import site.remlit.aster.model.Configuration
@@ -16,6 +17,7 @@ import site.remlit.aster.service.BookmarkService
 import site.remlit.aster.service.IdentifierService
 import site.remlit.aster.service.NoteService
 import site.remlit.aster.service.NotificationService
+import site.remlit.aster.service.ReportService
 import site.remlit.aster.service.RoleService
 import site.remlit.aster.service.VisibilityService
 import site.remlit.aster.util.authenticatedUserKey
@@ -23,13 +25,6 @@ import site.remlit.aster.util.authentication
 import site.remlit.aster.util.model.fromEntity
 
 internal object NoteRoutes {
-	@Serializable
-	data class PostNoteBody(
-		val cw: String? = null,
-		val content: String? = null,
-		val visibility: String,
-	)
-
 	fun register() =
 		RouteRegistry.registerRoute {
 			authentication {
@@ -84,7 +79,7 @@ internal object NoteRoutes {
 				post("/api/note") {
 					val authenticatedUser = call.attributes[authenticatedUserKey]
 
-					val body = call.receive<PostNoteBody>()
+					val body = call.receive<CreateNoteRequest>()
 
 					if (body.content.isNullOrBlank())
 						throw ApiException(HttpStatusCode.BadRequest, "Content required")
@@ -93,7 +88,7 @@ internal object NoteRoutes {
 						IdentifierService.generate(),
 						authenticatedUser,
 						body.cw,
-						body.content,
+						body.content!!,
 						Visibility.fromString(body.visibility)
 					)
 
@@ -104,7 +99,7 @@ internal object NoteRoutes {
 					val authenticatedUser = call.attributes[authenticatedUserKey]
 					val id = call.parameters.getOrFail("id")
 
-					val body = call.receive<PostNoteBody>()
+					val body = call.receive<CreateNoteRequest>()
 
 					val repeat = NoteService.repeat(
 						User.fromEntity(authenticatedUser),
@@ -179,6 +174,32 @@ internal object NoteRoutes {
 					NotificationService.bite(UserEntity[note.user.id], authenticatedUser, note)
 
 					call.respond(HttpStatusCode.OK)
+				}
+
+				post("/api/note/{id}/report") {
+					val authenticatedUser = call.attributes[authenticatedUserKey]
+					val note = NoteService.getById(call.parameters.getOrFail("id"))
+					val body = call.receive<ReportRequest>()
+
+					if (
+						note == null ||
+						!note.user.activated ||
+						note.user.suspended ||
+						!(VisibilityService.canISee(
+							note.visibility,
+							note.user.id,
+							note.to,
+							authenticatedUser.id.toString()
+						))
+					) throw ApiException(HttpStatusCode.NotFound, "Note not found.")
+
+					val report = ReportService.create(
+						authenticatedUser,
+						body.comment,
+						note.id,
+					)
+
+					call.respond(report)
 				}
 
 				/* Hide post and all replies to it, use conversation to determine replies */

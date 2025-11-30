@@ -11,6 +11,7 @@ import {useState} from "react";
 import Container from "../Container.tsx";
 import Button from "../Button.tsx";
 import Mfm from "../Mfm.tsx";
+import * as Common from 'aster-common'
 
 function UserPage(
     {handle}: { handle: string }
@@ -38,8 +39,7 @@ function UserPage(
                                 </Container>
                                 <Container gap={"sm"}>
                                     <span className={"displayName"}>{displayName}</span>
-                                    <span
-                                        className={"username"}>@{data?.username}{(data?.host === null) ? "" : `@${data?.host}`}</span>
+                                    <span className={"username"}>{Common.renderHandle(data)}</span>
                                 </Container>
                             </Container>
 
