@@ -19,3 +19,20 @@
 
   margin: 4px 0;
 }
+
+.inputCtn {
+  &.checkbox {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    gap: 8px;
+
+    .inputLabel {
+      font-size: var(--fs-md);
+    }
+
+    .input {
+      width: auto;
+    }
+  }
+}

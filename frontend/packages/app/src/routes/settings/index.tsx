@@ -5,6 +5,7 @@ import {IconDeviceDesktop, IconSettings, IconUser} from "@tabler/icons-react";
 import Tab from "../../lib/components/Tab.tsx";
 import Container from "../../lib/components/Container.tsx";
 import {useState} from "react";
+import Input from "../../lib/components/Input.tsx";
 
 export const Route = createFileRoute('/settings/')({
     component: RouteComponent,
@@ -20,7 +21,8 @@ function RouteComponent() {
             case 0:
                 return (
                     <>
-                        <span>tab {tab}</span>
+                        <Input type={"checkbox"} label={"Hide repeat counts"}/>
+                        <Input type={"checkbox"} label={"Hide like counts"}/>
                     </>
                 )
             case 1:
