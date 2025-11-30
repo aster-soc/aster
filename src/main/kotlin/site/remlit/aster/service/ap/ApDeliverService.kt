@@ -4,6 +4,7 @@ import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.server.http.*
+import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 import org.slf4j.LoggerFactory
 import site.remlit.aster.common.model.type.PolicyType
 import site.remlit.aster.db.entity.DeliverQueueEntity
@@ -86,7 +87,7 @@ object ApDeliverService {
 			if (blockedHosts.contains(url.host))
 				return
 
-			val actor = job.sender ?: UserService.getInstanceActor()
+			val actor = transaction { job.sender } ?: UserService.getInstanceActor()
 
 			val actorPrivate = UserService.getPrivateById(actor.id.toString())!!
 

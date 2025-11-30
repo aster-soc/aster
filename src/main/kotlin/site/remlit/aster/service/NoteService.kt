@@ -283,7 +283,7 @@ object NoteService : Service {
 							)
 						}
 					),
-					UserEntity[user.id],
+					transaction { UserEntity[user.id] },
 					if (note.user.host != null) listOf(note.user.inbox) else listOf()
 				)
 			}
@@ -319,7 +319,7 @@ object NoteService : Service {
 					actor = user.apId,
 					`object` = ApIdOrObject.Id(note.apId),
 				),
-				UserEntity[user.id],
+				transaction { UserEntity[user.id] },
 				if (note.user.host != null) listOf(note.user.inbox) else listOf()
 			)
 		}

@@ -189,6 +189,7 @@ object QueueService : Service {
 				this.status = QueueStatus.PENDING
 				this.content = ExposedBlob(data)
 				this.sender = sender
+				this.retries = 0
 			}
 		}
 	}
@@ -213,6 +214,7 @@ object QueueService : Service {
 				this.content = ExposedBlob(data)
 				this.sender = sender
 				this.inbox = inbox
+				this.retries = 0
 			}
 		}
 	}
