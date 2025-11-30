@@ -6,6 +6,8 @@
     </picture>
 </h1>
 
+[Issue Tracker](https://youtrack.remlit.site/projects/AS/issues)
+
 Decentralized social software using ActivityPub, written in Kotlin.
 
 ## Goals
@@ -20,7 +22,7 @@ Decentralized social software using ActivityPub, written in Kotlin.
 To build Aster, you'll need at least Java 21. You'll also need Node.js (Latest LTS version recommended) and pnpm (
 `npm i -g pnpm`).
 
-Run the build script `./gradlew build`, and then grab the JAR from `target/aster-*-all.jar`.
+Run the build script `./gradlew build`, and then grab the JAR from `build/libs/aster-*-all.jar`.
 
 ## Running
 
@@ -34,8 +36,23 @@ role by running `java -jar aster.jar role:list`, and then `java -jar aster.jar r
 
 ## Contributing
 
-Contributions are welcome, but Aster is in early development and I may have plans for how to do things already. You
+Code contributions are welcome, but Aster is in early development and I may have plans for how to do things already. You
 should contact me before opening a pull request or working on anything so we can get on the same page.
+
+Contributing by reporting bugs is also welcome, too! Aster's issue tracker can be
+found [here](https://youtrack.remlit.site/projects/AS/issues).
+
+### Project Breakdown
+
+The main part of the project is the backend, `main`, which runs the server. It uses Ktor, a custom event system, and a
+custom plugin system.
+
+There's a module called `common` which targets the JVM and JS using Kotlin Multiplatform, this allows shared models and
+types between the frontend and backend and shared logic. Certain things used in the admin frontend (server side rendered
+and built into `main`) are also usable in the frontend, so it's put there.
+
+There's another module that relates to `common` called `common-generators`. It generates partial versions of certain
+models that are all nullable, and by default null. These can be used for edits, like on a user or a note.
 
 ### Development Environment
 
