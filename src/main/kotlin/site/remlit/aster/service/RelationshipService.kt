@@ -13,6 +13,7 @@ import site.remlit.aster.common.model.User
 import site.remlit.aster.common.model.type.NotificationType
 import site.remlit.aster.common.model.type.RelationshipType
 import site.remlit.aster.db.entity.RelationshipEntity
+import site.remlit.aster.db.entity.UserEntity
 import site.remlit.aster.db.table.RelationshipTable
 import site.remlit.aster.db.table.UserTable
 import site.remlit.aster.event.user.UserFollowEvent
@@ -124,6 +125,28 @@ object RelationshipService : Service {
 			.singleOrNull()
 			?.activityId
 	}
+
+	/**
+	 * Get followers of a user
+	 *
+	 * @param user Query to find relationships
+	 *
+	 * @return Following users
+	 * */
+	@JvmStatic
+	fun getFollowers(user: UserEntity): List<User> =
+		getMany(userToAlias[UserTable.id] eq user.id).map { it.from }
+
+	/**
+	 * Get following of a user
+	 *
+	 * @param user Query to find relationships
+	 *
+	 * @return Followed users
+	 * */
+	@JvmStatic
+	fun getFollowing(user: UserEntity): List<User> =
+		getMany(userFromAlias[UserTable.id] eq user.id).map { it.to }
 
 	/**
 	 * Get relationships in both directions for two users

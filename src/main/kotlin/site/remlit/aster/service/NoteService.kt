@@ -31,6 +31,10 @@ import site.remlit.aster.event.note.NoteUnlikeEvent
 import site.remlit.aster.exception.InsertFailureException
 import site.remlit.aster.model.Configuration
 import site.remlit.aster.model.Service
+import site.remlit.aster.model.ap.ApIdOrObject
+import site.remlit.aster.model.ap.activity.ApLikeActivity
+import site.remlit.aster.model.ap.activity.ApUndoActivity
+import site.remlit.aster.service.ap.ApDeliverService
 import site.remlit.aster.service.ap.ApIdService
 import site.remlit.aster.util.model.fromEntities
 import site.remlit.aster.util.model.fromEntity
@@ -265,16 +269,36 @@ object NoteService : Service {
 							(NotificationTable.note eq note.id),
 				)
 
+			if (note.user.host != null && user.host == null) {
+				val likeApId = ApIdService.renderActivityApId(existing.id.toString())
+
+				ApDeliverService.deliverToFollowers<ApUndoActivity>(
+					ApUndoActivity(
+						"$likeApId/undo",
+						`object` = ApIdOrObject.createObject {
+							ApLikeActivity(
+								likeApId,
+								actor = user.apId,
+								`object` = ApIdOrObject.Id(note.apId),
+							)
+						}
+					),
+					UserEntity[user.id],
+					if (note.user.host != null) listOf(note.user.inbox) else listOf()
+				)
+			}
+
 			NoteUnlikeEvent(note, user).call()
 			return
 		}
 
+		val likeId = IdentifierService.generate()
 
 		transaction {
 			val userEntity = UserEntity[user.id]
 			val noteEntity = NoteEntity[note.id]
 
-			NoteLikeEntity.new(IdentifierService.generate()) {
+			NoteLikeEntity.new(likeId) {
 				this.user = userEntity
 				this.note = noteEntity
 			}
@@ -286,6 +310,18 @@ object NoteService : Service {
 					userEntity,
 					note
 				)
+		}
+
+		if (user.host == null) {
+			ApDeliverService.deliverToFollowers<ApLikeActivity>(
+				ApLikeActivity(
+					ApIdService.renderActivityApId(likeId),
+					actor = user.apId,
+					`object` = ApIdOrObject.Id(note.apId),
+				),
+				UserEntity[user.id],
+				if (note.user.host != null) listOf(note.user.inbox) else listOf()
+			)
 		}
 
 		NoteLikeEvent(note, user).call()

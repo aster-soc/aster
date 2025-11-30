@@ -12,6 +12,7 @@ import site.remlit.aster.exception.ResolverException
 import site.remlit.aster.service.KeypairService
 import site.remlit.aster.service.PolicyService
 import site.remlit.aster.service.QueueService
+import site.remlit.aster.service.RelationshipService
 import site.remlit.aster.service.ResolverService
 import site.remlit.aster.service.UserService
 import site.remlit.aster.util.jsonConfig
@@ -44,6 +45,27 @@ object ApDeliverService {
 			sender,
 			inbox
 		)
+
+	/**
+	 * Deliver an activity to the inboxes of followers of
+	 * the sender.
+	 *
+	 * @param activity Activity to send
+	 * @param sender Activity sender
+	 * @param and Other inboxes to send to
+	 * */
+	inline fun <reified T> deliverToFollowers(
+		activity: T,
+		sender: UserEntity,
+		and: List<String> = listOf()
+	) {
+		val inboxes = RelationshipService.getFollowers(sender).map { it.inbox }
+			.toMutableList().apply { this.addAll(and) }.distinct()
+
+		for (inbox in inboxes) {
+			deliver<T>(activity, sender, inbox)
+		}
+	}
 
 	/**
 	 * Handle a deliver job
