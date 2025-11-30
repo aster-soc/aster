@@ -21,8 +21,8 @@ function RouteComponent() {
             case 0:
                 return (
                     <>
-                        <Input type={"checkbox"} label={"Hide repeat counts"}/>
-                        <Input type={"checkbox"} label={"Hide like counts"}/>
+                        <Input type={"checkbox"} label={"Hide repeat count"} setting={"hide_repeat_count"}/>
+                        <Input type={"checkbox"} label={"Hide like count"} setting={"hide_like_count"}/>
                     </>
                 )
             case 1:

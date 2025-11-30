@@ -285,7 +285,9 @@ function Note(
                     onClick={() => repeat()}
                 >
                     <IconRepeat aria-hidden size={20}/>
-                    {(note?.repeats?.length >= 1) ? <span>{note?.repeats?.length}</span> : null}
+                    {localstore.getParsed("hide_repeat_count") ? null : (
+                        (note?.repeats?.length >= 1) ? <span>{note?.repeats?.length}</span> : null
+                    )}
                 </button>
                 <button
                     className={"highlightable" + ((note?.likes?.some((e) => e?.id === self?.id)) ? " liked" : "")}
@@ -293,7 +295,9 @@ function Note(
                     onClick={() => like()}
                 >
                     <IconStar aria-hidden size={20}/>
-                    {(note?.likes?.length >= 1) ? <span>{note?.likes?.length}</span> : null}
+                    {localstore.getParsed("hide_like_count") ? null : (
+                        (note?.likes?.length >= 1) ? <span>{note?.likes?.length}</span> : null
+                    )}
                 </button>
                 <button className={"highlightable"} title={"React"}>
                     <IconPlus aria-hidden size={20}/>

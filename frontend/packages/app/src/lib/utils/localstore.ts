@@ -3,7 +3,7 @@ import * as Common from "aster-common"
 let defaults = {
     debug: {
         type: 'boolean',
-        value: false
+        value: true
     },
 
     self: {
@@ -18,6 +18,16 @@ let defaults = {
     timeline: {
         type: 'string',
         value: 'home'
+    },
+
+    hide_repeat_count: {
+        type: 'boolean',
+        value: false
+    },
+
+    hide_like_count: {
+        type: 'boolean',
+        value: false
     }
 };
 
@@ -35,7 +45,7 @@ class localstore {
         if (toReturn) {
             return toReturn;
         } else {
-            return defaults[key].value;
+            return defaults[key]?.value;
         }
     }
 
@@ -53,7 +63,12 @@ class localstore {
 
             if (toReturn) {
                 if (defaultObj.type === 'string') return String(toReturn);
-                if (defaultObj.type === 'boolean') return Boolean(toReturn);
+                if (defaultObj.type === 'boolean') switch (toReturn) {
+                    case "true":
+                        return true;
+                    default:
+                        return false;
+                }
                 if (defaultObj.type === 'number') return Number(toReturn);
                 if (defaultObj.type === 'json') return JSON.parse(toReturn);
                 if (defaultObj.type === 'user') return JSON.parse(toReturn) as Common.User;
@@ -70,12 +85,11 @@ class localstore {
         return this.getParsed("self") as Common.User | undefined
     }
 
-    public set(key: string, val: string) {
+    public set(key: string, val: string | undefined) {
         if (this.getParsed('debug'))
             console.debug('[localstore set] ' + key, val);
 
         if (val) {
-            // a 'false' string is considered true!
             localStorage.setItem('aster_' + key, val);
         } else {
             localStorage.setItem('aster_' + key, '');
