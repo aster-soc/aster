@@ -13,7 +13,7 @@ import Input from "./Input.tsx";
 
 function Compose() {
     let [cw, setCw] = React.useState(undefined)
-    let [showCwField, setShowCwField] = React.useState(false)
+    let [showCwField, setShowCwField] = React.useState(localstore.getParsed("always_show_cw_compose"))
 
     let [content, setContent] = React.useState(undefined)
     let [visibility, setVisibility] = React.useState("public")

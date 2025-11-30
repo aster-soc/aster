@@ -28,13 +28,14 @@ function RouteComponent() {
             case 1:
                 return (
                     <>
-                        <span>tab {tab}</span>
+                        <Input type={"checkbox"} label={"Show rounded avatars"} setting={"rounded_avatars"}/>
+                        <Input type={"checkbox"} label={"Always show content warning input in compose box"}
+                               setting={"always_show_cw_compose"}/>
                     </>
                 )
             case 2:
                 return (
                     <>
-                        <span>tab {tab}</span>
                     </>
                 )
         }

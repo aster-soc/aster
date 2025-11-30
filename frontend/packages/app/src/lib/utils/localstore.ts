@@ -28,6 +28,16 @@ let defaults = {
     hide_like_count: {
         type: 'boolean',
         value: false
+    },
+
+    rounded_avatars: {
+        type: 'boolean',
+        value: false
+    },
+
+    always_show_cw_compose: {
+        type: 'boolean',
+        value: false
     }
 };
 
