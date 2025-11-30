@@ -142,11 +142,13 @@ object ReportService {
 
 		val id = IdentifierService.generate()
 
-		ReportEntity.new(id) {
-			this.sender = sender
-			this.comment = comment
-			this.note = if (note != null) NoteEntity[note] else null
-			this.user = if (user != null) UserEntity[user] else null
+		transaction {
+			ReportEntity.new(id) {
+				this.sender = sender
+				this.comment = comment
+				this.note = if (note != null) NoteEntity[note] else null
+				this.user = if (user != null) UserEntity[user] else null
+			}
 		}
 
 		return getById(id)
@@ -172,9 +174,11 @@ object ReportService {
 		if (report.resolvedBy != null)
 			throw IllegalArgumentException("Report already resolved")
 
-		ReportEntity.findByIdAndUpdate(report.id) {
-			it.resolvedBy = resolvedBy
-			it.updatedAt = TimeService.now()
+		transaction {
+			ReportEntity.findByIdAndUpdate(report.id) {
+				it.resolvedBy = resolvedBy
+				it.updatedAt = TimeService.now()
+			}
 		}
 
 		val resolved = getById(report.id)
@@ -199,6 +203,8 @@ object ReportService {
 
 		ReportDeleteEvent(report).call()
 
-		ReportEntity[report.id].delete()
+		transaction {
+			ReportEntity[report.id].delete()
+		}
 	}
 }

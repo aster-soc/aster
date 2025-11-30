@@ -77,7 +77,7 @@ object AdminReportRoutes {
 												if (isResolved) +"Yes" else +"No"
 											}
 											td {
-												+"${report.comment}"
+												+(report.comment ?: "")
 											}
 											td {
 												if (report.note != null) {

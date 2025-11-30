@@ -6,5 +6,5 @@ import kotlin.js.JsExport
 @Serializable
 @JsExport
 data class ReportRequest(
-	val comment: String,
+	val comment: String? = null,
 )
