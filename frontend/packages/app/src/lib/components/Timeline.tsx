@@ -1,5 +1,6 @@
 import * as React from "react";
 import './Timeline.scss';
+import Container from "./Container.tsx";
 
 function Timeline(
     {data, Component}:
@@ -33,7 +34,11 @@ function Timeline(
 
     return (
         <div className={`timeline`}>
-            {timeline}
+            {timeline.length > 0 ? timeline : (
+                <Container align={"center"} padding={"12px 0"}>
+                    <span className={"notice"}>Nothing to show...</span>
+                </Container>
+            )}
         </div>
     )
 }
