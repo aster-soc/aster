@@ -10,5 +10,5 @@ data class Report(
 	val comment: String? = null,
 	val user: User? = null,
 	val note: Note? = null,
-	val instance: Instance? = null
+	val resolvedBy: User? = null
 )

@@ -15,6 +15,8 @@ class ReportEntity(id: EntityID<String>) : Entity<String>(id) {
 
 	var comment by ReportTable.comment
 
+	var resolvedBy by UserEntity optionalReferencedOn ReportTable.resolvedBy
+
 	val createdAt by ReportTable.createdAt
 	var updatedAt by ReportTable.updatedAt
 }

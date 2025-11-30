@@ -12,6 +12,8 @@ import site.remlit.aster.db.entity.ReportEntity
 import site.remlit.aster.db.entity.UserEntity
 import site.remlit.aster.db.table.ReportTable
 import site.remlit.aster.db.table.UserTable
+import site.remlit.aster.event.report.ReportDeleteEvent
+import site.remlit.aster.event.report.ReportResolveEvent
 import site.remlit.aster.exception.InsertFailureException
 import site.remlit.aster.model.Configuration
 import site.remlit.aster.util.model.fromEntities
@@ -36,6 +38,13 @@ object ReportService {
 	 * */
 	@JvmStatic
 	val userAlias = UserTable.alias("user")
+
+	/**
+	 * Reference the "resolvedBy" user on a report.
+	 * For usage in queries.
+	 * */
+	@JvmStatic
+	val resolvedByAlias = UserTable.alias("resolvedBy")
 
 	/**
 	 * Get a report
@@ -83,6 +92,7 @@ object ReportService {
 		val entities = ReportTable
 			.join(senderAlias, JoinType.INNER, ReportTable.sender, senderAlias[UserTable.id])
 			.join(userAlias, JoinType.LEFT, ReportTable.user, userAlias[UserTable.id])
+			.join(resolvedByAlias, JoinType.LEFT, ReportTable.resolvedBy, resolvedByAlias[UserTable.id])
 			.selectAll()
 			.where { where }
 			.offset(offset)
@@ -127,5 +137,54 @@ object ReportService {
 
 		return getById(id)
 			?: throw InsertFailureException("Failed to create report")
+	}
+
+	/**
+	 * Resolve a report.
+	 * Indicates action has been taken.
+	 *
+	 * @param resolvedBy User resolving the report
+	 * @param report ID of report to resolve
+	 *
+	 * @return Resolved report
+	 * */
+	fun resolve(
+		resolvedBy: UserEntity,
+		report: String,
+	): Report {
+		val report = getById(report)
+			?: throw IllegalArgumentException("Report not found")
+
+		if (report.resolvedBy != null)
+			throw IllegalArgumentException("Report already resolved")
+
+		ReportEntity.findByIdAndUpdate(report.id) {
+			it.resolvedBy = resolvedBy
+			it.updatedAt = TimeService.now()
+		}
+
+		val resolved = getById(report.id)
+			?: throw IllegalArgumentException("Report not found")
+
+		ReportResolveEvent(resolved).call()
+
+		return resolved
+	}
+
+	/**
+	 * Delete a report.
+	 * Indicates report being ignored.
+	 *
+	 * @param report ID of report to delete
+	 * */
+	fun delete(
+		report: String,
+	) {
+		val report = getById(report)
+			?: throw IllegalArgumentException("Report not found")
+
+		ReportDeleteEvent(report).call()
+
+		ReportEntity[report.id].delete()
 	}
 }

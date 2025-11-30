@@ -50,3 +50,4 @@
 1764462646952_Migration_note_bookmark.sql
 1764462646992_Migration_password_reset_code.sql
 1764470370410_Migration_report.sql
+1764517207736_Migration_report.sql

@@ -15,6 +15,8 @@ object ReportTable : IdTable<String>("report") {
 
 	val comment = varchar("comment", length = 10000).nullable()
 
+	val resolvedBy = optReference("resolvedBy", UserTable.id, onDelete = ReferenceOption.CASCADE)
+
 	val createdAt = datetime("createdAt").defaultExpression(CurrentDateTime)
 	val updatedAt = datetime("updatedAt").nullable()
 

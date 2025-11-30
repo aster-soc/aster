@@ -33,14 +33,13 @@ internal object TimelineRoutes {
 					val take = TimelineService.normalizeTake(call.parameters["take"]?.toIntOrNull())
 
 					val notes = BookmarkService.getMany(
-						where = NoteBookmarkTable.user eq authenticatedUser.id,
+						where = NoteBookmarkTable.user eq authenticatedUser.id and
+								(NoteBookmarkTable.createdAt less since),
 						take = take
 					)
 
-					if (notes.isEmpty()) {
-						call.respond(HttpStatusCode.NoContent)
-						return@get
-					}
+					if (notes.isEmpty())
+						return@get call.respond(HttpStatusCode.NoContent)
 
 					call.respond(notes)
 				}
@@ -67,10 +66,8 @@ internal object TimelineRoutes {
 						take = take
 					)
 
-					if (notes.isEmpty()) {
-						call.respond(HttpStatusCode.NoContent)
-						return@get
-					}
+					if (notes.isEmpty())
+						return@get call.respond(HttpStatusCode.NoContent)
 
 					call.respond(notes)
 				}
@@ -90,10 +87,8 @@ internal object TimelineRoutes {
 						take = take
 					)
 
-					if (notes.isEmpty()) {
-						call.respond(HttpStatusCode.NoContent)
-						return@get
-					}
+					if (notes.isEmpty())
+						return@get call.respond(HttpStatusCode.NoContent)
 
 					call.respond(notes)
 				}
@@ -115,10 +110,8 @@ internal object TimelineRoutes {
 						take = take
 					)
 
-					if (notes.isEmpty()) {
-						call.respond(HttpStatusCode.NoContent)
-						return@get
-					}
+					if (notes.isEmpty())
+						return@get call.respond(HttpStatusCode.NoContent)
 
 					call.respond(notes)
 				}
@@ -139,10 +132,8 @@ internal object TimelineRoutes {
 
 					// todo: implement hideRemoteContent, making this essentially local tl 2
 
-					if (notes.isEmpty()) {
-						call.respond(HttpStatusCode.NoContent)
-						return@get
-					}
+					if (notes.isEmpty())
+						return@get call.respond(HttpStatusCode.NoContent)
 
 					call.respond(notes)
 				}
