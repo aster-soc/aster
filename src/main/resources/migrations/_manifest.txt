@@ -47,3 +47,5 @@
 1763508219144_Migration_emoji.sql
 1764181019569_Migration_emoji.sql
 1764181019698_Migration_password_reset_code.sql
+1764462646952_Migration_note_bookmark.sql
+1764462646992_Migration_password_reset_code.sql

@@ -9,10 +9,12 @@ import org.jetbrains.exposed.v1.core.inList
 import org.jetbrains.exposed.v1.core.less
 import org.jetbrains.exposed.v1.core.or
 import site.remlit.aster.common.model.Visibility
+import site.remlit.aster.db.table.NoteBookmarkTable
 import site.remlit.aster.db.table.NoteTable
 import site.remlit.aster.db.table.UserTable
 import site.remlit.aster.model.Configuration
 import site.remlit.aster.registry.RouteRegistry
+import site.remlit.aster.service.BookmarkService
 import site.remlit.aster.service.NoteService
 import site.remlit.aster.service.TimelineService
 import site.remlit.aster.util.authenticatedUserKey
@@ -25,6 +27,24 @@ internal object TimelineRoutes {
 			authentication(
 				required = true,
 			) {
+				get("/api/bookmarks") {
+					val authenticatedUser = call.attributes[authenticatedUserKey]
+					val since = TimelineService.normalizeSince(call.parameters["since"])
+					val take = TimelineService.normalizeTake(call.parameters["take"]?.toIntOrNull())
+
+					val notes = BookmarkService.getMany(
+						where = NoteBookmarkTable.user eq authenticatedUser.id,
+						take = take
+					)
+
+					if (notes.isEmpty()) {
+						call.respond(HttpStatusCode.NoContent)
+						return@get
+					}
+
+					call.respond(notes)
+				}
+
 				get("/api/timeline/home") {
 					val authenticatedUser = call.attributes[authenticatedUserKey]
 					val since = TimelineService.normalizeSince(call.parameters["since"])
