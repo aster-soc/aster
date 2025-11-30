@@ -15,6 +15,7 @@ import site.remlit.aster.service.PolicyService
 import site.remlit.aster.service.QueueService
 import site.remlit.aster.service.RelationshipService
 import site.remlit.aster.service.ResolverService
+import site.remlit.aster.service.ResolverService.okRange
 import site.remlit.aster.service.UserService
 import site.remlit.aster.util.jsonConfig
 import java.time.LocalDateTime
@@ -91,7 +92,7 @@ object ApDeliverService {
 
 			val actorPrivate = UserService.getPrivateById(actor.id.toString())!!
 
-			val digest = ApSignatureService.createDigest(job.content.bytes)
+			val digest = "SHA-256=${ApSignatureService.createDigest(job.content.bytes)}"
 
 			val client = ResolverService.createClient()
 			val response = client.post(url) {
@@ -110,7 +111,7 @@ object ApDeliverService {
 					mapOf(
 						"Host" to listOf(url.host),
 						"Date" to listOf(date),
-						"Digest" to listOf(date),
+						"Digest" to listOf(digest),
 						"Content-Type" to listOf("application/activity+json")
 					)
 				)
@@ -119,14 +120,13 @@ object ApDeliverService {
 			}
 			client.close()
 
-			if (response.status != HttpStatusCode.OK)
+			if (response.status.value !in okRange)
 				throw ResolverException(response.status, response.status.description)
 			else {
 				logger.info("${response.status} ${response.request.method} - ${response.request.url}")
 				QueueService.completeDeliverJob(job)
 			}
-		} catch (e: Exception) {
-			e.printStackTrace()
+		} catch (_: Exception) {
 			QueueService.errorDeliverJob(job)
 		}
 	}

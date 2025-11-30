@@ -13,6 +13,7 @@ import org.jetbrains.exposed.v1.core.Op
 import org.jetbrains.exposed.v1.core.and
 import org.jetbrains.exposed.v1.core.eq
 import org.jetbrains.exposed.v1.core.lessEq
+import org.jetbrains.exposed.v1.core.notInList
 import org.jetbrains.exposed.v1.core.or
 import org.jetbrains.exposed.v1.core.statements.api.ExposedBlob
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
@@ -63,6 +64,12 @@ object QueueService : Service {
 	 * */
 	@JvmStatic
 	var activeDeliverWorkers = 0
+
+	/**
+	 * Currently being processed activities
+	 * */
+	@JvmStatic
+	var lockedIds = mutableSetOf<String>()
 
 	/**
 	 * Initialize queue managers. These check frequently for new items in the queue, and then launch a consumer.
@@ -122,7 +129,7 @@ object QueueService : Service {
 		transaction {
 			InboxQueueEntity
 				.find {
-					(InboxQueueTable.status eq QueueStatus.PENDING) or
+					(InboxQueueTable.status eq QueueStatus.PENDING) and (InboxQueueTable.id notInList lockedIds) or
 							(InboxQueueTable.status eq QueueStatus.FAILED and (InboxQueueTable.retryAt lessEq TimeService.now()))
 				}
 				.take(Configuration.queue.inbox.concurrency)
@@ -133,7 +140,9 @@ object QueueService : Service {
 
 					inboxScope.launch {
 						activeInboxWorkers++
+						lockedIds.add(it.id.toString())
 						consumeInboxJob(it)
+						lockedIds.remove(it.id.toString())
 						activeInboxWorkers--
 					}
 				}
@@ -144,7 +153,7 @@ object QueueService : Service {
 		transaction {
 			DeliverQueueEntity
 				.find {
-					(DeliverQueueTable.status eq QueueStatus.PENDING) or
+					(DeliverQueueTable.status eq QueueStatus.PENDING) and (DeliverQueueTable.id notInList lockedIds) or
 							(DeliverQueueTable.status eq QueueStatus.FAILED and (DeliverQueueTable.retryAt lessEq TimeService.now()))
 				}
 				.take(Configuration.queue.deliver.concurrency)
@@ -155,7 +164,9 @@ object QueueService : Service {
 
 					deliverScope.launch {
 						activeDeliverWorkers++
+						lockedIds.add(it.id.toString())
 						consumeDeliverJob(it)
+						lockedIds.remove(it.id.toString())
 						activeDeliverWorkers--
 					}
 				}

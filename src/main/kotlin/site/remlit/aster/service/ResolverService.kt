@@ -33,6 +33,14 @@ object ResolverService : Service {
 	private val logger = LoggerFactory.getLogger(ResolverService::class.java)
 
 	/**
+	 * Range from 200 to 299, acceptable response status
+	 * codes indicating no error.
+	 * */
+	@JvmStatic
+	@Suppress("MagicNumber")
+	val okRange = 200 .. 299
+
+	/**
 	 * Creates an HTTP client with default request headers
 	 * and content negotiation rules for ActivityPub and more.
 	 *
@@ -94,7 +102,7 @@ object ResolverService : Service {
 
 			logger.info("${response.status} ${response.request.method} - ${response.request.url}")
 
-			if (response.status != HttpStatusCode.OK)
+			if (response.status.value !in okRange)
 				throw ResolverException(response.status, response.status.description)
 
 			val body: JsonObject? = response.body()
@@ -159,7 +167,7 @@ object ResolverService : Service {
 			}
 			client.close()
 
-			if (response.status != HttpStatusCode.OK)
+			if (response.status.value !in okRange)
 				throw ResolverException(response.status, response.status.description)
 			else logger.info("${response.status} ${response.request.method} - ${response.request.url}")
 

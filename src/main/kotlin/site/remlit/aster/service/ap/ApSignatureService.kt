@@ -88,7 +88,5 @@ object ApSignatureService : Service {
 
 	@JvmStatic
 	fun createDigest(data: ByteArray): String =
-		java.util.Base64.getEncoder().encodeToString(
-			MessageDigest.getInstance("SHA-256").digest(data)
-		)
+		Base64.encode(MessageDigest.getInstance("SHA-256").digest(data))
 }
