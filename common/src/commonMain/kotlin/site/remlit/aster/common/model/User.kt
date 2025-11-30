@@ -43,4 +43,7 @@ data class User(
 	val updatedAt: LocalDateTime? = null,
 
 	val publicKey: String
-)
+) {
+	fun renderHandle(): String =
+		site.remlit.aster.common.util.renderHandle(this)
+}

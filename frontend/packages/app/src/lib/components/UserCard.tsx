@@ -12,13 +12,13 @@ function UserCard(
     return (
         <div
             className={"userCard" + (padded ? " padded" : "")}
-            onClick={() => navigate({to: `/@${data.username}${data.host ? "@" + data.host : ""}`})}
+            onClick={() => navigate({to: `/${Common.renderHandle(data)}`})}
         >
             <Container gap={"md"} align={"horizontal"}>
                 <Avatar user={data} size="md"/>
                 <Container>
                     <span>{data.displayName ?? data.username}</span>
-                    <span>@{data.username}@{data.host}</span>
+                    <span>{Common.renderHandle(data)}</span>
                 </Container>
             </Container>
         </div>

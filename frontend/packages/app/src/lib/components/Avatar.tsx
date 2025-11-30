@@ -1,5 +1,6 @@
 import * as React from "react";
 import './Avatar.scss'
+import * as Common from 'aster-common'
 
 function Avatar(
     {user, size}:
@@ -12,7 +13,7 @@ function Avatar(
 
     return (
         <div className={`avatarCtn`}>
-            <a href={`/@${user?.username}${user?.host ? ("@" + user?.host) : ""}`}
+            <a href={`/${Common.renderHandle(user)}`}
                className={`avatar ${size ?? ""} highlightable`}>
                 <img src={user?.avatar ?? fallback} alt={user?.avatarAlt ?? `${user.username}'s avatar`}
                      onError={e => e.currentTarget.src = fallback}/>

@@ -10,6 +10,7 @@ import org.jetbrains.exposed.v1.core.eq
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 import site.remlit.aster.common.model.User
 import site.remlit.aster.common.model.generated.PartialUser
+import site.remlit.aster.common.model.request.ReportRequest
 import site.remlit.aster.db.entity.UserEntity
 import site.remlit.aster.db.table.UserTable
 import site.remlit.aster.event.user.UserEditEvent
@@ -18,6 +19,7 @@ import site.remlit.aster.model.Configuration
 import site.remlit.aster.registry.RouteRegistry
 import site.remlit.aster.service.NotificationService
 import site.remlit.aster.service.RelationshipService
+import site.remlit.aster.service.ReportService
 import site.remlit.aster.service.RoleService
 import site.remlit.aster.service.TimeService
 import site.remlit.aster.service.UserService
@@ -138,12 +140,21 @@ internal object UserRoutes {
 				}
 
 				post("/api/user/{id}/report") {
+					val authenticatedUser = call.attributes[authenticatedUserKey]
 					val user = UserService.getById(call.parameters.getOrFail("id"))
+					val body = call.receive<ReportRequest>()
 
 					if (user == null || !user.activated || user.suspended)
 						throw ApiException(HttpStatusCode.NotFound)
 
-					throw ApiException(HttpStatusCode.NotImplemented)
+					val report = ReportService.create(
+						authenticatedUser,
+						body.comment,
+						null,
+						user.id.toString()
+					)
+
+					call.respond(report)
 				}
 
 				post("/api/user/{id}/mute") {

@@ -17,7 +17,7 @@ function NoteSimple(
                         <Avatar size={"sm"} user={data.user}/>
                         <Container gap={"sm"} align={"horizontal"}>
                             <b>{data.user.displayName ?? data.user.username}</b>
-                            <span>@{data.user.username}{data.user.host ? "@" + data.user.host : ""}</span>
+                            <span>{Common.renderHandleSmall(data.user)}</span>
                         </Container>
                     </Container>
 
