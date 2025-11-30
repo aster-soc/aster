@@ -107,6 +107,20 @@ object ReportService {
 	}
 
 	/**
+	 * Count reports
+	 *
+	 * @param where Query to find reports
+	 *
+	 * @return Count of reports found
+	 * */
+	@JvmStatic
+	fun count(where: Op<Boolean>): Long = transaction {
+		ReportEntity
+			.find { where }
+			.count()
+	}
+
+	/**
 	 * Create a report
 	 *
 	 * @param sender Sender of the report

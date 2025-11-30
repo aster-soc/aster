@@ -13,6 +13,7 @@ import site.remlit.aster.route.admin.AdminInstanceRoutes
 import site.remlit.aster.route.admin.AdminInviteRoutes
 import site.remlit.aster.route.admin.AdminPluginRoutes
 import site.remlit.aster.route.admin.AdminQueueRoutes
+import site.remlit.aster.route.admin.AdminReportRoutes
 import site.remlit.aster.route.admin.AdminUserRoutes
 import site.remlit.aster.route.ap.ApNoteRoutes
 import site.remlit.aster.route.ap.ApUserRoutes
@@ -22,20 +23,20 @@ import site.remlit.aster.route.ap.NodeInfoRoutes
 import site.remlit.aster.route.ap.OutboxRoutes
 import site.remlit.aster.route.ap.WebfingerRoutes
 import site.remlit.aster.route.api.DriveRoutes
+import site.remlit.aster.route.api.EmojiRoutes
 import site.remlit.aster.route.api.FollowRequestRoutes
+import site.remlit.aster.route.api.InviteRoutes
 import site.remlit.aster.route.api.LoginRoutes
 import site.remlit.aster.route.api.MetaRoutes
 import site.remlit.aster.route.api.NoteRoutes
 import site.remlit.aster.route.api.NotificationRoutes
 import site.remlit.aster.route.api.PasswordResetRoutes
+import site.remlit.aster.route.api.PolicyRoutes
 import site.remlit.aster.route.api.RegisterRoutes
+import site.remlit.aster.route.api.ReportRoutes
 import site.remlit.aster.route.api.SearchRoutes
 import site.remlit.aster.route.api.TimelineRoutes
 import site.remlit.aster.route.api.UserRoutes
-import site.remlit.aster.route.api.EmojiRoutes
-import site.remlit.aster.route.api.InviteRoutes
-import site.remlit.aster.route.api.PolicyRoutes
-import site.remlit.aster.route.api.ReportRoutes
 
 /**
  * Registry for keeping track of built-in and plugin routes.
@@ -86,6 +87,7 @@ object RouteRegistry {
 		AdminInviteRoutes.register()
 		AdminPluginRoutes.register()
 		AdminQueueRoutes.register()
+		AdminReportRoutes.register()
 		AdminUserRoutes.register()
 
 		ApNoteRoutes.register()
@@ -97,17 +99,17 @@ object RouteRegistry {
 		WebfingerRoutes.register()
 
 		DriveRoutes.register()
-        EmojiRoutes.register()
+		EmojiRoutes.register()
 		FollowRequestRoutes.register()
-        InviteRoutes.register()
+		InviteRoutes.register()
 		LoginRoutes.register()
 		MetaRoutes.register()
 		NoteRoutes.register()
 		NotificationRoutes.register()
 		PasswordResetRoutes.register()
-        PolicyRoutes.register()
+		PolicyRoutes.register()
 		RegisterRoutes.register()
-        ReportRoutes.register()
+		ReportRoutes.register()
 		SearchRoutes.register()
 		TimelineRoutes.register()
 		UserRoutes.register()

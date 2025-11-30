@@ -7,6 +7,7 @@ import kotlin.js.JsExport
 @JsExport
 data class Report(
 	val id: String,
+	val sender: User,
 	val comment: String? = null,
 	val user: User? = null,
 	val note: Note? = null,

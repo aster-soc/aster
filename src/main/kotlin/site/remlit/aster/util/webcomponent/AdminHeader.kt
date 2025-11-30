@@ -30,6 +30,7 @@ fun FlowContent.adminHeader(currentPage: String) {
 				if (Configuration.registrations == InstanceRegistrationsType.Invite)
 					adminHeaderButton("Invites", "/admin/invites")
 				adminHeaderButton("Queues", "/admin/queues")
+				adminHeaderButton("Reports", "/admin/reports")
 				adminHeaderButton("Plugins", "/admin/plugins")
 				adminHeaderButton("Debug", "/admin/debug")
 			}
