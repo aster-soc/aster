@@ -160,7 +160,7 @@ internal object AdminQueueRoutes {
 													li {
 														a {
 															href = "/admin/queues/deliver/job/${job.id}"
-															+"${job.id} ${job.sender?.host}"
+															+"${job.id} ${job.inbox}"
 														}
 													}
 												}
@@ -176,7 +176,7 @@ internal object AdminQueueRoutes {
 													li {
 														a {
 															href = "/admin/queues/deliver/job/${job.id}"
-															+"${job.id} ${job.sender?.host}"
+															+"${job.id} ${job.inbox}"
 														}
 													}
 												}
@@ -192,7 +192,7 @@ internal object AdminQueueRoutes {
 													li {
 														a {
 															href = "/admin/queues/deliver/job/${job.id}"
-															+"${job.id} ${job.sender?.host}"
+															+"${job.id} ${job.inbox}"
 														}
 													}
 												}

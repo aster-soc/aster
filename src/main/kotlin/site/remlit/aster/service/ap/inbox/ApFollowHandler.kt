@@ -33,7 +33,7 @@ class ApFollowHandler : ApInboxHandler() {
 			throw IllegalArgumentException("Conflicting existing relationship")
 
 		val existingRelationship =
-			RelationshipService.getByIds(actor.id.toString(), obj.id.toString())
+			RelationshipService.getByIds(obj.id.toString(), actor.id.toString())
 
 		if (existingRelationship != null && existingRelationship.type == RelationshipType.Follow) {
 			if (existingRelationship.pending) {
@@ -43,8 +43,6 @@ class ApFollowHandler : ApInboxHandler() {
 				return
 			}
 		}
-
-		// Handle follow
 
 		RelationshipService.follow(obj.id.toString(), actor.id.toString())
 	}

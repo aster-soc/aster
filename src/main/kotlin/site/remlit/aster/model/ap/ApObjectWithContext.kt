@@ -2,7 +2,6 @@ package site.remlit.aster.model.ap
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.JsonArray
 import org.jetbrains.annotations.ApiStatus
 
 /**
@@ -13,5 +12,5 @@ import org.jetbrains.annotations.ApiStatus
 @ApiStatus.OverrideOnly
 open class ApObjectWithContext(
 	@SerialName("@context")
-	val context: JsonArray = ApContext
+	val context: ApIdOrObject = ApIdOrObject.createObject { ApContext }
 ) : ApObject

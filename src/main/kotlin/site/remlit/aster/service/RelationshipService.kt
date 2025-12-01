@@ -5,7 +5,6 @@ import org.jetbrains.exposed.v1.core.Op
 import org.jetbrains.exposed.v1.core.alias
 import org.jetbrains.exposed.v1.core.and
 import org.jetbrains.exposed.v1.core.eq
-import org.jetbrains.exposed.v1.dao.load
 import org.jetbrains.exposed.v1.jdbc.selectAll
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 import site.remlit.aster.common.model.Relationship
@@ -21,6 +20,7 @@ import site.remlit.aster.event.user.UserFollowRequestEvent
 import site.remlit.aster.model.Configuration
 import site.remlit.aster.model.Service
 import site.remlit.aster.model.ap.ApIdOrObject
+import site.remlit.aster.model.ap.activity.ApAcceptActivity
 import site.remlit.aster.model.ap.activity.ApFollowActivity
 import site.remlit.aster.service.ap.ApDeliverService
 import site.remlit.aster.service.ap.ApIdService
@@ -56,10 +56,13 @@ object RelationshipService : Service {
 	 * */
 	@JvmStatic
 	fun get(where: Op<Boolean>): Relationship? = transaction {
-		val relationship = RelationshipEntity
-			.find { where }
+		val relationship = RelationshipTable
+			.join(userToAlias, JoinType.INNER, RelationshipTable.to, userToAlias[UserTable.id])
+			.join(userFromAlias, JoinType.INNER, RelationshipTable.from, userFromAlias[UserTable.id])
+			.selectAll()
+			.where { where }
+			.let { RelationshipEntity.wrapRows(it) }
 			.singleOrNull()
-			?.load(RelationshipEntity::to, RelationshipEntity::from)
 
 		if (relationship != null)
 			Relationship.fromEntity(relationship)
@@ -220,11 +223,12 @@ object RelationshipService : Service {
 	 *
 	 * @param to Relationship target
 	 * @param from Relationship owner
+	 * @param activityId ID of Follow activity
 	 *
 	 * @return Relationship pair
 	 * */
 	@JvmStatic
-	fun follow(to: String, from: String): Pair<Relationship?, Relationship?> {
+	fun follow(to: String, from: String, activityId: String? = null): Pair<Relationship?, Relationship?> {
 		if (eitherBlocking(to, from))
 			throw IllegalArgumentException("You cannot follow this user")
 
@@ -273,10 +277,18 @@ object RelationshipService : Service {
 				relationship
 			)
 
-			if (to.locked) UserFollowRequestEvent(relationship, User.fromEntity(to))
-			else {
+			if (to.locked) UserFollowRequestEvent(relationship, User.fromEntity(to)) else {
 				UserFollowEvent(relationship, User.fromEntity(to))
-				// Accept
+
+				ApDeliverService.deliver<ApAcceptActivity>(
+					ApAcceptActivity(
+						ApIdService.renderActivityApId(IdentifierService.generate()),
+						actor = to.apId,
+						`object` = ApIdOrObject.Id(activityId)
+					),
+					to,
+					from.inbox
+				)
 			}
 		}
 

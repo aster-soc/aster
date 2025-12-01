@@ -167,7 +167,7 @@ object NotificationService : Service {
 		type,
 		to,
 		from,
-		if (note != null) NoteEntity[note.id] else null,
+		if (note != null) transaction { NoteEntity[note.id] } else null,
 		relationship
 	)
 
@@ -194,7 +194,7 @@ object NotificationService : Service {
 		to,
 		from,
 		note,
-		if (relationship != null) RelationshipEntity[relationship.id] else null
+		if (relationship != null) transaction { RelationshipEntity[relationship.id] } else null
 	)
 
 	/**
@@ -219,8 +219,8 @@ object NotificationService : Service {
 		type,
 		to,
 		from,
-		if (note != null) NoteEntity[note.id] else null,
-		if (relationship != null) RelationshipEntity[relationship.id] else null
+		if (note != null) transaction { NoteEntity[note.id] } else null,
+		if (relationship != null) transaction { RelationshipEntity[relationship.id] } else null
 	)
 
 	/**
@@ -243,7 +243,7 @@ object NotificationService : Service {
 		type,
 		to,
 		from,
-		if (note != null) NoteEntity[note.id] else null,
+		if (note != null) transaction { NoteEntity[note.id] } else null,
 		null as RelationshipEntity?
 	)
 
