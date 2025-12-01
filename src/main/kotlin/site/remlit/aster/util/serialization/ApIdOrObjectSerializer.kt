@@ -6,6 +6,7 @@ import kotlinx.serialization.descriptors.PrimitiveKind
 import kotlinx.serialization.descriptors.buildSerialDescriptor
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
+import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonDecoder
 import kotlinx.serialization.json.JsonEncoder
 import kotlinx.serialization.json.JsonObject
@@ -38,8 +39,13 @@ object ApIdOrObjectSerializer : KSerializer<ApIdOrObject> {
 
 		return when (val element = jsonDecoder.decodeJsonElement()) {
 			is JsonPrimitive if element.isString -> ApIdOrObject.Id(element.content)
+			
 			is JsonObject -> ApIdOrObject.Object(
 				jsonDecoder.json.decodeFromJsonElement<JsonObject>(element)
+			)
+
+			is JsonArray -> ApIdOrObject.Object(
+				jsonDecoder.json.decodeFromJsonElement<JsonArray>(element)
 			)
 
 			else -> throw IllegalArgumentException("Unknown JSON element for ApIdOrObject: $element")
