@@ -5,9 +5,13 @@ import site.remlit.aster.common.model.type.RelationshipType
 import site.remlit.aster.db.entity.InboxQueueEntity
 import site.remlit.aster.model.ap.ApIdOrObject
 import site.remlit.aster.model.ap.ApInboxHandler
+import site.remlit.aster.model.ap.activity.ApAcceptActivity
 import site.remlit.aster.model.ap.activity.ApFollowActivity
+import site.remlit.aster.service.IdentifierService
 import site.remlit.aster.service.RelationshipService
 import site.remlit.aster.service.ap.ApActorService
+import site.remlit.aster.service.ap.ApDeliverService
+import site.remlit.aster.service.ap.ApIdService
 import site.remlit.aster.util.jsonConfig
 
 class ApFollowHandler : ApInboxHandler() {
@@ -27,8 +31,6 @@ class ApFollowHandler : ApInboxHandler() {
 		if (obj.host != null)
 			throw IllegalArgumentException("Follow target must be local")
 
-		logger.debug("${actor.apId} sent follow request to ${obj.apId}")
-
 		if (RelationshipService.eitherBlocking(actor.id.toString(), obj.id.toString()))
 			throw IllegalArgumentException("Conflicting existing relationship")
 
@@ -39,11 +41,19 @@ class ApFollowHandler : ApInboxHandler() {
 			if (existingRelationship.pending) {
 				return
 			} else {
-				// accept
+				ApDeliverService.deliver<ApAcceptActivity>(
+					ApAcceptActivity(
+						ApIdService.renderActivityApId(IdentifierService.generate()),
+						actor = obj.apId,
+						`object` = ApIdOrObject.Id(follow.id)
+					),
+					obj,
+					actor.inbox
+				)
 				return
 			}
 		}
 
-		RelationshipService.follow(obj.id.toString(), actor.id.toString())
+		RelationshipService.follow(obj.id.toString(), actor.id.toString(), follow.id)
 	}
 }

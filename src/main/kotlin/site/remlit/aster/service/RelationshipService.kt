@@ -223,12 +223,12 @@ object RelationshipService : Service {
 	 *
 	 * @param to Relationship target
 	 * @param from Relationship owner
-	 * @param activityId ID of Follow activity
+	 * @param followId ID of Follow activity
 	 *
 	 * @return Relationship pair
 	 * */
 	@JvmStatic
-	fun follow(to: String, from: String, activityId: String? = null): Pair<Relationship?, Relationship?> {
+	fun follow(to: String, from: String, followId: String? = null): Pair<Relationship?, Relationship?> {
 		if (eitherBlocking(to, from))
 			throw IllegalArgumentException("You cannot follow this user")
 
@@ -280,15 +280,17 @@ object RelationshipService : Service {
 			if (to.locked) UserFollowRequestEvent(relationship, User.fromEntity(to)) else {
 				UserFollowEvent(relationship, User.fromEntity(to))
 
-				ApDeliverService.deliver<ApAcceptActivity>(
-					ApAcceptActivity(
-						ApIdService.renderActivityApId(IdentifierService.generate()),
-						actor = to.apId,
-						`object` = ApIdOrObject.Id(activityId)
-					),
-					to,
-					from.inbox
-				)
+				if (followId != null) {
+					ApDeliverService.deliver<ApAcceptActivity>(
+						ApAcceptActivity(
+							ApIdService.renderActivityApId(IdentifierService.generate()),
+							actor = to.apId,
+							`object` = ApIdOrObject.Id(activityId)
+						),
+						to,
+						from.inbox
+					)
+				}
 			}
 		}
 

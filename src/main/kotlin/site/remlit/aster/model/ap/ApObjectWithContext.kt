@@ -12,5 +12,5 @@ import org.jetbrains.annotations.ApiStatus
 @ApiStatus.OverrideOnly
 open class ApObjectWithContext(
 	@SerialName("@context")
-	val context: ApIdOrObject = ApIdOrObject.createObject { ApContext }
+	val context: ApIdOrObject = ApIdOrObject.createArray { ApContext }
 ) : ApObject

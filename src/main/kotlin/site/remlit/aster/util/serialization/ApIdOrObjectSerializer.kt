@@ -27,7 +27,7 @@ object ApIdOrObjectSerializer : KSerializer<ApIdOrObject> {
 		when (value) {
 			is ApIdOrObject.Id -> jsonEncoder.encodeJsonElement(JsonPrimitive(value.value))
 			is ApIdOrObject.Object -> jsonEncoder.encodeJsonElement(
-				jsonEncoder.json.encodeToJsonElement<JsonObject>(value.value)
+				jsonEncoder.json.encodeToJsonElement(value.value)
 			)
 		}
 	}

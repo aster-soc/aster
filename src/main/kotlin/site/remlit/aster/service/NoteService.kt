@@ -303,7 +303,7 @@ object NoteService : Service {
 				this.note = noteEntity
 			}
 
-			if (note.user.host == null)
+			if (note.user.host == null && note.user.id != user.id)
 				NotificationService.create(
 					NotificationType.Like,
 					noteEntity.user,
