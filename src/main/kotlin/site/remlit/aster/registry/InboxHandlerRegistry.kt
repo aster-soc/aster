@@ -64,6 +64,7 @@ object InboxHandlerRegistry {
 	@JvmStatic
 	fun register(type: String, handler: ApInboxHandler) {
 		inboxHandlers.add(Pair(type, handler))
+		if (Configuration.debug) logger.debug("Added $type activity handler ${handler::class.simpleName}")
 	}
 
 	/**

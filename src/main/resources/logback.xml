@@ -17,4 +17,5 @@
     <logger name="io.netty" level="INFO"/>
     <logger name="org.jetbrains.exposed" level="DEBUG"/>
     <logger name="site.remlit" level="DEBUG"/>
+    <logger name="io.ktor.server.plugins.cors" level="OFF"/>
 </configuration>

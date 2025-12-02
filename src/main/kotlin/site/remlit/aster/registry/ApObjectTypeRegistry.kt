@@ -2,6 +2,8 @@ package site.remlit.aster.registry
 
 import kotlinx.serialization.KSerializer
 import org.jetbrains.annotations.ApiStatus
+import org.slf4j.LoggerFactory
+import site.remlit.aster.model.Configuration
 import site.remlit.aster.model.ap.ApActor
 import site.remlit.aster.model.ap.ApNote
 import site.remlit.aster.model.ap.ApObject
@@ -9,6 +11,8 @@ import site.remlit.aster.model.ap.ApTypedObject
 import kotlin.reflect.KClass
 
 object ApObjectTypeRegistry {
+	private val logger = LoggerFactory.getLogger(ApObjectTypeRegistry::class.java)
+
 	@JvmStatic
 	val apObjectTypes =
 		mutableListOf<Pair<KClass<out ApObject>, KSerializer<out ApObject>>>()
@@ -22,6 +26,7 @@ object ApObjectTypeRegistry {
 	@JvmStatic
 	fun register(klass: KClass<out ApObject>, serializer: KSerializer<out ApObject>) {
 		apObjectTypes.add(Pair(klass, serializer))
+		if (Configuration.debug) logger.debug("Added ${klass.simpleName} as an AP object type")
 	}
 
 	/**
