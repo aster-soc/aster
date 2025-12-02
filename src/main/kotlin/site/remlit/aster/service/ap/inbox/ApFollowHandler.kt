@@ -18,13 +18,13 @@ class ApFollowHandler : ApInboxHandler() {
 	private val logger = LoggerFactory.getLogger(ApFollowHandler::class.java)
 
 	override suspend fun handle(job: InboxQueueEntity) {
-		val follow = jsonConfig.decodeFromString<ApFollowActivity>(String(job.content.bytes))
+		val activity = jsonConfig.decodeFromString<ApFollowActivity>(String(job.content.bytes))
 
-		val actor = ApActorService.resolve(follow.actor)
+		val actor = ApActorService.resolve(activity.actor)
 			?: throw IllegalArgumentException("Follow sender cannot be found")
 
-		val obj = when (follow.`object`) {
-			is ApIdOrObject.Id -> ApActorService.resolve(follow.`object`.value)
+		val obj = when (activity.`object`) {
+			is ApIdOrObject.Id -> ApActorService.resolve(activity.`object`.value)
 			else -> throw IllegalArgumentException("Follow target must be represented as an ID")
 		} ?: throw IllegalArgumentException("Follow target cannot be found")
 
@@ -45,7 +45,7 @@ class ApFollowHandler : ApInboxHandler() {
 					ApAcceptActivity(
 						ApIdService.renderActivityApId(IdentifierService.generate()),
 						actor = obj.apId,
-						`object` = ApIdOrObject.Id(follow.id)
+						`object` = ApIdOrObject.Id(activity.id)
 					),
 					obj,
 					actor.inbox
@@ -54,6 +54,6 @@ class ApFollowHandler : ApInboxHandler() {
 			}
 		}
 
-		RelationshipService.follow(obj.id.toString(), actor.id.toString(), follow.id)
+		RelationshipService.follow(obj.id.toString(), actor.id.toString(), activity.id)
 	}
 }

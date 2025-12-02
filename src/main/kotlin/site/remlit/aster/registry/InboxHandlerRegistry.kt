@@ -12,6 +12,7 @@ import site.remlit.aster.service.QueueService
 import site.remlit.aster.service.ap.inbox.ApBiteHandler
 import site.remlit.aster.service.ap.inbox.ApCreateHandler
 import site.remlit.aster.service.ap.inbox.ApFollowHandler
+import site.remlit.aster.service.ap.inbox.ApLikeHandler
 import site.remlit.aster.util.jsonConfig
 import kotlin.reflect.full.createInstance
 
@@ -82,5 +83,6 @@ object InboxHandlerRegistry {
 		register<ApBiteHandler>("Bite")
 		register<ApCreateHandler>("Create")
 		register<ApFollowHandler>("Follow")
+		register<ApLikeHandler>("Like")
 	}
 }

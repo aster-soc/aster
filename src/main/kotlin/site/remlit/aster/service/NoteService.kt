@@ -244,6 +244,7 @@ object NoteService : Service {
 	fun like(
 		user: User,
 		noteId: String,
+		toggle: Boolean = true,
 	) {
 		val note = getById(noteId)
 			?: throw IllegalArgumentException("Note not found")
@@ -260,7 +261,7 @@ object NoteService : Service {
 				.singleOrNull()
 		}
 
-		if (existing != null) {
+		if (existing != null && toggle) {
 			transaction { existing.delete() }
 
 			if (note.user.host == null)
@@ -291,6 +292,8 @@ object NoteService : Service {
 			NoteUnlikeEvent(note, user).call()
 			return
 		}
+		
+		if (existing != null) return
 
 		val likeId = IdentifierService.generate()
 

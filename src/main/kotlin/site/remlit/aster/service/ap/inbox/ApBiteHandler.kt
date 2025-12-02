@@ -12,14 +12,14 @@ import site.remlit.aster.util.jsonConfig
 
 class ApBiteHandler : ApInboxHandler() {
 	override suspend fun handle(job: InboxQueueEntity) {
-		val bite = jsonConfig.decodeFromString<ApBiteActivity>(String(job.content.bytes))
+		val activity = jsonConfig.decodeFromString<ApBiteActivity>(String(job.content.bytes))
 
-		if (bite.actor == null) return
-		val sender = ApActorService.resolve(bite.actor)
+		if (activity.actor == null) return
+		val sender = ApActorService.resolve(activity.actor)
 			?: throw IllegalArgumentException("Sender could not be resolved")
 
-		val targetNote = NoteService.getByApId(bite.target)
-		val targetUser = UserService.getByApId(bite.target)
+		val targetNote = NoteService.getByApId(activity.target)
+		val targetUser = UserService.getByApId(activity.target)
 
 		val realTargetUser = UserService.getById(targetNote?.user?.id ?: targetUser?.id.toString())
 			?: return

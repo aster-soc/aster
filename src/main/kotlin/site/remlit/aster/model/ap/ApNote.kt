@@ -33,7 +33,7 @@ data class ApNote(
 	val to: List<String>,
 	val cc: List<String>
 
-) : ApObject {
+) : ApObjectWithContext() {
 	companion object {
 		fun fromEntity(note: Note): ApNote {
 			val toCc = ApVisibilityService.visibilityToCc(
