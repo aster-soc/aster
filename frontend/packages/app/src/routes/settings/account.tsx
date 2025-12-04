@@ -158,27 +158,88 @@ function RouteComponent() {
                                                     )
                                                 }}
                                             />
+                                            <form.Field
+                                                name={"locked"}
+                                                children={(field) => {
+                                                    return (
+                                                        <Input
+                                                            id={field.name}
+                                                            name={field.name}
+                                                            label={"Locked"}
+                                                            type={"checkbox"}
+                                                            value={field.state.value}
+                                                            onBlur={field.handleBlur}
+                                                            onChange={(e) => field.handleChange(e.target.value)}
+                                                        />
+                                                    )
+                                                }}
+                                            />
+                                            <form.Field
+                                                name={"indexable"}
+                                                children={(field) => {
+                                                    return (
+                                                        <Input
+                                                            id={field.name}
+                                                            name={field.name}
+                                                            label={"Indexable"}
+                                                            type={"checkbox"}
+                                                            value={field.state.value}
+                                                            onBlur={field.handleBlur}
+                                                            onChange={(e) => field.handleChange(e.target.value)}
+                                                        />
+                                                    )
+                                                }}
+                                            />
+                                            <form.Field
+                                                name={"isCat"}
+                                                children={(field) => {
+                                                    return (
+                                                        <Input
+                                                            id={field.name}
+                                                            name={field.name}
+                                                            label={"Are you a cat?"}
+                                                            type={"checkbox"}
+                                                            value={field.state.value}
+                                                            onBlur={field.handleBlur}
+                                                            onChange={(e) => field.handleChange(e.target.value)}
+                                                        />
+                                                    )
+                                                }}
+                                            />
+                                            <form.Field
+                                                name={"speakAsCat"}
+                                                children={(field) => {
+                                                    return (
+                                                        <Input
+                                                            id={field.name}
+                                                            name={field.name}
+                                                            label={"Speak as cat"}
+                                                            type={"checkbox"}
+                                                            value={field.state.value}
+                                                            onBlur={field.handleBlur}
+                                                            onChange={(e) => field.handleChange(e.target.value)}
+                                                        />
+                                                    )
+                                                }}
+                                            />
+                                            <form.Field
+                                                name={"sensitive"}
+                                                children={(field) => {
+                                                    return (
+                                                        <Input
+                                                            id={field.name}
+                                                            name={field.name}
+                                                            label={"Sensitive"}
+                                                            type={"checkbox"}
+                                                            value={field.state.value}
+                                                            onBlur={field.handleBlur}
+                                                            onChange={(e) => field.handleChange(e.target.value)}
+                                                        />
+                                                    )
+                                                }}
+                                            />
                                         </Container>
                                     </Container>
-
-                                    <form.Field
-                                        name={"birthday"}
-                                        children={(field) => {
-                                            return (
-                                                <Input
-                                                    id={field.name}
-                                                    name={field.name}
-                                                    label={"Locked"}
-                                                    type={"checkbox"}
-                                                    value={field.state.value}
-                                                    onBlur={field.handleBlur}
-                                                    onChange={(e) => field.handleChange(e.target.value)}
-                                                />
-                                            )
-                                        }}
-                                    />
-
-
                                     <Container align={"left"}>
                                         <form.Subscribe
                                             selector={(state) => [state.canSubmit, state.isSubmitting]}
