@@ -32,10 +32,12 @@ import site.remlit.aster.exception.InsertFailureException
 import site.remlit.aster.model.Configuration
 import site.remlit.aster.model.Service
 import site.remlit.aster.model.ap.ApIdOrObject
+import site.remlit.aster.model.ap.activity.ApAnnounceActivity
 import site.remlit.aster.model.ap.activity.ApLikeActivity
 import site.remlit.aster.model.ap.activity.ApUndoActivity
 import site.remlit.aster.service.ap.ApDeliverService
 import site.remlit.aster.service.ap.ApIdService
+import site.remlit.aster.service.ap.ApVisibilityService
 import site.remlit.aster.util.model.fromEntities
 import site.remlit.aster.util.model.fromEntity
 import site.remlit.aster.util.sanitizeOrNull
@@ -292,7 +294,7 @@ object NoteService : Service {
 			NoteUnlikeEvent(note, user).call()
 			return
 		}
-		
+
 		if (existing != null) return
 
 		val likeId = IdentifierService.generate()
@@ -371,6 +373,22 @@ object NoteService : Service {
 			?: throw InsertFailureException("Note not found")
 
 		NoteRepeatEvent(repeat, note, user).call()
+
+		val (to, cc) = ApVisibilityService.visibilityToCc(repeat.visibility, null, null)
+
+		if (user.host == null) {
+			ApDeliverService.deliverToFollowers<ApAnnounceActivity>(
+				ApAnnounceActivity(
+					repeat.id + "/activity",
+					actor = user.apId,
+					published = repeat.createdAt, // todo: format?
+					`object` = ApIdOrObject.Id(note.apId),
+					to = to,
+					cc = cc
+				),
+				transaction { UserEntity[user.id] },
+			)
+		}
 
 		return repeat
 	}

@@ -17,32 +17,34 @@ object ApVisibilityService : Service {
 	 * @param visibility Visibility
 	 * @param followersUrl URL of the actor's followers collection
 	 * @param to List of other actors this object is addressed to, using their IDs
+	 *
+	 * @return Pair where the first is to and the second is cc.
 	 * */
 	@JvmStatic
 	fun visibilityToCc(
 		visibility: Visibility,
 		followersUrl: String?,
 		to: List<String>?
-	): Map<String, List<String>> {
+	): Pair<List<String>, List<String>> {
 		return when (visibility) {
-			Visibility.Public -> mapOf(
-				"to" to listOf(AS_PUBLIC),
-				"cc" to emptyList()
+			Visibility.Public -> Pair(
+				listOf(AS_PUBLIC),
+				emptyList()
 			)
 
-			Visibility.Unlisted -> mapOf(
-				"to" to if (followersUrl != null) listOf(followersUrl) else listOf(),
-				"cc" to listOf(AS_PUBLIC)
+			Visibility.Unlisted -> Pair(
+				if (followersUrl != null) listOf(followersUrl) else listOf(),
+				listOf(AS_PUBLIC)
 			)
 
-			Visibility.Followers -> mapOf(
-				"to" to if (followersUrl != null) listOf(followersUrl) else listOf(),
-				"cc" to emptyList()
+			Visibility.Followers -> Pair(
+				(if (followersUrl != null) listOf(followersUrl) else listOf()),
+				emptyList()
 			)
 
-			Visibility.Direct -> mapOf(
-				"to" to emptyList(), // todo: to
-				"cc" to emptyList()
+			Visibility.Direct -> Pair(
+				to.orEmpty(),
+				emptyList()
 			)
 		}
 	}

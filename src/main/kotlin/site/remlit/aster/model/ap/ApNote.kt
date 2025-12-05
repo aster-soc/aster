@@ -36,7 +36,7 @@ data class ApNote(
 ) : ApObjectWithContext() {
 	companion object {
 		fun fromEntity(note: Note): ApNote {
-			val toCc = ApVisibilityService.visibilityToCc(
+			val (to, cc) = ApVisibilityService.visibilityToCc(
 				note.visibility,
 				followersUrl = null,
 				to = note.to
@@ -49,8 +49,8 @@ data class ApNote(
 				misskeyContent = note.content,
 				published = FormatService.formatToStandardDateTime(note.createdAt),
 				visibility = note.visibility,
-				to = toCc["to"].orEmpty(),
-				cc = toCc["cc"].orEmpty()
+				to = to,
+				cc = cc
 			)
 		}
 	}

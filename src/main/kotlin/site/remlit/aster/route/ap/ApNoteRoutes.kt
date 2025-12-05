@@ -50,7 +50,7 @@ internal object ApNoteRoutes {
 					throw ApiException(HttpStatusCode.NotFound)
 
 				// todo: these shouldnt be null
-				val toCc = ApVisibilityService.visibilityToCc(note.visibility, null, null)
+				val (to, cc) = ApVisibilityService.visibilityToCc(note.visibility, null, null)
 
 				call.respond(
 					ApCreateActivity(
@@ -59,8 +59,8 @@ internal object ApNoteRoutes {
 						`object` = ApIdOrObject.createObject {
 							ApNote.fromEntity(note)
 						},
-						to = toCc["to"].orEmpty(),
-						cc = toCc["cc"].orEmpty()
+						to = to,
+						cc = cc
 					)
 				)
 			}
