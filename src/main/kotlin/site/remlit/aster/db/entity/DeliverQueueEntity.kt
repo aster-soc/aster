@@ -15,6 +15,8 @@ class DeliverQueueEntity(id: EntityID<String>) : Entity<String>(id = id) {
 	var inbox by DeliverQueueTable.inbox
 
 	val createdAt by DeliverQueueTable.createdAt
+
+	var stacktrace by DeliverQueueTable.stacktrace
 	var retryAt by DeliverQueueTable.retryAt
 	var retries by DeliverQueueTable.retries
 }

@@ -16,6 +16,8 @@ object DeliverQueueTable : IdTable<String>("deliver_queue") {
 	val inbox = varchar("inbox", length = 5000)
 
 	val createdAt = datetime("createdAt").defaultExpression(CurrentDateTime)
+
+	val stacktrace = text("stacktrace").nullable()
 	val retryAt = datetime("retryAt").nullable()
 	val retries = integer("retries")
 

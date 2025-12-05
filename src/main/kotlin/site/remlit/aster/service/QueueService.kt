@@ -262,14 +262,17 @@ object QueueService : Service {
 	 * Marks an inbox job as errored, and schedules it to be retried.
 	 *
 	 * @param job Inbox queue job
+	 * @param exception Exception thrown
 	 * */
 	@ApiStatus.Internal
 	@OptIn(ExperimentalTime::class)
-	fun errorInboxJob(job: InboxQueueEntity) =
+	fun errorInboxJob(job: InboxQueueEntity, exception: Exception) =
 		transaction {
+			logger.error("Inbox job ${job.id} failed: ${exception.message?.replace("\n", "")}")
 			job.refresh()
 			InboxQueueEntity.findByIdAndUpdate(job.id.toString()) {
 				job.status = QueueStatus.FAILED
+				it.stacktrace = exception.stackTraceToString()
 				job.retryAt = Clock.System.now().plus((job.retries * 15).minutes)
 					.toLocalDateTime(TimeZone.currentSystemDefault())
 				job.retries += 1
@@ -280,14 +283,17 @@ object QueueService : Service {
 	 * Marks a deliver job as errored, and schedules it to be retried.
 	 *
 	 * @param job Deliver queue job
+	 * @param exception Exception thrown
 	 * */
 	@ApiStatus.Internal
 	@OptIn(ExperimentalTime::class)
-	fun errorDeliverJob(job: DeliverQueueEntity) =
+	fun errorDeliverJob(job: DeliverQueueEntity, exception: Exception) =
 		transaction {
+			logger.error("Deliver job ${job.id} failed: ${exception.message?.replace("\n", "")}")
 			job.refresh()
 			DeliverQueueEntity.findByIdAndUpdate(job.id.toString()) {
 				it.status = QueueStatus.FAILED
+				it.stacktrace = exception.stackTraceToString()
 				it.retryAt = Clock.System.now().plus((job.retries * 15).minutes)
 					.toLocalDateTime(TimeZone.currentSystemDefault())
 				it.retries += 1

@@ -48,9 +48,7 @@ object InboxHandlerRegistry {
 				}
 				QueueService.completeInboxJob(job)
 			} catch (e: Exception) {
-				e.printStackTrace()
-				logger.error("Job ${job.id} failed: ${e.message?.replace("\n", "")}")
-				QueueService.errorInboxJob(job)
+				QueueService.errorInboxJob(job, e)
 			}
 		}
 	}
