@@ -9,11 +9,20 @@ import site.remlit.aster.model.Configuration
 import site.remlit.aster.model.ap.ApInboxHandler
 import site.remlit.aster.model.ap.ApTypedObject
 import site.remlit.aster.service.QueueService
+import site.remlit.aster.service.ap.inbox.ApAcceptHandler
+import site.remlit.aster.service.ap.inbox.ApAddHandler
+import site.remlit.aster.service.ap.inbox.ApAnnounceHandler
 import site.remlit.aster.service.ap.inbox.ApBiteHandler
+import site.remlit.aster.service.ap.inbox.ApBlockHandler
 import site.remlit.aster.service.ap.inbox.ApCreateHandler
+import site.remlit.aster.service.ap.inbox.ApDeleteHandler
+import site.remlit.aster.service.ap.inbox.ApEmojiReactHandler
 import site.remlit.aster.service.ap.inbox.ApFollowHandler
 import site.remlit.aster.service.ap.inbox.ApLikeHandler
+import site.remlit.aster.service.ap.inbox.ApRejectHandler
+import site.remlit.aster.service.ap.inbox.ApRemoveHandler
 import site.remlit.aster.service.ap.inbox.ApUndoHandler
+import site.remlit.aster.service.ap.inbox.ApUpdateHandler
 import site.remlit.aster.util.jsonConfig
 import kotlin.reflect.full.createInstance
 
@@ -80,10 +89,19 @@ object InboxHandlerRegistry {
 	 * */
 	@ApiStatus.Internal
 	fun registerDefaults() {
+		register<ApAcceptHandler>("Accept")
+		register<ApAddHandler>("Add")
+		register<ApAnnounceHandler>("Announce")
 		register<ApBiteHandler>("Bite")
+		register<ApBlockHandler>("Block")
 		register<ApCreateHandler>("Create")
+		register<ApDeleteHandler>("Delete")
+		register<ApEmojiReactHandler>("EmojiReact")
 		register<ApFollowHandler>("Follow")
 		register<ApLikeHandler>("Like")
+		register<ApRejectHandler>("Reject")
+		register<ApRemoveHandler>("Remove")
 		register<ApUndoHandler>("Undo")
+		register<ApUpdateHandler>("Update")
 	}
 }

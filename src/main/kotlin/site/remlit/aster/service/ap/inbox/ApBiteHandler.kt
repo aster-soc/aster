@@ -10,7 +10,7 @@ import site.remlit.aster.service.UserService
 import site.remlit.aster.service.ap.ApActorService
 import site.remlit.aster.util.jsonConfig
 
-class ApBiteHandler : ApInboxHandler() {
+class ApBiteHandler : ApInboxHandler {
 	override suspend fun handle(job: InboxQueueEntity) {
 		val activity = jsonConfig.decodeFromString<ApBiteActivity>(String(job.content.bytes))
 

@@ -11,7 +11,7 @@ import site.remlit.aster.model.ap.activity.ApCreateActivity
 import site.remlit.aster.service.ap.ApNoteService
 import site.remlit.aster.util.jsonConfig
 
-class ApCreateHandler : ApInboxHandler() {
+class ApCreateHandler : ApInboxHandler {
 	private val logger = LoggerFactory.getLogger(ApCreateHandler::class.java)
 
 	override suspend fun handle(job: InboxQueueEntity) {

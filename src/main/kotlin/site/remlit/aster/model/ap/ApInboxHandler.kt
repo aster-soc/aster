@@ -9,6 +9,6 @@ import site.remlit.aster.db.entity.InboxQueueEntity
  * */
 // Consider making this <T>
 @ApiStatus.OverrideOnly
-open class ApInboxHandler {
-	open suspend fun handle(job: InboxQueueEntity) {}
+interface ApInboxHandler {
+	suspend fun handle(job: InboxQueueEntity)
 }

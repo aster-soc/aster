@@ -16,7 +16,7 @@ import site.remlit.aster.service.ap.ApNoteService
 import site.remlit.aster.util.jsonConfig
 import site.remlit.aster.util.model.fromEntity
 
-class ApUndoHandler : ApInboxHandler() {
+class ApUndoHandler : ApInboxHandler {
 	private val logger = LoggerFactory.getLogger(ApUndoHandler::class.java)
 
 	override suspend fun handle(job: InboxQueueEntity) {

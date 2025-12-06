@@ -12,7 +12,7 @@ import site.remlit.aster.service.ap.ApNoteService
 import site.remlit.aster.util.jsonConfig
 import site.remlit.aster.util.model.fromEntity
 
-class ApLikeHandler : ApInboxHandler() {
+class ApLikeHandler : ApInboxHandler {
 	override suspend fun handle(job: InboxQueueEntity) {
 		val activity = jsonConfig.decodeFromString<ApLikeActivity>(String(job.content.bytes))
 

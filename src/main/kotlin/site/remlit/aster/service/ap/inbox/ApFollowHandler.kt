@@ -14,7 +14,7 @@ import site.remlit.aster.service.ap.ApDeliverService
 import site.remlit.aster.service.ap.ApIdService
 import site.remlit.aster.util.jsonConfig
 
-class ApFollowHandler : ApInboxHandler() {
+class ApFollowHandler : ApInboxHandler {
 	private val logger = LoggerFactory.getLogger(ApFollowHandler::class.java)
 
 	override suspend fun handle(job: InboxQueueEntity) {
