@@ -32,7 +32,9 @@ import site.remlit.aster.exception.InsertFailureException
 import site.remlit.aster.model.Configuration
 import site.remlit.aster.model.Service
 import site.remlit.aster.model.ap.ApIdOrObject
+import site.remlit.aster.model.ap.ApNote
 import site.remlit.aster.model.ap.activity.ApAnnounceActivity
+import site.remlit.aster.model.ap.activity.ApCreateActivity
 import site.remlit.aster.model.ap.activity.ApLikeActivity
 import site.remlit.aster.model.ap.activity.ApUndoActivity
 import site.remlit.aster.service.ap.ApDeliverService
@@ -211,6 +213,27 @@ object NoteService : Service {
 		}
 
 		val note = getById(id)!!
+
+		if (user.host == null) {
+			val (to, cc) = ApVisibilityService.visibilityToCc(
+				note.visibility,
+				user.followersUrl,
+				note.to
+			)
+
+			ApDeliverService.deliverToFollowers<ApCreateActivity>(
+				ApCreateActivity(
+					id = note.apId,
+					actor = user.apId,
+					`object` = ApIdOrObject.createObject { ApNote.fromEntity(note) },
+					to = to,
+					cc = cc
+				),
+				user,
+				// TODO: and to
+			)
+		}
+
 		NoteCreateEvent(note).call()
 
 		return note
