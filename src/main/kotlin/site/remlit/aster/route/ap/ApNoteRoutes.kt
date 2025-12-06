@@ -8,6 +8,7 @@ import site.remlit.aster.common.model.Visibility
 import site.remlit.aster.model.ApiException
 import site.remlit.aster.model.ap.ApIdOrObject
 import site.remlit.aster.model.ap.ApNote
+import site.remlit.aster.model.ap.activity.ApAnnounceActivity
 import site.remlit.aster.model.ap.activity.ApCreateActivity
 import site.remlit.aster.registry.RouteRegistry
 import site.remlit.aster.service.NoteService
@@ -31,6 +32,25 @@ internal object ApNoteRoutes {
 				)
 					throw ApiException(HttpStatusCode.NotFound)
 
+				if (note.content == null && note.repeat != null) {
+					val (to, cc) = ApVisibilityService.visibilityToCc(
+						note.visibility,
+						note.user.followersUrl,
+						emptyList()
+					)
+
+					return@get call.respond(
+						ApAnnounceActivity(
+							note.apId,
+							actor = note.user.apId,
+							published = note.createdAt,
+							`object` = ApIdOrObject.Id(note.repeat!!.apId),
+							to = to,
+							cc = cc
+						)
+					)
+				}
+
 				call.respond(ApNote.fromEntity(note))
 			}
 
@@ -51,6 +71,9 @@ internal object ApNoteRoutes {
 
 				// todo: these shouldnt be null
 				val (to, cc) = ApVisibilityService.visibilityToCc(note.visibility, null, null)
+
+				if (note.content == null && note.repeat != null)
+					throw ApiException(HttpStatusCode.NotFound)
 
 				call.respond(
 					ApCreateActivity(
