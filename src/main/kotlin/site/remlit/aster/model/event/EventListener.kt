@@ -1,6 +1,5 @@
 package site.remlit.aster.model.event
 
-import site.remlit.aster.model.Event
 import kotlin.reflect.KClass
 
 data class EventListener(

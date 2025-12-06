@@ -1,7 +1,7 @@
 package site.remlit.aster.event.drive
 
 import site.remlit.aster.common.model.DriveFile
-import site.remlit.aster.model.Event
+import site.remlit.aster.model.event.Event
 
 /**
  * Event related to a drive file.

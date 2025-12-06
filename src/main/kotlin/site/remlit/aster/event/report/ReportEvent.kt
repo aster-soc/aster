@@ -1,7 +1,7 @@
 package site.remlit.aster.event.report
 
 import site.remlit.aster.common.model.Report
-import site.remlit.aster.model.Event
+import site.remlit.aster.model.event.Event
 
 /**
  * Event relating to reports
