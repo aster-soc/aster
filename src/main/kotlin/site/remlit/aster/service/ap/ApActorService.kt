@@ -2,7 +2,6 @@ package site.remlit.aster.service.ap
 
 import io.ktor.http.*
 import kotlinx.datetime.LocalDateTime
-import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 import org.slf4j.LoggerFactory
@@ -106,11 +105,11 @@ object ApActorService : Service {
 
 		val summary = extractedMisskeySummary ?: extractedSummary
 
-        val extractedIcon = extractString { json["icon"] }
-        val extractedImage = extractString { json["image"] }
+		val extractedIcon = extractString { json["icon"] }
+		val extractedImage = extractString { json["image"] }
 
-        val icon = if (extractedIcon != null) jsonConfig.decodeFromString<ApImage>(extractedIcon) else null
-        val image = if (extractedImage != null) jsonConfig.decodeFromString<ApImage>(extractedImage) else null
+		val icon = if (extractedIcon != null) jsonConfig.decodeFromString<ApImage>(extractedIcon) else null
+		val image = if (extractedImage != null) jsonConfig.decodeFromString<ApImage>(extractedImage) else null
 
 		val extractedPublicKey = extractString {
 			extractObject { json["publicKey"] }?.get("publicKeyPem")
@@ -143,9 +142,9 @@ object ApActorService : Service {
 			birthday = null,
 			location = null,
 
-			avatar = icon?.src,
+			avatar = icon?.url,
 			avatarAlt = icon?.summary ?: icon?.name,
-			banner = image?.src,
+			banner = image?.url,
 			bannerAlt = image?.summary ?: image?.name,
 
 			inbox = inbox,

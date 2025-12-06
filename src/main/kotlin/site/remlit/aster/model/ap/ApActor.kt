@@ -58,13 +58,13 @@ data class ApActor(
 				preferredUsername = user.username,
 
 				icon = if (user.avatar != null) ApImage(
-					src = user.avatar!!,
+					url = user.avatar!!,
 					sensitive = user.sensitive,
 					name = user.avatarAlt,
 					summary = user.avatarAlt
 				) else null,
 				image = if (user.banner != null) ApImage(
-					src = user.banner!!,
+					url = user.banner!!,
 					sensitive = user.sensitive,
 					name = user.bannerAlt,
 					summary = user.bannerAlt
