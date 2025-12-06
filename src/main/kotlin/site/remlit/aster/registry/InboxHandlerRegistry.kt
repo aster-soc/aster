@@ -13,6 +13,7 @@ import site.remlit.aster.service.ap.inbox.ApBiteHandler
 import site.remlit.aster.service.ap.inbox.ApCreateHandler
 import site.remlit.aster.service.ap.inbox.ApFollowHandler
 import site.remlit.aster.service.ap.inbox.ApLikeHandler
+import site.remlit.aster.service.ap.inbox.ApUndoHandler
 import site.remlit.aster.util.jsonConfig
 import kotlin.reflect.full.createInstance
 
@@ -83,5 +84,6 @@ object InboxHandlerRegistry {
 		register<ApCreateHandler>("Create")
 		register<ApFollowHandler>("Follow")
 		register<ApLikeHandler>("Like")
+		register<ApUndoHandler>("Undo")
 	}
 }

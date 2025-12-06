@@ -262,6 +262,7 @@ object NoteService : Service {
 	 *
 	 * @param user User liking the note
 	 * @param noteId ID of the target note
+	 * @param toggle Whether to unlike if like exists
 	 *
 	 * @since 2025.9.1.1-SNAPSHOT
 	 * */
@@ -287,35 +288,7 @@ object NoteService : Service {
 		}
 
 		if (existing != null && toggle) {
-			transaction { existing.delete() }
-
-			if (note.user.host == null)
-				NotificationService.delete(
-					NotificationTable.type eq NotificationType.Like and
-							(NotificationTable.note eq note.id),
-				)
-
-			if (user.host == null) {
-				val likeApId = ApIdService.renderActivityApId(existing.id.toString())
-
-				ApDeliverService.deliverToFollowers<ApUndoActivity>(
-					ApUndoActivity(
-						"$likeApId/undo",
-						`object` = ApIdOrObject.createObject {
-							ApLikeActivity(
-								likeApId,
-								actor = user.apId,
-								`object` = ApIdOrObject.Id(note.apId),
-							)
-						}
-					),
-					transaction { UserEntity[user.id] },
-					if (note.user.host != null) listOf(note.user.inbox) else listOf()
-				)
-			}
-
-			NoteUnlikeEvent(note, user).call()
-			return
+			unlike(user, noteId)
 		}
 
 		if (existing != null) return
@@ -353,6 +326,67 @@ object NoteService : Service {
 		}
 
 		NoteLikeEvent(note, user).call()
+	}
+
+	/**
+	 * Unlike a note as a user
+	 *
+	 * @param user User liking the note
+	 * @param noteId ID of the target note
+	 *
+	 * @since 2025.12.1.0-SNAPSHOT
+	 *  */
+	@JvmStatic
+	fun unlike(
+		user: User,
+		noteId: String
+	) {
+		val note = getById(noteId)
+			?: throw IllegalArgumentException("Note not found")
+
+		if (!VisibilityService.canISee(note.visibility, note.user.id, note.to, user.id))
+			throw IllegalArgumentException("Note not found")
+
+		val like = transaction {
+			NoteLikeEntity
+				.find {
+					NoteLikeTable.note eq note.id and
+							(NoteLikeTable.user eq user.id)
+				}
+				.singleOrNull()
+		}
+
+		if (like == null)
+			throw IllegalArgumentException("Like not found")
+
+		transaction { like.delete() }
+
+		if (note.user.host == null)
+			NotificationService.delete(
+				NotificationTable.type eq NotificationType.Like and
+						(NotificationTable.note eq note.id),
+			)
+
+		if (user.host == null) {
+			val likeApId = ApIdService.renderActivityApId(like.id.toString())
+
+			ApDeliverService.deliverToFollowers<ApUndoActivity>(
+				ApUndoActivity(
+					"$likeApId/undo",
+					`object` = ApIdOrObject.createObject {
+						ApLikeActivity(
+							likeApId,
+							actor = user.apId,
+							`object` = ApIdOrObject.Id(note.apId),
+						)
+					}
+				),
+				transaction { UserEntity[user.id] },
+				if (note.user.host != null) listOf(note.user.inbox) else listOf()
+			)
+		}
+
+		NoteUnlikeEvent(note, user).call()
 	}
 
 	/**
