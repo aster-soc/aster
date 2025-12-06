@@ -12,14 +12,13 @@ import kotlinx.serialization.json.JsonEncoder
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.decodeFromJsonElement
-import kotlinx.serialization.json.encodeToJsonElement
 import site.remlit.aster.model.ap.ApIdOrObject
 
 object ApIdOrObjectSerializer : KSerializer<ApIdOrObject> {
 
 	@OptIn(InternalSerializationApi::class)
 	override val descriptor =
-		buildSerialDescriptor("ApIdOrObject", PrimitiveKind.STRING)
+		buildSerialDescriptor("site.remlit.aster.util.serialization.ApIdOrObject", PrimitiveKind.STRING)
 
 	override fun serialize(encoder: Encoder, value: ApIdOrObject) {
 		val jsonEncoder = encoder as? JsonEncoder
@@ -27,9 +26,7 @@ object ApIdOrObjectSerializer : KSerializer<ApIdOrObject> {
 
 		when (value) {
 			is ApIdOrObject.Id -> jsonEncoder.encodeJsonElement(JsonPrimitive(value.value))
-			is ApIdOrObject.Object -> jsonEncoder.encodeJsonElement(
-				jsonEncoder.json.encodeToJsonElement(value.value)
-			)
+			is ApIdOrObject.Object -> jsonEncoder.encodeJsonElement(value.value)
 		}
 	}
 
@@ -39,9 +36,13 @@ object ApIdOrObjectSerializer : KSerializer<ApIdOrObject> {
 
 		return when (val element = jsonDecoder.decodeJsonElement()) {
 			is JsonPrimitive if element.isString -> ApIdOrObject.Id(element.content)
-			
+
 			is JsonObject -> ApIdOrObject.Object(
-				jsonDecoder.json.decodeFromJsonElement<JsonObject>(element)
+				JsonObject(
+					jsonDecoder.json
+						.decodeFromJsonElement<JsonObject>(element)
+						.minus("@context")
+				)
 			)
 
 			is JsonArray -> ApIdOrObject.Object(

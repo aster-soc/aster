@@ -33,7 +33,6 @@ object ApSignatureService : Service {
 				output += "\n"
 		}
 
-		println(output)
 		return output
 	}
 

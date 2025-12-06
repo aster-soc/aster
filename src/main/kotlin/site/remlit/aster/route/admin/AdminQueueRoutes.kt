@@ -236,9 +236,7 @@ internal object AdminQueueRoutes {
 											p { +"${job.status}" }
 
 											b { +"Content" }
-											p {
-												code { +String(job.content.bytes) }
-											}
+											p { code { +String(job.content.bytes) } }
 
 											b { +"Created at" }
 											p { +"${job.createdAt}" }
@@ -248,6 +246,9 @@ internal object AdminQueueRoutes {
 
 											b { +"Retries" }
 											p { +"${job.retries}" }
+
+											b { +"Stack trace" }
+											p { code { +"${job.stacktrace}" } }
 										}
 									}
 								}
@@ -283,9 +284,7 @@ internal object AdminQueueRoutes {
 											p { +"${job.status}" }
 
 											b { +"Content" }
-											p {
-												code { +String(job.content.bytes) }
-											}
+											p { code { +String(job.content.bytes) } }
 
 											b { +"Created at" }
 											p { +"${job.createdAt}" }
@@ -295,6 +294,9 @@ internal object AdminQueueRoutes {
 
 											b { +"Retries" }
 											p { +"${job.retries}" }
+
+											b { +"Stack trace" }
+											p { code { +"${job.stacktrace}" } }
 										}
 									}
 								}

@@ -272,7 +272,7 @@ object NoteService : Service {
 							(NotificationTable.note eq note.id),
 				)
 
-			if (note.user.host != null && user.host == null) {
+			if (user.host == null) {
 				val likeApId = ApIdService.renderActivityApId(existing.id.toString())
 
 				ApDeliverService.deliverToFollowers<ApUndoActivity>(

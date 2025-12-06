@@ -4,6 +4,7 @@ import kotlinx.serialization.Serializable
 import site.remlit.aster.model.ap.ApIdOrObject
 import site.remlit.aster.model.ap.ApObjectWithContext
 import site.remlit.aster.model.ap.ApType
+import site.remlit.aster.util.serialization.NestedApObjectSerializer
 
 @Serializable
 data class ApBlockActivity(
@@ -11,5 +12,6 @@ data class ApBlockActivity(
 	val type: ApType.Activity = ApType.Activity.Block,
 
 	val actor: String? = null,
+	@Serializable(with = NestedApObjectSerializer::class)
 	val `object`: ApIdOrObject,
 ) : ApObjectWithContext()
