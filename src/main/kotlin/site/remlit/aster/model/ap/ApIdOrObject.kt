@@ -22,10 +22,12 @@ sealed class ApIdOrObject {
 	companion object {
 		fun createObject(json: JsonElement) = Object(json)
 
+		@JvmSynthetic
 		inline fun <reified T> createObject(obj: () -> T) = createObject(
 			jsonConfig.encodeToJsonElement<T>(obj()) as JsonObject
 		)
 
+		@JvmSynthetic
 		inline fun <reified T> createArray(obj: () -> T) = createObject(
 			jsonConfig.encodeToJsonElement<T>(obj()) as JsonArray
 		)
