@@ -13,6 +13,8 @@ style:
     active: false
   UnusedPrivateProperty:
     allowedNames: 'ignored|expected|serialVersionUID|logger'
+  ForbiddenComment:
+    active: false
 complexity:
   LongMethod:
     active: false
