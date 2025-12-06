@@ -1,4 +1,4 @@
-package site.remlit.aster.model
+package site.remlit.aster.model.event
 
 import org.jetbrains.annotations.ApiStatus
 import site.remlit.aster.registry.EventRegistry

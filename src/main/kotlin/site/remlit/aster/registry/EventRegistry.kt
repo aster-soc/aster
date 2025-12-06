@@ -8,8 +8,9 @@ import kotlinx.coroutines.runBlocking
 import org.jetbrains.annotations.ApiStatus
 import org.slf4j.LoggerFactory
 import site.remlit.aster.model.Configuration
-import site.remlit.aster.model.Event
+import site.remlit.aster.model.event.Event
 import site.remlit.aster.model.event.EventListener
+import site.remlit.aster.model.event.InterruptableEvent
 import site.remlit.aster.model.event.ListenerPriority
 import kotlin.reflect.KClass
 import kotlin.reflect.full.isSubclassOf
@@ -94,24 +95,47 @@ object EventRegistry {
 	/**
 	 * Function ran from an Event when it's called through the call() method.
 	 *
-	 * This function will launch a coroutine that will run listeners for the specified event in order they were registered.
+	 * This function will launch a coroutine that will run listeners for the specified event ordered by priority.
 	 *
 	 * @param event Instance of an event to be executed
 	 *
 	 * @since 2025.9.1.0-SNAPSHOT
 	 * */
 	@ApiStatus.Internal
+	@Suppress("LoopWithTooManyJumpStatements")
 	fun executeEvent(event: Event) =
 		runBlocking {
-			if (Configuration.debug) logger.debug("Executing event ${event::class.simpleName}")
-			val prioritizedList = listeners.toList().sortedBy { it.priority }
 			eventScope.launch {
+				if (Configuration.debug) logger.debug("Executing event ${event::class.simpleName}")
+				val prioritizedList = listeners.toList().sortedBy { it.priority }
 				for (listener in prioritizedList) {
-					if (!listener.event.isInstance(event)) continue
+					if (event is InterruptableEvent && interruptedEvents.contains(event)) {
+						interruptedEvents.remove(event)
+						break
+					}
+
+					if (!listener.event.isInstance(event))
+						continue
+
 					listener.listener.invoke(event)
 				}
 			}
 		}
+
+	/**
+	 * Mutable list of interrupted events
+	 * */
+	private val interruptedEvents = mutableListOf<InterruptableEvent>()
+
+	/**
+	 * Terminates an event and stops listener calling.
+	 *
+	 * @param event Instance of an event to be terminated
+	 *
+	 * @since 2025.12.1.0-SNAPSHOT
+	 * */
+	@ApiStatus.Internal
+	fun interruptEvent(event: InterruptableEvent) = interruptedEvents.add(event)
 
 	/**
 	 * Clears the registered listeners to prevent any events blocking shutdown or not completing correctly.
