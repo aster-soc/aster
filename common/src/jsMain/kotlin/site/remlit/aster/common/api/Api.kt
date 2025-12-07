@@ -1,5 +1,7 @@
 package site.remlit.aster.common.api
 
+import site.remlit.aster.common.model.DriveFile
+import site.remlit.aster.common.model.Meta
 import site.remlit.aster.common.model.Note
 import site.remlit.aster.common.model.Notification
 import site.remlit.aster.common.model.SearchResults
@@ -8,6 +10,7 @@ import site.remlit.aster.common.model.Visibility
 import site.remlit.aster.common.model.response.AuthResponse
 import site.remlit.aster.common.util.Https
 import site.remlit.aster.common.util.toObject
+import kotlin.js.Promise
 
 @JsExport
 @Suppress("UtilityClassWithPublicConstructor", "Unused")
@@ -15,7 +18,7 @@ import site.remlit.aster.common.util.toObject
 class Api {
 	companion object {
 		@JsStatic
-		fun register(username: String, password: String, invite: String?): AuthResponse? =
+		fun register(username: String, password: String, invite: String?) =
 			Https.post(
 				"/api/register",
 				false,
@@ -24,10 +27,10 @@ class Api {
 					"password" to password,
 					"invite" to invite
 				).toObject()
-			).unsafeCast<AuthResponse?>()
+			).unsafeCast<Promise<AuthResponse?>>()
 
 		@JsStatic
-		fun login(username: String, password: String): AuthResponse? =
+		fun login(username: String, password: String) =
 			Https.post(
 				"/api/login",
 				false,
@@ -35,7 +38,7 @@ class Api {
 					"username" to username,
 					"password" to password
 				).toObject()
-			).unsafeCast<AuthResponse?>()
+			).unsafeCast<Promise<AuthResponse?>>()
 
 		@JsStatic
 		fun passwordReset(code: String, password: String) =
@@ -49,72 +52,82 @@ class Api {
 			)
 
 		@JsStatic
-		fun getTimeline(timeline: String): List<Note>? =
+		fun getTimeline(timeline: String) =
 			Https.get("/api/timeline/$timeline", true)
-				.unsafeCast<List<Note>?>()
+				.unsafeCast<Promise<List<Note?>>>()
 
 		@JsStatic
-		fun getBookmarks(): List<Note>? =
+		fun getBookmarks() =
 			Https.get("/api/bookmarks", true)
-				.unsafeCast<List<Note>?>()
+				.unsafeCast<Promise<List<Note?>>>()
 
 		@JsStatic
-		fun search(query: String): SearchResults? =
+		fun search(query: String) =
 			Https.get("/api/search?q=$query", true)
-				.unsafeCast<SearchResults?>()
+				.unsafeCast<Promise<SearchResults?>>()
 
 		@JsStatic
-		fun getUser(id: String): User? =
+		fun getUser(id: String) =
 			Https.get("/api/user/$id", true)
-				.unsafeCast<User?>()
+				.unsafeCast<Promise<User?>>()
 
 		@JsStatic
-		fun lookupUser(handle: String): User? =
+		fun lookupUser(handle: String) =
 			Https.get("/api/lookup/$handle", true)
-				.unsafeCast<User?>()
+				.unsafeCast<Promise<User?>>()
 
 		@JsStatic
-		fun editUser(id: String, data: Any): User? =
+		fun editUser(id: String, data: Any) =
 			Https.post("/api/user/$id", true, data)
-				.unsafeCast<User?>()
+				.unsafeCast<Promise<User?>>()
 
 		@JsStatic
-		fun getNotifications(): List<Notification>? =
+		fun getNotifications() =
 			Https.get("/api/notifications", true)
-				.unsafeCast<List<Notification>?>()
+				.unsafeCast<Promise<List<Notification>?>>()
 
 		@JsStatic
-		fun getNote(id: String): Note? =
+		fun getNote(id: String) =
 			Https.get("/api/note/$id", true)
-				.unsafeCast<Note?>()
+				.unsafeCast<Promise<Note?>>()
 
 		@JsStatic
-		fun likeNote(id: String): Note? =
+		fun likeNote(id: String) =
 			Https.post("/api/note/$id/like", true)
-				.unsafeCast<Note?>()
+				.unsafeCast<Promise<Note?>>()
 
 		@JsStatic
-		fun bookmarkNote(id: String): Note? =
+		fun bookmarkNote(id: String) =
 			Https.post("/api/note/$id/bookmark", true)
-				.unsafeCast<Note?>()
+				.unsafeCast<Promise<Note?>>()
 
 		@JsStatic
-		fun repeatNote(id: String, content: String? = null): Note? =
+		fun repeatNote(id: String, content: String? = null) =
 			Https.post(
 				"/api/note/$id/repeat", true, mapOf(
 					"content" to content,
 					"visibility" to Visibility.Public // TODO: Visibility setting
 				).toObject()
-			).unsafeCast<Note?>()
+			).unsafeCast<Promise<Note?>>()
 
 		@JsStatic
-		fun deleteNote(id: String): Note? =
+		fun deleteNote(id: String) =
 			Https.delete("/api/note/$id/like")
-				.unsafeCast<Note?>()
+				.unsafeCast<Promise<Note?>>()
 
 		@JsStatic
-		fun createNote(data: JsAny): Note? =
+		fun createNote(data: JsAny) =
 			Https.post("/api/note", true, data)
-				.unsafeCast<Note?>()
+				.unsafeCast<Promise<Note?>>()
+
+		@JsStatic
+		fun getMeta() =
+			Https.get("/api/meta", true)
+				.unsafeCast<Promise<Meta?>>()
+
+		@JsStatic
+		fun getDrive() =
+			Https.get("/api/drive", true)
+				.unsafeCast<Promise<List<DriveFile>?>>()
 	}
 }

@@ -10,7 +10,6 @@ import Info from '../lib/components/Info.tsx';
 import localstore from "../lib/utils/localstore.ts";
 import router from "../lib/router.tsx";
 import {useQuery} from "@tanstack/react-query";
-import getMeta from "../lib/api/meta/get.ts";
 import {Api} from 'aster-common'
 
 export const Route = createFileRoute('/register')({
@@ -28,7 +27,7 @@ export const Route = createFileRoute('/register')({
 function RouteComponent() {
     const {isLoading, isError, error, data} = useQuery({
         queryKey: ['meta'],
-        queryFn: () => getMeta(),
+        queryFn: () => Api.getMeta(),
     });
 
     const inviteParam = new URLSearchParams(window.location.search).get('invite');
