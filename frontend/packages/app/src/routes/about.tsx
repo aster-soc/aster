@@ -1,9 +1,9 @@
 import {createFileRoute} from '@tanstack/react-router'
 import {useQuery} from "@tanstack/react-query";
-import getMeta from "../lib/api/meta/get.ts";
 import PageHeader from "../lib/components/PageHeader.tsx";
 import {IconInfoCircle} from "@tabler/icons-react";
 import PageWrapper from '../lib/components/PageWrapper.tsx';
+import {Api} from 'aster-common'
 
 export const Route = createFileRoute('/about')({
     component: RouteComponent,
@@ -12,7 +12,7 @@ export const Route = createFileRoute('/about')({
 function RouteComponent() {
     const {data} = useQuery({
         queryKey: ['meta'],
-        queryFn: () => getMeta(),
+        queryFn: () => Api.getMeta(),
     });
 
     return (

@@ -3,11 +3,11 @@ import PageHeader from "../lib/components/PageHeader.tsx";
 import {IconBookmark} from "@tabler/icons-react";
 import PageWrapper from "../lib/components/PageWrapper.tsx";
 import {useQuery} from "@tanstack/react-query";
-import bookmarks from "../lib/api/bookmarks.ts";
 import Loading from "../lib/components/Loading.tsx";
 import Error from "../lib/components/Error.tsx";
 import Timeline from "../lib/components/Timeline.tsx";
 import Note from "../lib/components/Note.tsx";
+import {Api} from 'aster-common'
 
 export const Route = createFileRoute('/bookmarks')({
     component: RouteComponent,
@@ -16,7 +16,7 @@ export const Route = createFileRoute('/bookmarks')({
 function RouteComponent() {
     const {isPending, error, data, isFetching, refetch} = useQuery({
         queryKey: ['bookmarks'],
-        queryFn: async () => await bookmarks(),
+        queryFn: async () => await Api.getBookmarks(),
     })
 
     return (

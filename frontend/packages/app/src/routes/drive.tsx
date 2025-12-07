@@ -4,11 +4,11 @@ import {IconFolder} from "@tabler/icons-react";
 import PageWrapper from "../lib/components/PageWrapper.tsx";
 import {useQuery} from "@tanstack/react-query";
 import localstore from "../lib/utils/localstore.ts";
-import get from "../lib/api/drive/get.ts";
 import DriveFile from "../lib/components/DriveFile.tsx";
 import Container from "../lib/components/Container.tsx";
 import Loading from "../lib/components/Loading.tsx";
 import Error from "../lib/components/Error.tsx";
+import {Api} from 'aster-common'
 
 export const Route = createFileRoute('/drive')({
     component: RouteComponent,
@@ -17,7 +17,7 @@ export const Route = createFileRoute('/drive')({
 function RouteComponent() {
     const {data, error, isPending, isFetching, refetch} = useQuery({
         queryKey: [`drive_${localstore.getSelf()?.id}`],
-        queryFn: () => get(),
+        queryFn: () => Api.getDrive(),
     });
 
     return (

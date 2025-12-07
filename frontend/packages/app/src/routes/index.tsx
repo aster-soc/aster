@@ -6,11 +6,11 @@ import localstore from "../lib/utils/localstore.ts";
 import Timeline from "../lib/components/Timeline.tsx";
 import Note from "../lib/components/Note.tsx";
 import {useQuery} from "@tanstack/react-query";
-import getTimeline from "../lib/api/timeline.ts";
 import {useState} from "react";
 import Tab from "../lib/components/Tab.tsx";
 import Loading from "../lib/components/Loading.tsx";
 import Error from "../lib/components/Error.tsx";
+import {Api} from 'aster-common'
 
 export const Route = createFileRoute('/')({
     component: RouteComponent,
@@ -24,8 +24,8 @@ function RouteComponent() {
         let [timeline, setTimeline] = useState((previousTimeline === undefined) ? "home" : previousTimeline);
 
         const {isPending, error, data, isFetching, refetch} = useQuery({
-            queryKey: ['Timeline'],
-            queryFn: async () => await getTimeline(timeline),
+            queryKey: ['timeline'],
+            queryFn: async () => Api.getTimeline(timeline),
         })
 
         function updateTimeline(timeline: string) {

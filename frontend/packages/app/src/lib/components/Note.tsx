@@ -1,6 +1,7 @@
 import * as React from "react";
 import {type RefObject, useState} from "react";
 import * as Common from "aster-common";
+import {Api} from "aster-common";
 import './Note.scss'
 import Container from "./Container.tsx";
 import Avatar from "./Avatar.tsx";
@@ -25,12 +26,8 @@ import Visibility from "./Visibility.tsx";
 import Button from "./Button.tsx";
 import {Link, useNavigate} from "@tanstack/react-router";
 import localstore from "../utils/localstore.ts";
-import likeNote from "../api/note/like.ts";
 import Dropdown, {DropdownDivider, DropdownItem, type DropdownNode} from "./dropdown/Dropdown.tsx";
 import Mfm from "./Mfm.tsx";
-import deleteNote from "../api/note/delete.ts";
-import repeatNote from "../api/note/repeat.ts";
-import bookmark from "../api/note/bookmark.ts";
 import {useStore} from "@tanstack/react-store";
 import {store} from "../utils/state.ts";
 
@@ -59,7 +56,7 @@ function Note(
     /* Interactions */
 
     function like() {
-        likeNote(note?.id).then((e) => {
+        Api.likeNote(note?.id).then((e) => {
             if (e?.id === note?.id) setNote(e)
         })
     }
@@ -71,11 +68,11 @@ function Note(
         console.log("existing repeat", existingRepeat)
 
         if (existingRepeat) {
-            deleteNote(existingRepeat?.id).then(() => {
+            Api.deleteNote(existingRepeat?.id).then(() => {
                 setShow(false)
             })
         } else {
-            repeatNote(note?.id)
+            Api.repeatNote(note?.id)
         }
     }
 
@@ -210,7 +207,7 @@ function Note(
                 'Bookmark note',
                 undefined,
                 () => {
-                    bookmark(note.id)
+                    Api.bookmarkNote(note.id)
                 }
             ),
             new DropdownItem(
@@ -241,7 +238,7 @@ function Note(
                 'Delete note',
                 undefined,
                 () => {
-                    deleteNote(note?.id)
+                    Api.deleteNote(note?.id)
                 }
             )
         )

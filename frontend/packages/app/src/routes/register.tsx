@@ -10,8 +10,7 @@ import Info from '../lib/components/Info.tsx';
 import localstore from "../lib/utils/localstore.ts";
 import router from "../lib/router.tsx";
 import {useQuery} from "@tanstack/react-query";
-import getMeta from "../lib/api/meta/get.ts";
-import register from '../lib/api/register.ts';
+import {Api} from 'aster-common'
 
 export const Route = createFileRoute('/register')({
     component: RouteComponent,
@@ -28,7 +27,7 @@ export const Route = createFileRoute('/register')({
 function RouteComponent() {
     const {isLoading, isError, error, data} = useQuery({
         queryKey: ['meta'],
-        queryFn: () => getMeta(),
+        queryFn: () => Api.getMeta(),
     });
 
     const inviteParam = new URLSearchParams(window.location.search).get('invite');
@@ -41,14 +40,14 @@ function RouteComponent() {
         },
         onSubmit: async (values) => {
             console.log(values);
-            await register(values.value.username, values.value.password, values.value.invite).then((result) => {
+            await Api.register(values.value.username, values.value.password, values.value.invite).then((result) => {
                 if (result.token && result.user) {
                     localstore.set("token", result.token);
 
                     let expiresAt = new Date();
                     expiresAt.setMonth((expiresAt.getMonth() !== 11) ? expiresAt.getMonth() + 1 : 0)
 
-                    document.cookie = `AsAuthorization=${result.token}; expires=${expiresAt.toUTCString()}; SameSite=Strict; Secure`;
+                    document.cookie = `AsAuthorization=${result.token}; expires=${expiresAt.toUTCString()}; Secure`;
                     localstore.set("self", JSON.stringify(result.user));
 
                     router.navigate({

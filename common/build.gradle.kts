@@ -32,16 +32,18 @@ kotlin {
 		outputModuleName.set("aster-common")
 	}
 
-	sourceSets {
-		commonMain.dependencies {
+	sourceSets.all {
+		dependencies {
 			implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.7.1")
 			implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0")
+			implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
 		}
 	}
 
 	compilerOptions {
 		freeCompilerArgs.add("-Xes-long-as-bigint")
 		freeCompilerArgs.add("-opt-in=kotlin.js.ExperimentalJsExport")
+		freeCompilerArgs.add("-opt-in=kotlin.js.ExperimentalWasmJsInterop")
 	}
 }
 

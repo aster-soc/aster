@@ -1,0 +1,133 @@
+package site.remlit.aster.common.api
+
+import site.remlit.aster.common.model.DriveFile
+import site.remlit.aster.common.model.Meta
+import site.remlit.aster.common.model.Note
+import site.remlit.aster.common.model.Notification
+import site.remlit.aster.common.model.SearchResults
+import site.remlit.aster.common.model.User
+import site.remlit.aster.common.model.Visibility
+import site.remlit.aster.common.model.response.AuthResponse
+import site.remlit.aster.common.util.Https
+import site.remlit.aster.common.util.toObject
+import kotlin.js.Promise
+
+@JsExport
+@Suppress("UtilityClassWithPublicConstructor", "Unused")
+@OptIn(ExperimentalJsStatic::class)
+class Api {
+	companion object {
+		@JsStatic
+		fun register(username: String, password: String, invite: String?) =
+			Https.post(
+				"/api/register",
+				false,
+				mapOf(
+					"username" to username,
+					"password" to password,
+					"invite" to invite
+				).toObject()
+			).unsafeCast<Promise<AuthResponse?>>()
+
+		@JsStatic
+		fun login(username: String, password: String) =
+			Https.post(
+				"/api/login",
+				false,
+				mapOf(
+					"username" to username,
+					"password" to password
+				).toObject()
+			).unsafeCast<Promise<AuthResponse?>>()
+
+		@JsStatic
+		fun passwordReset(code: String, password: String) =
+			Https.post(
+				"/api/password-reset",
+				false,
+				mapOf(
+					"code" to code,
+					"password" to password
+				).toObject()
+			)
+
+		@JsStatic
+		fun getTimeline(timeline: String) =
+			Https.get("/api/timeline/$timeline", true)
+				.unsafeCast<Promise<List<Note?>>>()
+
+		@JsStatic
+		fun getBookmarks() =
+			Https.get("/api/bookmarks", true)
+				.unsafeCast<Promise<List<Note?>>>()
+
+		@JsStatic
+		fun search(query: String) =
+			Https.get("/api/search?q=$query", true)
+				.unsafeCast<Promise<SearchResults?>>()
+
+		@JsStatic
+		fun getUser(id: String) =
+			Https.get("/api/user/$id", true)
+				.unsafeCast<Promise<User?>>()
+
+		@JsStatic
+		fun lookupUser(handle: String) =
+			Https.get("/api/lookup/$handle", true)
+				.unsafeCast<Promise<User?>>()
+
+		@JsStatic
+		fun editUser(id: String, data: Any) =
+			Https.post("/api/user/$id", true, data)
+				.unsafeCast<Promise<User?>>()
+
+		@JsStatic
+		fun getNotifications() =
+			Https.get("/api/notifications", true)
+				.unsafeCast<Promise<List<Notification>?>>()
+
+		@JsStatic
+		fun getNote(id: String) =
+			Https.get("/api/note/$id", true)
+				.unsafeCast<Promise<Note?>>()
+
+		@JsStatic
+		fun likeNote(id: String) =
+			Https.post("/api/note/$id/like", true)
+				.unsafeCast<Promise<Note?>>()
+
+		@JsStatic
+		fun bookmarkNote(id: String) =
+			Https.post("/api/note/$id/bookmark", true)
+				.unsafeCast<Promise<Note?>>()
+
+		@JsStatic
+		fun repeatNote(id: String, content: String? = null) =
+			Https.post(
+				"/api/note/$id/repeat", true, mapOf(
+					"content" to content,
+					"visibility" to Visibility.Public // TODO: Visibility setting
+				).toObject()
+			).unsafeCast<Promise<Note?>>()
+
+		@JsStatic
+		fun deleteNote(id: String) =
+			Https.delete("/api/note/$id/like")
+				.unsafeCast<Promise<Note?>>()
+
+		@JsStatic
+		fun createNote(data: JsAny) =
+			Https.post("/api/note", true, data)
+				.unsafeCast<Promise<Note?>>()
+
+		@JsStatic
+		fun getMeta() =
+			Https.get("/api/meta", true)
+				.unsafeCast<Promise<Meta?>>()
+
+		@JsStatic
+		fun getDrive() =
+			Https.get("/api/drive", true)
+				.unsafeCast<Promise<List<DriveFile>?>>()
+	}
+}

@@ -7,14 +7,13 @@ import Container from "../../lib/components/Container.tsx";
 import {useState} from "react";
 import {useQuery} from "@tanstack/react-query";
 import localstore from "../../lib/utils/localstore.ts";
-import get from "../../lib/api/user/get.ts";
 import Loading from "../../lib/components/Loading.tsx";
 import Error from "../../lib/components/Error.tsx";
 import {useForm} from "@tanstack/react-form";
-import edit from "../../lib/api/user/edit.ts";
 import Input from "../../lib/components/Input.tsx";
 import TextArea from "../../lib/components/TextArea.tsx";
 import Button from "../../lib/components/Button.tsx";
+import {Api} from 'aster-common'
 
 export const Route = createFileRoute('/settings/account')({
     component: RouteComponent,
@@ -31,7 +30,7 @@ function RouteComponent() {
 
     const {data, error, isPending, isFetching, refetch} = useQuery({
         queryKey: [`user_${localstore.getSelf()?.id}`],
-        queryFn: () => get(self.id),
+        queryFn: () => Api.getUser(self.id),
     });
 
     const form = useForm({
@@ -59,7 +58,7 @@ function RouteComponent() {
         },
         onSubmit: async (values) => {
             console.log(values)
-            edit(self.id, values.value).then((result) => {
+            Api.editUser(self.id, values.value).then((result) => {
                 if (result) {
                     self = result
                     localstore.set("self", JSON.stringify(self))
