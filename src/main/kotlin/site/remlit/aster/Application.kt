@@ -117,6 +117,8 @@ fun Application.module() {
 	install(CORS) {
 		anyMethod()
 		allowHost(Configuration.url.host)
+		allowHost("0.0.0.0")
+		allowHost("127.0.0.1")
 		allowHost("0.0.0.0:${Configuration.port}")
 		allowHost("127.0.0.1:${Configuration.port}")
 		allowHost("0.0.0.0:5173")
