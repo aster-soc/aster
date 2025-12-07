@@ -2,6 +2,7 @@ package site.remlit.aster.common.api
 
 import site.remlit.aster.common.model.Note
 import site.remlit.aster.common.model.SearchResults
+import site.remlit.aster.common.model.User
 import site.remlit.aster.common.model.response.AuthResponse
 import site.remlit.aster.common.util.Https
 import site.remlit.aster.common.util.toObject
@@ -59,5 +60,20 @@ class Api {
 		fun search(query: String): SearchResults? =
 			Https.get("/api/search?q=$query", true)
 				.unsafeCast<SearchResults?>()
+
+		@JsStatic
+		fun getUser(id: String): User? =
+			Https.get("/api/user/$id", true)
+				.unsafeCast<User?>()
+
+		@JsStatic
+		fun lookupUser(handle: String): User? =
+			Https.get("/api/lookup/$handle", true)
+				.unsafeCast<User?>()
+
+		@JsStatic
+		fun editUser(id: String, data: Any): User? =
+			Https.post("/api/user/$id", true, data)
+				.unsafeCast<User?>()
 	}
 }

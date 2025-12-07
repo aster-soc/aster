@@ -3,7 +3,6 @@ import PageHeader from "../PageHeader.tsx";
 import PageWrapper from "../PageWrapper.tsx";
 import {IconCake, IconDots, IconUser} from "@tabler/icons-react";
 import {useQuery} from "@tanstack/react-query";
-import lookup from "../../api/user/lookup.ts";
 import Loading from "../Loading.tsx";
 import Error from "../Error.tsx";
 import Avatar from "../Avatar.tsx";
@@ -12,6 +11,7 @@ import Container from "../Container.tsx";
 import Button from "../Button.tsx";
 import Mfm from "../Mfm.tsx";
 import * as Common from 'aster-common'
+import {Api} from 'aster-common'
 
 function UserPage(
     {handle}: { handle: string }
@@ -20,7 +20,7 @@ function UserPage(
 
     const {isLoading, isError, error, data} = useQuery({
         queryKey: [`user_${handle}`],
-        queryFn: () => lookup(handle).then((e) => {
+        queryFn: () => Api.lookupUser(handle).then((e) => {
             setDisplayName(e?.displayName ?? e?.username ?? handle);
             return e
         }),
