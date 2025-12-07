@@ -22,6 +22,7 @@ var lastConfigReloadAt = TimeService.now()
 
 interface ConfigurationObject
 
+@Suppress("MagicNumber")
 object Configuration : ConfigurationObject {
 	val name: String get() = config?.propertyOrNull("name")?.getString() ?: "Aster"
 
@@ -53,6 +54,7 @@ object Configuration : ConfigurationObject {
 	val fileStorage: ConfigurationFileStorage = ConfigurationFileStorage()
 
 	val hideRemoteContent: Boolean get() = config?.propertyOrNull("hideRemoteContent")?.getString()?.toBoolean() ?: true
+	val maxResolveDepth: Int get() = config?.propertyOrNull("maxResolveDepth")?.getString()?.toInt() ?: 20
 
 	val reservedUsernames: List<String>
 		get() =
@@ -69,6 +71,7 @@ object Configuration : ConfigurationObject {
 	}
 }
 
+@Suppress("MagicNumber")
 class ConfigurationFileStorage : ConfigurationObject {
 	val type: FileStorageType
 		get() = FileStorageType.valueOf(
@@ -92,6 +95,7 @@ class ConfigurationFileStorage : ConfigurationObject {
 		get() = config?.propertyOrNull("fileStorage.maxUploadSize")?.getString()?.toInt() ?: 25
 }
 
+@Suppress("MagicNumber")
 class ConfigurationDatabase : ConfigurationObject {
 	val host: String get() = config?.propertyOrNull("database.host")?.getString() ?: "127.0.0.1"
 	val port: String get() = config?.propertyOrNull("database.port")?.getString() ?: "5432"
@@ -106,6 +110,7 @@ class ConfigurationDatabase : ConfigurationObject {
 			?: throw ConfigurationException("Configuration is missing 'database.password' attribute.")
 }
 
+@Suppress("MagicNumber")
 class ConfigurationQueue : ConfigurationObject {
 	val inbox: ConfigurationSpecificQueue
 		get() = ConfigurationSpecificQueue(
@@ -125,6 +130,7 @@ data class ConfigurationSpecificQueue(
 	val concurrency: Int
 ) : ConfigurationObject
 
+@Suppress("MagicNumber")
 class ConfigurationTimeline : ConfigurationObject {
 	val defaultObjects: Int get() = config?.propertyOrNull("timeline.defaultObjects")?.getString()?.toIntOrNull() ?: 15
 	val maxObjects: Int get() = config?.propertyOrNull("timeline.maxObjects")?.getString()?.toIntOrNull() ?: 35

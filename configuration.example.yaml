@@ -106,6 +106,12 @@ fileStorage:
 ##
 hideRemoteContent: true
 
+## Max resolve depth ##
+# Maximum number of recursive resolves before stopping.
+# Prevents infinitely fetching notes.
+##
+maxResolveDepth: 25
+
 ## Reserved usernames ##
 # Nobody can register an account with these usernames.
 # Case-insensitive.

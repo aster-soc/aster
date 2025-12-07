@@ -11,6 +11,7 @@ import site.remlit.aster.common.model.User
 import site.remlit.aster.common.model.Visibility
 import site.remlit.aster.common.model.generated.PartialNote
 import site.remlit.aster.db.entity.NoteEntity
+import site.remlit.aster.model.Configuration
 import site.remlit.aster.model.Service
 import site.remlit.aster.service.IdentifierService
 import site.remlit.aster.service.InstanceService
@@ -40,7 +41,7 @@ object ApNoteService : Service {
 	 * */
 	@JvmStatic
 	suspend fun resolve(apId: String, refetch: Boolean = false, depth: Int = 0): Note? {
-		if (depth > 20) return null
+		if (depth > Configuration.maxResolveDepth) return null
 
 		InstanceService.resolve(Url(apId).host)
 		val existingNote = NoteService.getByApId(apId)
