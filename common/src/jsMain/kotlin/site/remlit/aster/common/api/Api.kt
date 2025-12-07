@@ -1,7 +1,7 @@
 package site.remlit.aster.common.api
 
-import org.w3c.notifications.Notification
 import site.remlit.aster.common.model.Note
+import site.remlit.aster.common.model.Notification
 import site.remlit.aster.common.model.SearchResults
 import site.remlit.aster.common.model.User
 import site.remlit.aster.common.model.Visibility
