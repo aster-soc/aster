@@ -49,10 +49,13 @@ custom plugin system.
 
 There's a module called `common` which targets the JVM and JS using Kotlin Multiplatform, this allows shared models and
 types between the frontend and backend and shared logic. Certain things used in the admin frontend (server side rendered
-and built into `main`) are also usable in the frontend, so it's put there.
+and built into `main`) are also usable in the frontend, so it's put there. The frontend's API request handling code is
+also in this package.
 
 There's another module that relates to `common` called `common-generators`. It generates partial versions of certain
 models that are all nullable, and by default null. These can be used for edits, like on a user or a note.
+
+The last module isn't an "official" module, it's `frontend`, the directory that contains the React frontend project.
 
 ### Development Environment
 
