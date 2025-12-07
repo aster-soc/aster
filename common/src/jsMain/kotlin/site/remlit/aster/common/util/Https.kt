@@ -53,7 +53,8 @@ object Https {
 		val request = window.fetch(
 			url, RequestInit(
 				method = "POST",
-				headers = if (auth) createHeaders(Pair("Content-Type", "application/json")) else null,
+				headers = if (auth) createHeaders(Pair("Content-Type", "application/json"))
+				else mapOf("Content-Type" to "application/json").toObject(),
 				body = if (body != null) JSON.stringify(body) else null
 			)
 		)
