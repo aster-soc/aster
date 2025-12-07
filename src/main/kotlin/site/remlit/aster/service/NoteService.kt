@@ -200,6 +200,7 @@ object NoteService : Service {
 		cw: String?,
 		content: String,
 		visibility: Visibility,
+		replyingTo: String? = null,
 	): Note {
 		transaction {
 			NoteEntity.new(id) {
@@ -208,6 +209,22 @@ object NoteService : Service {
 				this.cw = if (cw != null) SanitizerService.sanitize(cw, true) else null
 				this.content = SanitizerService.sanitize(content, true)
 				this.visibility = visibility
+
+				if (replyingTo != null) {
+					val replyingTo = getById(replyingTo)
+						?: throw IllegalArgumentException("Replying to target not found")
+
+					if (!VisibilityService.canISee(
+							replyingTo.visibility,
+							replyingTo.user.id,
+							replyingTo.to,
+							user.id.toString()
+						)
+					) throw IllegalArgumentException("Replying to target not found")
+
+					this.replyingTo = NoteEntity[replyingTo.id]
+				}
+
 				// todo: determine to, tags
 			}
 		}

@@ -5,13 +5,22 @@ import Avatar from "./Avatar.tsx";
 import {IconAlertTriangle, IconMoodSmile, IconPaperclip} from "@tabler/icons-react";
 import Button from "./Button.tsx";
 import TextArea from "./TextArea.tsx";
-import type {RefObject} from "react";
 import * as React from "react";
+import {type RefObject, useEffect} from "react";
 import Visibility from "./Visibility.tsx";
 import Dropdown, {DropdownItem, type DropdownNode} from "./dropdown/Dropdown.tsx";
 import Input from "./Input.tsx";
+import {useStore} from "@tanstack/react-store";
+import {store} from "../utils/state.ts";
+import NoteSimple from "./NoteSimple.tsx";
+import {useQuery} from "@tanstack/react-query";
+import getNote from "../api/note/get.ts";
+import createNote from "../api/note/create.ts";
 
 function Compose() {
+    const replyingTo = useStore(store, (state) => state["replyingTo"]);
+    const quoting = useStore(store, (state) => state["quoting"]);
+
     let [cw, setCw] = React.useState(undefined)
     let [showCwField, setShowCwField] = React.useState(localstore.getParsed("always_show_cw_compose"))
 
@@ -67,7 +76,22 @@ function Compose() {
     if (account === undefined) return <></>
 
     function post() {
-        console.log(`CW ${cw} CONTENT ${content} VIS ${visibility}`)
+        if (!content && !quoting) return
+
+        createNote({
+            cw: cw,
+            content: content,
+            visibility: visibility,
+            replyingTo: replyingTo,
+        }).then((e) => {
+            if (e) {
+                setCw(undefined)
+                setContent(undefined)
+                store.setState((state) => {
+                    return {...state, ["replyingTo"]: undefined, ["quoting"]: undefined}
+                })
+            }
+        })
     }
 
     function renderHeader() {
@@ -96,6 +120,35 @@ function Compose() {
                 />
             </>
         )
+    }
+
+    const reply = useQuery({
+        queryKey: ['compose_reply'],
+        queryFn: async () => (replyingTo) ? await getNote(replyingTo) : null,
+    })
+
+    const quote = useQuery({
+        queryKey: ['compose_quote'],
+        queryFn: async () => (quoting) ? await getNote(quoting) : null,
+    })
+
+    useEffect(() => {
+        reply.refetch()
+        quote.refetch()
+    }, [replyingTo, quoting])
+
+    function renderReply() {
+        if (replyingTo && reply.data)
+            return (
+                <NoteSimple data={reply.data}/>
+            )
+    }
+
+    function renderQuote() {
+        if (quoting && quote.data)
+            return (
+                <NoteSimple data={quote.data}/>
+            )
     }
 
     function renderFooter() {
@@ -132,11 +185,13 @@ function Compose() {
         <div className={`compose`}>
             <Container gap={"md"}>
                 {renderHeader()}
+                {renderReply()}
                 {showCwField ? (
                     <Input
                         wide
                         placeholder={"Content warning"}
                         value={content}
+                        onChange={(e) => setCw(e.target.value)}
                     />
                 ) : null}
                 <TextArea
@@ -144,7 +199,9 @@ function Compose() {
                     rows={5}
                     placeholder={placeholder}
                     value={content}
+                    onChange={(e) => setContent(e.target.value)}
                 />
+                {renderQuote()}
                 {renderFooter()}
             </Container>
         </div>

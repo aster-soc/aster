@@ -7,6 +7,7 @@ import Avatar from "./Avatar.tsx";
 import {
     IconAlertTriangle,
     IconArrowBackUp,
+    IconArrowBackUpDouble,
     IconBookmark,
     IconDots,
     IconExternalLink,
@@ -30,12 +31,17 @@ import Mfm from "./Mfm.tsx";
 import deleteNote from "../api/note/delete.ts";
 import repeatNote from "../api/note/repeat.ts";
 import bookmark from "../api/note/bookmark.ts";
+import {useStore} from "@tanstack/react-store";
+import {store} from "../utils/state.ts";
 
 function Note(
     {data, detailed = false}:
     { data: Common.Note, detailed?: boolean }
 ) {
     const navigate = useNavigate();
+
+    const replyingTo = useStore(store, (state) => state["replyingTo"]);
+
     let [show, setShow] = React.useState(true)
     let [note, setNote] = React.useState(data)
     let [repeater, setRepeater] = React.useState()
@@ -235,6 +241,7 @@ function Note(
                 'Delete note',
                 undefined,
                 () => {
+                    deleteNote(note?.id)
                 }
             )
         )
@@ -271,13 +278,32 @@ function Note(
                 </Container>
             </Container>
 
+            {note?.replyingTo ? (
+                <a href={"/note/" + note?.replyingTo?.id}>
+                    <Container align={"horizontal"} gap={"sm"}>
+                        <IconArrowBackUp aria-hidden size={18}/>
+                        <span>Replying to {note?.replyingTo?.user?.displayName ?? note?.replyingTo?.user?.username}</span>
+                    </Container>
+                </a>
+            ) : null}
+
             {renderContent()}
 
             {renderTags()}
 
             <footer>
-                <button className={"highlightable"} title={"Reply"}>
-                    <IconArrowBackUp aria-hidden size={20}/>
+                <button
+                    className={"highlightable"}
+                    title={"Reply"}
+                    onClick={() => store.setState((state) => {
+                        return {...state, ["replyingTo"]: note?.id}
+                    })}
+                >
+                    {note?.replyingTo ? (
+                        <IconArrowBackUpDouble aria-hidden size={20}/>
+                    ) : (
+                        <IconArrowBackUp aria-hidden size={20}/>
+                    )}
                 </button>
                 <button
                     className={"highlightable" + ((note?.repeats?.some((e) => e?.user?.id === self?.id)) ? " repeated" : "")}

@@ -13,6 +13,7 @@ data class ApNote(
 	val type: ApType.Object = ApType.Object.Note,
 
 	val attributedTo: String,
+	val inReplyTo: String? = null,
 
 	val summary: String? = null,
 	@SerialName("_misskey_summary")
@@ -45,6 +46,7 @@ data class ApNote(
 			return ApNote(
 				id = note.apId,
 				attributedTo = note.user.apId,
+				inReplyTo = note.replyingTo?.apId,
 				content = note.content,
 				misskeyContent = note.content,
 				published = FormatService.formatToStandardDateTime(note.createdAt),

@@ -89,7 +89,8 @@ internal object NoteRoutes {
 						authenticatedUser,
 						body.cw,
 						body.content!!,
-						Visibility.fromString(body.visibility)
+						Visibility.fromString(body.visibility),
+						body.replyingTo
 					)
 
 					call.respond(note)
