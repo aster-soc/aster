@@ -266,7 +266,7 @@ object QueueService : Service {
 	 * */
 	@ApiStatus.Internal
 	@OptIn(ExperimentalTime::class)
-	fun errorInboxJob(job: InboxQueueEntity, exception: Exception) =
+	fun errorInboxJob(job: InboxQueueEntity, exception: Throwable) =
 		transaction {
 			logger.error("Inbox job ${job.id} failed: ${exception.message?.replace("\n", "")}")
 			job.refresh()

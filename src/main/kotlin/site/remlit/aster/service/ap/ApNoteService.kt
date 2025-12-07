@@ -39,7 +39,9 @@ object ApNoteService : Service {
 	 * @return Note or null
 	 * */
 	@JvmStatic
-	suspend fun resolve(apId: String, refetch: Boolean = false): Note? {
+	suspend fun resolve(apId: String, refetch: Boolean = false, depth: Int = 0): Note? {
+		if (depth > 20) return null
+
 		InstanceService.resolve(Url(apId).host)
 		val existingNote = NoteService.getByApId(apId)
 
@@ -50,10 +52,10 @@ object ApNoteService : Service {
 		val resolveResponse = ResolverService.resolveSigned(apId)
 
 		if (resolveResponse != null && existingNote == null)
-			return register(toNote(resolveResponse) ?: return null)
+			return register(toNote(resolveResponse, depth = depth + 1) ?: return null)
 
 		if (resolveResponse != null && existingNote != null)
-			return update(toNote(resolveResponse, existingNote) ?: return null)
+			return update(toNote(resolveResponse, existingNote, depth = depth + 1) ?: return null)
 
 		return null
 	}
@@ -67,7 +69,7 @@ object ApNoteService : Service {
 	 * @return PartialNote or null
 	 */
 	@JvmStatic
-	suspend fun toNote(json: JsonObject, existing: Note? = null): PartialNote? {
+	suspend fun toNote(json: JsonObject, existing: Note? = null, depth: Int = 0): PartialNote? {
 		val apId = extractString { json["id"] }
 		if (apId.isNullOrBlank()) return null
 
@@ -80,8 +82,8 @@ object ApNoteService : Service {
 		val author = ApActorService.resolve(attributedTo) ?: return null
 
 		// todo: maximum depth, otherwise this gets messy fast
-		//val inReplyTo = ApUtilityService.extractString(json["inReplyTo"])
-		//val replyingTo = if (inReplyTo.isNullOrBlank()) null else resolve(inReplyTo)
+		val inReplyTo = extractString { json["inReplyTo"] }
+		val replyingTo = if (inReplyTo.isNullOrBlank()) null else resolve(inReplyTo, depth = depth + 1)
 
 		val summary = extractString { json["summary"] }
 		val misskeySummary = extractString { json["_misskey_summary"] }
@@ -121,7 +123,7 @@ object ApNoteService : Service {
 			tags = null,
 			to = null,
 
-			replyingTo = existing?.replyingTo,
+			replyingTo = replyingTo,
 			repeat = existing?.repeat,
 
 			likes = existing?.likes,
@@ -151,6 +153,9 @@ object ApNoteService : Service {
 					// todo: note nullability
 					it.content = note.content.orEmpty()
 					it.visibility = note.visibility ?: Visibility.Direct
+
+					it.replyingTo =
+						if (note.replyingTo != null) transaction { NoteEntity[note.replyingTo!!.id] } else null
 
 					// todo: to
 					it.to = note.to.orEmpty()
@@ -187,6 +192,9 @@ object ApNoteService : Service {
 					// todo: note nullability
 					this.content = note.content.orEmpty()
 					this.visibility = note.visibility ?: Visibility.Direct
+
+					this.replyingTo =
+						if (note.replyingTo != null) transaction { NoteEntity[note.replyingTo!!.id] } else null
 
 					// todo: to
 					this.to = note.to.orEmpty()

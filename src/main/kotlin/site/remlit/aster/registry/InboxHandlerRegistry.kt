@@ -57,7 +57,7 @@ object InboxHandlerRegistry {
 						handler.second.handle(job)
 				}
 				QueueService.completeInboxJob(job)
-			} catch (e: Exception) {
+			} catch (e: Throwable) {
 				QueueService.errorInboxJob(job, e)
 			}
 		}
