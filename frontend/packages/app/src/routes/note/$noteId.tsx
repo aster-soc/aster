@@ -3,7 +3,6 @@ import PageHeader from "../../lib/components/PageHeader.tsx";
 import {IconNote} from "@tabler/icons-react";
 import PageWrapper from "../../lib/components/PageWrapper.tsx";
 import {useQuery} from '@tanstack/react-query'
-import getNote from '../../lib/api/note/get.ts'
 import Note from "../../lib/components/Note.tsx";
 import Loading from "../../lib/components/Loading.tsx";
 import Error from "../../lib/components/Error.tsx";
@@ -13,6 +12,7 @@ import {useState} from "react";
 import Timeline from "../../lib/components/Timeline.tsx";
 import NoteSimple from "../../lib/components/NoteSimple.tsx";
 import UserCard from "../../lib/components/UserCard.tsx";
+import {Api} from 'aster-common'
 
 export const Route = createFileRoute('/note/$noteId')({
     component: RouteComponent,
@@ -25,7 +25,7 @@ function RouteComponent() {
 
     const {isPending, isFetching, error, data, refetch} = useQuery({
         queryKey: ['note_' + noteId],
-        queryFn: () => getNote(noteId)
+        queryFn: () => Api.getNote(noteId)
     });
 
     console.log(data)

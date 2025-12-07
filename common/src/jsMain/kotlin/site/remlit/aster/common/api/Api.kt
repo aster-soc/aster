@@ -1,8 +1,10 @@
 package site.remlit.aster.common.api
 
+import org.w3c.notifications.Notification
 import site.remlit.aster.common.model.Note
 import site.remlit.aster.common.model.SearchResults
 import site.remlit.aster.common.model.User
+import site.remlit.aster.common.model.Visibility
 import site.remlit.aster.common.model.response.AuthResponse
 import site.remlit.aster.common.util.Https
 import site.remlit.aster.common.util.toObject
@@ -75,5 +77,44 @@ class Api {
 		fun editUser(id: String, data: Any): User? =
 			Https.post("/api/user/$id", true, data)
 				.unsafeCast<User?>()
+
+		@JsStatic
+		fun getNotifications(): List<Notification>? =
+			Https.get("/api/notifications", true)
+				.unsafeCast<List<Notification>?>()
+
+		@JsStatic
+		fun getNote(id: String): Note? =
+			Https.get("/api/note/$id", true)
+				.unsafeCast<Note?>()
+
+		@JsStatic
+		fun likeNote(id: String): Note? =
+			Https.post("/api/note/$id/like", true)
+				.unsafeCast<Note?>()
+
+		@JsStatic
+		fun bookmarkNote(id: String): Note? =
+			Https.post("/api/note/$id/bookmark", true)
+				.unsafeCast<Note?>()
+
+		@JsStatic
+		fun repeatNote(id: String, content: String? = null): Note? =
+			Https.post(
+				"/api/note/$id/repeat", true, mapOf(
+					"content" to content,
+					"visibility" to Visibility.Public // TODO: Visibility setting
+				).toObject()
+			).unsafeCast<Note?>()
+
+		@JsStatic
+		fun deleteNote(id: String): Note? =
+			Https.delete("/api/note/$id/like")
+				.unsafeCast<Note?>()
+
+		@JsStatic
+		fun createNote(data: JsAny): Note? =
+			Https.post("/api/note", true, data)
+				.unsafeCast<Note?>()
 	}
 }

@@ -34,7 +34,7 @@ object Https {
 		return headers
 	}
 
-	fun get(url: String, auth: Boolean = false): JsAny {
+	fun get(url: String, auth: Boolean = false): Promise<JsAny> {
 		start()
 
 		val request = window.fetch(
@@ -47,21 +47,21 @@ object Https {
 		return end(request)
 	}
 
-	fun post(url: String, auth: Boolean = false, body: JsAny): JsAny {
+	fun post(url: String, auth: Boolean = false, body: JsAny? = null): Promise<JsAny> {
 		start()
 
 		val request = window.fetch(
 			url, RequestInit(
 				method = "POST",
 				headers = if (auth) createHeaders(Pair("Content-Type", "application/json")) else null,
-				body = JSON.stringify(body)
+				body = if (body != null) JSON.stringify(body) else null
 			)
 		)
 
 		return end(request)
 	}
 
-	fun delete(url: String): JsAny {
+	fun delete(url: String): Promise<JsAny> {
 		start()
 
 		val request = window.fetch(

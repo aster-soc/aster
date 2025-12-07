@@ -14,8 +14,7 @@ import {useStore} from "@tanstack/react-store";
 import {store} from "../utils/state.ts";
 import NoteSimple from "./NoteSimple.tsx";
 import {useQuery} from "@tanstack/react-query";
-import getNote from "../api/note/get.ts";
-import createNote from "../api/note/create.ts";
+import {Api} from 'aster-common'
 
 function Compose() {
     const replyingTo = useStore(store, (state) => state["replyingTo"]);
@@ -78,7 +77,7 @@ function Compose() {
     function post() {
         if (!content && !quoting) return
 
-        createNote({
+        Api.createNote({
             cw: cw,
             content: content,
             visibility: visibility,
@@ -124,12 +123,12 @@ function Compose() {
 
     const reply = useQuery({
         queryKey: ['compose_reply'],
-        queryFn: async () => (replyingTo) ? await getNote(replyingTo) : null,
+        queryFn: async () => (replyingTo) ? await Api.getNote(replyingTo) : null,
     })
 
     const quote = useQuery({
         queryKey: ['compose_quote'],
-        queryFn: async () => (quoting) ? await getNote(quoting) : null,
+        queryFn: async () => (quoting) ? await Api.getNote(quoting) : null,
     })
 
     useEffect(() => {
