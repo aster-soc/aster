@@ -10,7 +10,6 @@ import io.ktor.server.plugins.autohead.*
 import io.ktor.server.plugins.callid.*
 import io.ktor.server.plugins.calllogging.*
 import io.ktor.server.plugins.contentnegotiation.*
-import io.ktor.server.plugins.cors.routing.*
 import io.ktor.server.plugins.defaultheaders.*
 import io.ktor.server.plugins.forwardedheaders.*
 import io.ktor.server.plugins.statuspages.*
@@ -112,17 +111,6 @@ fun Application.module() {
 	install(CallId) {
 		header(HttpHeaders.XRequestId)
 		generate { IdentifierService.generate() }
-	}
-
-	install(CORS) {
-		anyMethod()
-		allowHost(Configuration.url.host)
-		allowHost("0.0.0.0")
-		allowHost("127.0.0.1")
-		allowHost("0.0.0.0:${Configuration.port}")
-		allowHost("127.0.0.1:${Configuration.port}")
-		allowHost("0.0.0.0:5173")
-		allowHost("127.0.0.1:5173")
 	}
 
 	install(AutoHeadResponse)
