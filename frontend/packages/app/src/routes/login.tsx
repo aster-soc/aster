@@ -7,9 +7,9 @@ import Input from "../lib/components/Input.tsx";
 import Container from "../lib/components/Container.tsx";
 import Button from "../lib/components/Button.tsx";
 import Info from '../lib/components/Info.tsx';
-import login from "../lib/api/login.ts"
 import localstore from "../lib/utils/localstore.ts";
 import router from "../lib/router.tsx";
+import {Api} from 'aster-common'
 
 export const Route = createFileRoute('/login')({
     component: RouteComponent,
@@ -31,14 +31,14 @@ function RouteComponent() {
         },
         onSubmit: async (values) => {
             console.log(values);
-            await login(values.value.username, values.value.password).then((result) => {
+            await Api.login(values.value.username, values.value.password).then((result) => {
                 if (result.token && result.user) {
                     localstore.set("token", result.token);
 
                     let expiresAt = new Date();
                     expiresAt.setMonth((expiresAt.getMonth() !== 11) ? expiresAt.getMonth() + 1 : 0)
 
-                    document.cookie = `AsAuthorization=${result.token}; expires=${expiresAt.toUTCString()}; SameSite=Strict; Secure`;
+                    document.cookie = `AsAuthorization=${result.token}; expires=${expiresAt.toUTCString()}; Secure`;
                     localstore.set("self", JSON.stringify(result.user));
 
                     window.location.replace("/");

@@ -6,9 +6,9 @@ import Input from "../lib/components/Input.tsx";
 import Container from "../lib/components/Container.tsx";
 import Button from "../lib/components/Button.tsx";
 import {useForm} from "@tanstack/react-form";
-import passwordReset from "../lib/api/passwordReset.ts";
 import {useState} from "react";
 import Info from "../lib/components/Info.tsx";
+import {Api} from "aster-common"
 
 export const Route = createFileRoute('/forgot-password')({
     component: RouteComponent,
@@ -24,7 +24,7 @@ function RouteComponent() {
         },
         onSubmit: async (values) => {
             console.log(values);
-            await passwordReset(values.value.code, values.value.password).then(() => {
+            await Api.passwordReset(values.value.code, values.value.password).then(() => {
                 setSuccess(true)
             })
         }

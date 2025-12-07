@@ -6,11 +6,11 @@ import Container from "../lib/components/Container.tsx";
 import Button from "../lib/components/Button.tsx";
 import Input from "../lib/components/Input.tsx";
 import {useForm} from "@tanstack/react-form";
-import search from "../lib/api/search.ts";
 import Timeline from "../lib/components/Timeline.tsx";
 import {useState} from "react";
 import Search from "../lib/components/Search.tsx";
 import * as Common from 'aster-common'
+import {Api} from 'aster-common'
 
 export const Route = createFileRoute('/search')({
     component: RouteComponent,
@@ -24,7 +24,7 @@ function RouteComponent() {
             query: "",
         },
         onSubmit: async (values) => {
-            await search(values.value.query).then((data) => {
+            Api.search(values.value.query).then((data) => {
                 setData(data);
             });
         }

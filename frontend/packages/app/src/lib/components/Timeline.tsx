@@ -4,7 +4,7 @@ import Container from "./Container.tsx";
 
 function Timeline(
     {data, Component}:
-    { data: any[], Component: any }
+    { data?: any[], Component: any }
 ) {
     React.useEffect(() => {
         render()
@@ -20,7 +20,7 @@ function Timeline(
 
     function render() {
         clear()
-        data.forEach((item) => {
+        data?.forEach((item) => {
             random++
             timeline.push(
                 <Component data={item}
