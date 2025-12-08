@@ -12,6 +12,7 @@ import Button from "../Button.tsx";
 import Mfm from "../Mfm.tsx";
 import * as Common from 'aster-common'
 import {Api} from 'aster-common'
+import FollowButton from "../FollowButton.tsx";
 
 function UserPage(
     {handle}: { handle: string }
@@ -43,7 +44,7 @@ function UserPage(
                                 </Container>
                             </Container>
 
-                            <Button>Follow</Button>
+                            <FollowButton id={data?.id}/>
                             <Button><IconDots size={18}/></Button>
                         </Container>
                     </div>

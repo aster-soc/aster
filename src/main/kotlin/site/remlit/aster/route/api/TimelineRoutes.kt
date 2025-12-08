@@ -16,6 +16,7 @@ import site.remlit.aster.model.Configuration
 import site.remlit.aster.registry.RouteRegistry
 import site.remlit.aster.service.BookmarkService
 import site.remlit.aster.service.NoteService
+import site.remlit.aster.service.RelationshipService
 import site.remlit.aster.service.TimelineService
 import site.remlit.aster.util.authenticatedUserKey
 import site.remlit.aster.util.authentication
@@ -50,7 +51,7 @@ internal object TimelineRoutes {
 					val take = TimelineService.normalizeTake(call.parameters["take"]?.toIntOrNull())
 
 					val local = call.request.queryParameters["local"]?.toBoolean() ?: true
-					val following = listOf<String>()
+					val following = RelationshipService.getFollowing(authenticatedUser).map { it.id }
 
 					val notes = NoteService.getMany(
 						where = ((NoteTable.visibility inList listOf(

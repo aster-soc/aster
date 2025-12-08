@@ -87,10 +87,15 @@ object ResolverService : Service {
 	 * */
 	@JvmStatic
 	suspend fun resolve(url: String, accept: String = "application/activity+json"): JsonObject? {
+		val url = Url(url)
+
+		if (url.host == Configuration.host)
+			throw IllegalArgumentException("Attempted to resolve local url")
+
 		val blockPolicies = PolicyService.getAllByType(PolicyType.Block)
 		val blockedHosts = PolicyService.reducePoliciesToHost(blockPolicies)
 
-		if (blockedHosts.contains(Url(url).host))
+		if (blockedHosts.contains(url.host))
 			return null
 
 		try {
@@ -130,6 +135,9 @@ object ResolverService : Service {
 		user: String? = null
 	): JsonObject? {
 		val url = Url(url)
+
+		if (url.host == Configuration.host)
+			throw IllegalArgumentException("Attempted to resolve local url")
 
 		val date = LocalDateTime.now(ZoneId.of("GMT"))
 			.toHttpDateString()

@@ -72,6 +72,16 @@ object RelationshipService : Service {
 	/**
 	 * Get a relationship between two users
 	 *
+	 * @param id Relationship ID
+	 *
+	 * @return Relationship, if any
+	 * */
+	@JvmStatic
+	fun getById(id: String) = get(RelationshipTable.id eq id)
+
+	/**
+	 * Get a relationship between two users
+	 *
 	 * @param to Relationship target
 	 * @param from Relationship owner
 	 *
@@ -162,20 +172,16 @@ object RelationshipService : Service {
 	@JvmStatic
 	fun getPair(to: String, from: String): Pair<Relationship?, Relationship?> {
 		return Pair(
-			this.get(RelationshipTable.to eq to and (RelationshipTable.from eq from)),
-			this.get(RelationshipTable.to eq from and (RelationshipTable.from eq to))
+			this.get(RelationshipTable.to eq from and (RelationshipTable.from eq to)),
+			this.get(RelationshipTable.to eq to and (RelationshipTable.from eq from))
 		)
 	}
 
 	@JvmStatic
-	fun mapPair(pair: Pair<Relationship?, Relationship?>): List<Map<String, Relationship?>> {
-		return listOf(
-			mapOf(
-				"to" to pair.first
-			),
-			mapOf(
-				"from" to pair.second
-			)
+	fun mapPair(pair: Pair<Relationship?, Relationship?>): Map<String, Relationship?> {
+		return mapOf(
+			"to" to pair.first,
+			"from" to pair.second
 		)
 	}
 
@@ -229,7 +235,7 @@ object RelationshipService : Service {
 	 * */
 	@JvmStatic
 	fun follow(to: String, from: String, followId: String? = null): Pair<Relationship?, Relationship?> {
-		if (eitherBlocking(to, from))
+		if (eitherBlocking(to, from) || to == from)
 			throw IllegalArgumentException("You cannot follow this user")
 
 		val existing = getByIds(to, from)
@@ -242,7 +248,7 @@ object RelationshipService : Service {
 
 		val activityId = ApIdService.renderActivityApId(IdentifierService.generate())
 
-		if (to.host != null) {
+		if (to.host != null)
 			ApDeliverService.deliver(
 				ApFollowActivity(
 					activityId,
@@ -252,8 +258,6 @@ object RelationshipService : Service {
 				from,
 				to.inbox
 			)
-			throw NotImplementedError("Remote follows not implemented")
-		}
 
 		val id = IdentifierService.generate()
 
@@ -263,6 +267,7 @@ object RelationshipService : Service {
 				this.to = to
 				this.from = from
 				this.pending = to.locked || to.host != null
+				this.activityId = if (to.host != null && followId == null) activityId else followId
 			}
 		}
 
@@ -305,5 +310,36 @@ object RelationshipService : Service {
 	 * */
 	@JvmStatic
 	fun unfollow(to: String, from: String): Nothing = TODO()
+
+	/**
+	 * Accept a follow
+	 *
+	 * @param id ID of relationship
+	 *
+	 * @return Updated relationship
+	 * */
+	@JvmStatic
+	fun accept(id: String): Relationship? {
+		// todo: Notifications
+		transaction {
+			RelationshipEntity.findByIdAndUpdate(id) {
+				it.pending = false
+			}
+		}
+		return getById(id)
+	}
+
+	/**
+	 * Accept a follow
+	 *
+	 * @param apId Follow Activity ID
+	 *
+	 * @return Updated relationship
+	 * */
+	@JvmStatic
+	fun acceptByApId(apId: String): Relationship? = accept(
+		get(RelationshipTable.activityId eq apId)?.id
+			?: throw IllegalArgumentException("Relationship not found")
+	)
 	//</editor-fold>
 }

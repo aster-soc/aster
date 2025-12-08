@@ -131,12 +131,17 @@ internal object UserRoutes {
 				}
 
 				post("/api/user/{id}/follow") {
+					val authenticatedUser = call.attributes[authenticatedUserKey]
 					val user = UserService.getById(call.parameters.getOrFail("id"))
 
 					if (user == null || !user.activated || user.suspended)
 						throw ApiException(HttpStatusCode.NotFound)
 
-					throw ApiException(HttpStatusCode.NotImplemented)
+					call.respond(
+						RelationshipService.mapPair(
+							RelationshipService.follow(user.id.toString(), authenticatedUser.id.toString())
+						)
+					)
 				}
 
 				post("/api/user/{id}/report") {

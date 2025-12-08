@@ -73,6 +73,11 @@ class Api {
 				.unsafeCast<Promise<User?>>()
 
 		@JsStatic
+		fun getUserRelationship(id: String) =
+			Https.get("/api/user/$id/relationship", true)
+				.unsafeCast<Promise<User?>>()
+
+		@JsStatic
 		fun lookupUser(handle: String) =
 			Https.get("/api/lookup/$handle", true)
 				.unsafeCast<Promise<User?>>()
@@ -80,6 +85,11 @@ class Api {
 		@JsStatic
 		fun editUser(id: String, data: Any) =
 			Https.post("/api/user/$id", true, data)
+				.unsafeCast<Promise<User?>>()
+
+		@JsStatic
+		fun followUser(id: String) =
+			Https.post("/api/user/$id/follow", true)
 				.unsafeCast<Promise<User?>>()
 
 		@JsStatic
