@@ -1,6 +1,6 @@
 import {createFileRoute} from "@tanstack/react-router";
 import PageHeader from "../lib/components/PageHeader.tsx";
-import {IconFolder} from "@tabler/icons-react";
+import {IconFolder, IconPlus} from "@tabler/icons-react";
 import PageWrapper from "../lib/components/PageWrapper.tsx";
 import {useQuery} from "@tanstack/react-query";
 import localstore from "../lib/utils/localstore.ts";
@@ -8,6 +8,8 @@ import DriveFile from "../lib/components/DriveFile.tsx";
 import Container from "../lib/components/Container.tsx";
 import Loading from "../lib/components/Loading.tsx";
 import Error from "../lib/components/Error.tsx";
+import Button from "../lib/components/Button.tsx";
+import type {ChangeEvent} from "react";
 import {Api} from 'aster-common'
 
 export const Route = createFileRoute('/drive')({
@@ -20,12 +22,36 @@ function RouteComponent() {
         queryFn: () => Api.getDrive(),
     });
 
+    function upload(e: ChangeEvent<HTMLInputElement>) {
+        console.log(e.target.files)
+
+        let data = new FormData()
+
+        for (let filesKey of Array.from(e.target.files)) {
+            data.append("files", filesKey)
+        }
+
+        Api.upload(data)
+    }
+
     return (
         <>
             <PageHeader
                 icon={<IconFolder size={18}/>}
                 title={"Drive"}
-            />
+            >
+                <Button nav onClick={() =>
+                    document.getElementById("upload-input")?.click()
+                }>
+                    <IconPlus size={18}/>
+                </Button>
+                <input
+                    type={"file"}
+                    id={"upload-input"}
+                    multiple hidden
+                    onChange={(e) => upload(e)}
+                />
+            </PageHeader>
             <PageWrapper padding={"full"} center={false}>
                 {isPending || isFetching ? (
                     <Loading fill/>

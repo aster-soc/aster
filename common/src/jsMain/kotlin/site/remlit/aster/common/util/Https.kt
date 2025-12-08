@@ -27,7 +27,7 @@ object Https {
 
 	private val token: String? get() = window.localStorage.getItem("aster_token")
 
-	private fun createHeaders(vararg additional: Pair<String, String>): dynamic {
+	private fun createHeaders(vararg additional: Pair<String, String?>): dynamic {
 		val headers: dynamic = object {}
 		headers["Authorization"] = "Bearer $token"
 		additional.forEach { (k, v) -> headers[k] = v }
@@ -53,9 +53,8 @@ object Https {
 		val request = window.fetch(
 			url, RequestInit(
 				method = "POST",
-				headers = if (auth) createHeaders(Pair("Content-Type", "application/json"))
-				else mapOf("Content-Type" to "application/json").toObject(),
-				body = if (body != null) JSON.stringify(body) else null
+				headers = if (auth) createHeaders() else null,
+				body = body
 			)
 		)
 

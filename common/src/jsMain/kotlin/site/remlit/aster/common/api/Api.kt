@@ -1,5 +1,6 @@
 package site.remlit.aster.common.api
 
+import org.w3c.xhr.FormData
 import site.remlit.aster.common.model.DriveFile
 import site.remlit.aster.common.model.Meta
 import site.remlit.aster.common.model.Note
@@ -13,7 +14,7 @@ import site.remlit.aster.common.util.toObject
 import kotlin.js.Promise
 
 @JsExport
-@Suppress("UtilityClassWithPublicConstructor", "Unused")
+@Suppress("UtilityClassWithPublicConstructor", "TooManyFunctions", "Unused")
 @OptIn(ExperimentalJsStatic::class)
 class Api {
 	companion object {
@@ -129,5 +130,18 @@ class Api {
 		fun getDrive() =
 			Https.get("/api/drive", true)
 				.unsafeCast<Promise<List<DriveFile>?>>()
+
+		@JsStatic
+		fun getDriveFile(id: String) =
+			Https.get("/api/drive/file/$id")
+				.unsafeCast<Promise<DriveFile?>>()
+
+		@JsStatic
+		fun deleteDriveFile(id: String) =
+			Https.delete("/api/drive/file/$id")
+
+		@JsStatic
+		fun upload(data: FormData) =
+			Https.post("/upload", true, data)
 	}
 }
