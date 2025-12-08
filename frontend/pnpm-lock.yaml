@@ -6,6 +6,7 @@ settings:
 
 overrides:
   aster-common: link:../common/build/dist/js/productionLibrary
+  mfmkt: link:../mfmkt/build/dist/js/productionLibrary
 
 importers:
 
@@ -14,6 +15,9 @@ importers:
       aster-common:
         specifier: link:../common/build/dist/js/productionLibrary
         version: link:../common/build/dist/js/productionLibrary
+      mfmkt:
+        specifier: link:../mfmkt/build/dist/js/productionLibrary
+        version: link:../mfmkt/build/dist/js/productionLibrary
       preact-jsx-runtime:
         specifier: ^1.2.0
         version: 1.2.0(preact@10.27.2)

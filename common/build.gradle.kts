@@ -102,8 +102,8 @@ publishing {
 
 				licenses {
 					license {
-						name = "AGPLv3 License"
-						url = "https://opensource.org/license/agpl-v3"
+						name = "GPLv3 License"
+						url = "https://opensource.org/license/gpl-3-0"
 					}
 				}
 

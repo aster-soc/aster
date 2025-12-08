@@ -225,7 +225,11 @@ object NoteService : Service {
 					this.replyingTo = NoteEntity[replyingTo.id]
 				}
 
-				// todo: determine to, tags
+				/*
+				MfmKt.parse(content).map { it is MfmMention }.forEach {
+					it.toString()
+				} then resolve handles with ApActorService
+				* */
 			}
 		}
 

@@ -55,6 +55,9 @@ also in this package.
 There's another module that relates to `common` called `common-generators`. It generates partial versions of certain
 models that are all nullable, and by default null. These can be used for edits, like on a user or a note.
 
+Aster uses a markdown format used by Misskey called MFM. In the `mfmkt` module, there's a library that targets the JVM
+and JS. It's used for the frontend and backend to handle MFM and scanning user submitted content.
+
 The last module isn't an "official" module, it's `frontend`, the directory that contains the React frontend project.
 
 ### Development Environment

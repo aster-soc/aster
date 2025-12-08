@@ -81,6 +81,7 @@ dependencies {
 	testImplementation(kotlin("test"))
 
 	api(project(":common"))
+	api(project(":mfmkt"))
 }
 
 kotlin {
@@ -156,6 +157,7 @@ tasks.clean {
 }
 
 tasks.register<Exec>("compileFrontend") {
+	dependsOn(":mfmkt:build")
 	dependsOn(":common:build")
 	executable("./scripts/build-frontend.sh")
 }
@@ -238,8 +240,8 @@ publishing {
 
 				licenses {
 					license {
-						name = "AGPLv3 License"
-						url = "https://opensource.org/license/agpl-v3"
+						name = "GPLv3 License"
+						url = "https://opensource.org/license/gpl-3-0"
 					}
 				}
 

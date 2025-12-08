@@ -1,4 +1,6 @@
 packages:
   - packages/app
+
 overrides:
   aster-common: link:../common/build/dist/js/productionLibrary
+  mfmkt: link:../mfmkt/build/dist/js/productionLibrary

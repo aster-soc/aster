@@ -20,3 +20,5 @@ pluginManagement {
 
 include("common")
 include("common-generators")
+
+include("mfmkt")

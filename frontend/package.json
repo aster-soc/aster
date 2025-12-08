@@ -12,6 +12,7 @@
   "packageManager": "pnpm@10.18.2",
   "dependencies": {
     "aster-common": "link:../common/build/dist/js/productionLibrary",
+    "mfmkt": "link:../mfmkt/build/dist/js/productionLibrary",
     "preact-jsx-runtime": "^1.2.0"
   }
 }
