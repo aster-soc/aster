@@ -1,6 +1,6 @@
 import './Error.scss'
 import Button from "./Button.tsx";
-import {IconBug, IconReload} from "@tabler/icons-react";
+import {IconBug, IconReload, IconTool} from "@tabler/icons-react";
 import ApiError from "../utils/ApiError.ts";
 
 function Error(
@@ -34,6 +34,10 @@ function Error(
                 <Button>
                     <IconBug size={18}/>
                     Report Bug
+                </Button>
+                <Button onClick={() => console.error(error)}>
+                    <IconTool size={18}/>
+                    Throw
                 </Button>
             </div>
         </div>

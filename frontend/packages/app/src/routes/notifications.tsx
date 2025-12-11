@@ -3,7 +3,7 @@ import PageHeader from "../lib/components/PageHeader.tsx";
 import {IconBell} from "@tabler/icons-react";
 import PageWrapper from "../lib/components/PageWrapper.tsx";
 import localstore from "../lib/utils/localstore.ts";
-import {useQuery} from "@tanstack/react-query";
+import {useInfiniteQuery} from "@tanstack/react-query";
 import Loading from "../lib/components/Loading.tsx";
 import Error from "../lib/components/Error.tsx";
 import Timeline from "../lib/components/Timeline.tsx";
@@ -18,10 +18,14 @@ function RouteComponent() {
     const token = localstore.getParsed('token');
 
     if (token) {
-        const {isPending, error, data, isFetching, refetch} = useQuery({
-            queryKey: ['Notifications'],
-            queryFn: async () => await Api.getNotifications(),
-        })
+        const query = useInfiniteQuery({
+            queryKey: [`notifications`],
+            queryFn: ({pageParam}) => Api.getNotifications(pageParam),
+            initialPageParam: undefined,
+            getNextPageParam: (lastPage) => {
+                return lastPage ? lastPage?.at(-1)?.createdAt : undefined
+            }
+        });
 
         return <>
             <PageHeader title="Notifications" icon={<IconBell size={18}/>}>
@@ -44,12 +48,12 @@ function RouteComponent() {
                 */}
             </PageHeader>
             <PageWrapper padding={"timeline"} center={false}>
-                {isPending || isFetching ? (
+                {query.isPending ? (
                     <Loading fill/>
-                ) : error ? (
-                    <Error error={error} retry={refetch}/>
+                ) : query.error ? (
+                    <Error error={query.error} retry={query.refetch}/>
                 ) : (
-                    <Timeline data={data} Component={Notification}/>
+                    <Timeline query={query} Component={Notification}/>
                 )}
             </PageWrapper>
         </>

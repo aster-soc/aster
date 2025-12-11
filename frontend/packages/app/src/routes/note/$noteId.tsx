@@ -41,13 +41,13 @@ function RouteComponent() {
             case 1:
                 return (
                     <>
-                        <Timeline data={data.repeats} Component={NoteSimple}/>
+                        <Timeline data={data?.repeats} Component={NoteSimple}/>
                     </>
                 )
             case 2:
                 return (
                     <>
-                        <Timeline data={data.likes} Component={UserCard}/>
+                        <Timeline data={data?.likes} Component={UserCard}/>
                     </>
                 )
         }
