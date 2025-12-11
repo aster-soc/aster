@@ -1,5 +1,10 @@
 package site.remlit.mfmkt.model
 
+import kotlinx.serialization.Serializable
+import kotlin.js.JsExport
+
+@JsExport
+@Serializable
 data class MfmMention(
 	val username: String,
 	val host: String? = null,

@@ -7,7 +7,18 @@ import kotlin.test.expect
 
 class MfmKtTest {
 	@Test
-	fun parseTest() {
+	fun `parse test just text`() {
+		val expectedResults = listOf(
+			MfmText("biiig message blah blah")
+		)
+
+		val message = expectedResults.joinToString("")
+
+		expect(expectedResults) { MfmKt.parse(message).toList() }
+	}
+	
+	@Test
+	fun `parse test mixed`() {
 		val expectedResults = listOf(
 			MfmText("biiig message blah blah "),
 			MfmMention("test"),
@@ -18,6 +29,6 @@ class MfmKtTest {
 
 		val message = expectedResults.joinToString("")
 
-		expect(expectedResults) { MfmKt.parse(message) }
+		expect(expectedResults) { MfmKt.parse(message).toList() }
 	}
 }

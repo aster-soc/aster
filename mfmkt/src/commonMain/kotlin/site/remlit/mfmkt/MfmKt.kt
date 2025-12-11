@@ -20,7 +20,7 @@ class MfmKt {
 	companion object {
 		@JsStatic
 		@JvmStatic
-		fun parse(string: String): List<MfmNode> {
+		fun parse(string: String): Array<MfmNode> {
 			val nodes = mutableListOf<MfmNode>()
 
 			var last: String? = null
@@ -42,9 +42,10 @@ class MfmKt {
 				}
 			}
 
-			if (next != null) nodes.add(MfmText(next))
+			if (next != null || nodes.isEmpty())
+				nodes.add(MfmText(next ?: string))
 
-			return nodes
+			return nodes.toTypedArray()
 		}
 
 		private fun extractMentions(string: String): List<MfmMention> =
