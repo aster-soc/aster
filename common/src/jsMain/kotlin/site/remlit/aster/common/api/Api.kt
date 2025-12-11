@@ -53,13 +53,13 @@ class Api {
 			)
 
 		@JsStatic
-		fun getTimeline(timeline: String) =
-			Https.get("/api/timeline/$timeline", true)
+		fun getTimeline(timeline: String, since: String? = null) =
+			Https.get("/api/timeline/$timeline${if (since != null) "?since=$since" else ""}", true)
 				.unsafeCast<Promise<List<Note?>>>()
 
 		@JsStatic
-		fun getBookmarks() =
-			Https.get("/api/bookmarks", true)
+		fun getBookmarks(since: String? = null) =
+			Https.get("/api/bookmarks${if (since != null) "?since=$since" else ""}", true)
 				.unsafeCast<Promise<List<Note?>>>()
 
 		@JsStatic
@@ -93,8 +93,8 @@ class Api {
 				.unsafeCast<Promise<User?>>()
 
 		@JsStatic
-		fun getNotifications() =
-			Https.get("/api/notifications", true)
+		fun getNotifications(since: String? = null) =
+			Https.get("/api/notifications${if (since != null) "?since=$since" else ""}", true)
 				.unsafeCast<Promise<List<Notification>?>>()
 
 		@JsStatic
@@ -137,8 +137,8 @@ class Api {
 				.unsafeCast<Promise<Meta?>>()
 
 		@JsStatic
-		fun getDrive() =
-			Https.get("/api/drive", true)
+		fun getDrive(since: String? = null) =
+			Https.get("/api/drive${if (since != null) "?since=$since" else ""}", true)
 				.unsafeCast<Promise<List<DriveFile>?>>()
 
 		@JsStatic
