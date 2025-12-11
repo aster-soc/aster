@@ -63,7 +63,7 @@ function Compose() {
     const placeholders = [
         "What's on your mind?",
         "What are you thinking about?",
-        "Hows your day going?",
+        "How's your day going?",
         "What's up?"
     ]
     // if this isn't a state, most interactions with the box recalculate this
