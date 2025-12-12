@@ -80,6 +80,7 @@ dependencies {
 	compileOnly("org.jetbrains:annotations:26.0.2-1")
 
 	// test
+	testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4")
 	testImplementation("io.ktor:ktor-server-test-host:2.2.21")
 	testImplementation(kotlin("test"))
 

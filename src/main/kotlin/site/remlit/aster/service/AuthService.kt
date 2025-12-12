@@ -4,6 +4,7 @@ import org.jetbrains.exposed.v1.core.Op
 import org.jetbrains.exposed.v1.core.eq
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 import site.remlit.aster.db.entity.AuthEntity
+import site.remlit.aster.db.entity.UserEntity
 import site.remlit.aster.db.table.AuthTable
 import site.remlit.aster.db.table.UserTable
 import site.remlit.aster.model.Service
@@ -51,6 +52,28 @@ object AuthService : Service {
 		val generatedToken = RandomService.generateString()
 
 		val user = UserService.get(UserTable.id eq user)!!
+
+		transaction {
+			AuthEntity.new(id) {
+				token = generatedToken
+				this.user = user
+			}
+		}
+
+		return generatedToken
+	}
+
+	/**
+	 * Creates a new auth token for a user
+	 *
+	 * @param user User entity
+	 *
+	 * @return Newly created auth token
+	 * */
+	@JvmStatic
+	fun registerToken(user: UserEntity): String {
+		val id = IdentifierService.generate()
+		val generatedToken = RandomService.generateString()
 
 		transaction {
 			AuthEntity.new(id) {

@@ -85,9 +85,7 @@ fun Application.module() {
 	MigrationService.isUpToDate()
 	configureQueue()
 
-	runBlocking {
-		SetupService.setup()
-	}
+	SetupService.setup()
 
 	install(CallLogging) {
 		filter { call ->
