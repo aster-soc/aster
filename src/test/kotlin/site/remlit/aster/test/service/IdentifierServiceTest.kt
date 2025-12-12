@@ -74,5 +74,5 @@ class IdentifierServiceTest {
 	}
 
 	@Test
-	fun noDuplicates10000() = noDuplicates(10000)
+	fun `no duplicates 10000`() = noDuplicates(10000)
 }

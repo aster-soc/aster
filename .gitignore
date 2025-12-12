@@ -37,15 +37,18 @@ out/
 
 target/
 .DS_Store
-configuration.yaml
 .kotlin/
 .env
-plugins/
-logs/
 kotlin-js-store
-frontend/packages/common
+.vite
+.gc
 dist
 node_modules
-.vite
+
+### Aster ###
+plugins/
+logs/
 src/main/resources/frontend
-.gc
+configuration.yaml
+configuration.test.yaml
+frontend/packages/common

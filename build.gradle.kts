@@ -78,6 +78,9 @@ dependencies {
 	implementation("org.jetbrains.kotlin:kotlin-reflect:2.2.21")
 
 	compileOnly("org.jetbrains:annotations:26.0.2-1")
+
+	// test
+	testImplementation("io.ktor:ktor-server-test-host:2.2.21")
 	testImplementation(kotlin("test"))
 
 	api(project(":common"))
@@ -86,6 +89,10 @@ dependencies {
 
 kotlin {
 	jvmToolchain(21)
+}
+
+tasks.withType<Test>().configureEach {
+	environment("CONFIG_VERSION", "test")
 }
 
 application {
