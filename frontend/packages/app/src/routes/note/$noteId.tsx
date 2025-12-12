@@ -67,7 +67,7 @@ function RouteComponent() {
                 ) : (
                     <>
                         <Container padding={"12px 12px 0 12px"}>
-                            <Note data={data}/>
+                            <Note data={data} detailed/>
                         </Container>
                         <Container gap={"md"} align={"horizontal"} border={"bottom"} padding={"0 12px"}>
                             <Tab

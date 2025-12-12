@@ -30,6 +30,9 @@ importers:
       '@preact/compat':
         specifier: ^18.3.1
         version: 18.3.1(preact@10.27.2)
+      '@preact/signals':
+        specifier: ^2.5.1
+        version: 2.5.1(preact@10.27.2)
       '@tabler/icons-react':
         specifier: ^3.33.0
         version: 3.35.0(react@19.2.0)
@@ -683,6 +686,14 @@ packages:
     resolution: {integrity: sha512-Kog4PSRxtT4COtOXjsuQPV1vMXpUzREQfv+6Dmcy9/rMk0HOPK0HTE9fspFjAmY8R80T/T8gtgmZ68u5bOSngw==}
     peerDependencies:
       preact: '*'
+
+  '@preact/signals-core@1.12.1':
+    resolution: {integrity: sha512-BwbTXpj+9QutoZLQvbttRg5x3l5468qaV2kufh+51yha1c53ep5dY4kTuZR35+3pAZxpfQerGJiQqg34ZNZ6uA==}
+
+  '@preact/signals@2.5.1':
+    resolution: {integrity: sha512-VPjk5YFt7i11Fi4UK0tzaEe5xLwfhUxXL3l89ocxQ5aPz7bRo8M5+N73LjBMPklyXKYKz6YsNo4Smp8n6nplng==}
+    peerDependencies:
+      preact: '>= 10.25.0 || >=11.0.0-0'
 
   '@rolldown/pluginutils@1.0.0-beta.35':
     resolution: {integrity: sha512-slYrCpoxJUqzFDDNlvrOYRazQUNRvWPjXA17dAOISY3rDMxX6k8K4cj2H+hEYMHF81HO3uNd5rHVigAWRM5dSg==}
@@ -2632,6 +2643,13 @@ snapshots:
 
   '@preact/compat@18.3.1(preact@10.27.2)':
     dependencies:
+      preact: 10.27.2
+
+  '@preact/signals-core@1.12.1': {}
+
+  '@preact/signals@2.5.1(preact@10.27.2)':
+    dependencies:
+      '@preact/signals-core': 1.12.1
       preact: 10.27.2
 
   '@rolldown/pluginutils@1.0.0-beta.35': {}

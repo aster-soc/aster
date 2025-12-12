@@ -30,6 +30,7 @@ import Dropdown, {DropdownDivider, DropdownItem, type DropdownNode} from "./drop
 import Mfm from "./Mfm.tsx";
 import {useStore} from "@tanstack/react-store";
 import {store} from "../utils/state.ts";
+import alert, {Alert, AlertType} from '../utils/alert.ts'
 
 function Note(
     {data, detailed = false}:
@@ -173,8 +174,15 @@ function Note(
             <IconLink size={18}/>,
             'Copy link',
             undefined,
-            () => {
-            }
+            () => window.navigator.clipboard
+                .writeText(window.location.href + "note/" + note.id)
+                .then(() => {
+                    alert.add(new Alert(
+                        "",
+                        AlertType.Success,
+                        "Copied link"
+                    ))
+                })
         )
     )
 
@@ -185,14 +193,21 @@ function Note(
                 <IconLink size={18}/>,
                 'Copy remote link',
                 undefined,
-                () => {
-                }
+                () => window.navigator.clipboard
+                    .writeText(note.apId)
+                    .then(() => {
+                        alert.add(new Alert(
+                            "",
+                            AlertType.Success,
+                            "Copied remote link"
+                        ))
+                    })
             ),
             new DropdownItem(
                 undefined,
                 <IconExternalLink size={18}/>,
                 'View on remote',
-                undefined,
+                note.apId,
                 () => {
                 }
             )
@@ -206,9 +221,13 @@ function Note(
                 <IconBookmark size={18}/>,
                 'Bookmark note',
                 undefined,
-                () => {
-                    Api.bookmarkNote(note.id)
-                }
+                () => Api.bookmarkNote(note.id).then(() => {
+                    alert.add(new Alert(
+                        "",
+                        AlertType.Success,
+                        "Bookmarked note"
+                    ))
+                })
             ),
             new DropdownItem(
                 "danger",
@@ -237,9 +256,13 @@ function Note(
                 <IconTrash size={18}/>,
                 'Delete note',
                 undefined,
-                () => {
-                    Api.deleteNote(note?.id)
-                }
+                () => Api.deleteNote(note?.id).then(() => {
+                    alert.add(new Alert(
+                        "",
+                        AlertType.Success,
+                        "Deleted note"
+                    ))
+                })
             )
         )
 

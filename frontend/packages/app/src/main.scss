@@ -1,7 +1,7 @@
 @use "lib/font/inter";
 
 :root {
-  --font: 'Inter', 'Arial', sans-serif;
+  --font: 'Inter', 'Adwaita Sans', 'Arial', 'Helvetica', sans-serif;
   --font-features: 'cv05', 'cv08';
 
   --fs-xxs: 10px;
@@ -186,4 +186,53 @@ button.dismiss {
 
 .centerText {
   text-align: center;
+}
+
+.alerts {
+  display: flex;
+  flex-direction: column;
+  justify-content: end;
+  gap: 5px;
+
+  position: fixed;
+  bottom: 0;
+  right: 0;
+
+  height: calc(100vh - (10px * 2));
+
+  padding: 10px;
+
+  .alert {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    color: var(--tx-2);
+    background: var(--bg-2);
+    border-radius: var(--br-md);
+    box-shadow: 0 0 10px #00000050, var(--funky-effect);
+
+    width: 225px;
+    padding: 12px 16px;
+
+    &.info {
+      color: var(--ac-1);
+      background: var(--ac-1-25);
+    }
+
+    &.warn {
+      color: var(--warn);
+      background: var(--warn-25);
+    }
+
+    &.error {
+      color: var(--danger);
+      background: var(--danger-25);
+    }
+
+    &.success {
+      color: var(--success);
+      background: var(--success-25);
+    }
+  }
 }
