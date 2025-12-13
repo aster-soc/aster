@@ -8,8 +8,8 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import site.remlit.aster.model.Configuration
 import site.remlit.aster.model.Service
-import site.remlit.aster.model.plugin.PluginManifest
 import site.remlit.aster.model.plugin.AsterPlugin
+import site.remlit.aster.model.plugin.PluginManifest
 import site.remlit.aster.registry.PluginRegistry
 import java.io.InputStream
 import java.net.URI
@@ -20,6 +20,8 @@ import kotlin.io.path.Path
 import kotlin.io.path.absolutePathString
 import kotlin.io.path.createDirectories
 import kotlin.io.path.exists
+import kotlin.io.path.extension
+import kotlin.io.path.isRegularFile
 import kotlin.io.path.listDirectoryEntries
 import kotlin.io.path.name
 
@@ -42,7 +44,7 @@ object PluginService : Service {
 		if (!pluginDir.exists()) pluginDir.createDirectories()
 
 		pluginDir.listDirectoryEntries()
-			.filter { !it.endsWith(".jar") }
+			.filter { it.extension == "jar" || it.isRegularFile() }
 			.forEach { jar ->
 				ZipFile(jar.toFile()).use { zip ->
 					val pluginManifest = zip.getEntry("plugin.json")

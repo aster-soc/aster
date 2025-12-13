@@ -45,20 +45,22 @@ dependencies {
 	implementation("io.ktor:ktor-server-forwarded-header-jvm:3.3.3")
 	implementation("io.ktor:ktor-server-openapi-jvm:3.3.3")
 	implementation("io.ktor:ktor-server-swagger-jvm:3.3.3")
+	implementation("io.ktor:ktor-server-status-pages-jvm:3.3.3")
+	implementation("io.ktor:ktor-server-auto-head-response-jvm:3.3.3")
 
 	// templating
 	implementation("io.ktor:ktor-server-html-builder-jvm:3.3.3")
 	implementation("org.jetbrains.kotlinx:kotlinx-html:0.12.0")
 
 	// serialization
+	implementation("org.jetbrains.kotlinx:kotlinx-serialization-core-jvm:1.9.0")
+	implementation("org.jetbrains.kotlinx:kotlinx-serialization-json-jvm:1.9.0")
 	implementation("io.ktor:ktor-server-content-negotiation-jvm:3.3.3")
 	implementation("io.ktor:ktor-serialization-kotlinx-json-jvm:3.3.3")
 
 	// ktor client
 	implementation("io.ktor:ktor-client-core-jvm:3.3.3")
 	implementation("io.ktor:ktor-client-cio-jvm:3.3.3")
-	implementation("io.ktor:ktor-server-status-pages-jvm:3.3.3")
-	implementation("io.ktor:ktor-server-auto-head-response-jvm:3.3.3")
 	implementation("io.ktor:ktor-client-content-negotiation-jvm:3.3.3")
 
 	// database
