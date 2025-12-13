@@ -156,6 +156,11 @@ artifacts {
 
 // building
 
+tasks.register("preCommit") {
+	dependsOn("detekt")
+	dependsOn("test")
+}
+
 tasks.register<Exec>("cleanFrontend") {
 	executable("./scripts/clean-frontend.sh")
 }

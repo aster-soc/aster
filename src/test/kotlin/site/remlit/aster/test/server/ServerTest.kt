@@ -113,6 +113,10 @@ class ServerTest {
 
 		val token = AuthService.registerToken(instanceActor)
 
+		/*
+		* Create public note
+		* */
+
 		val testNoteContent = RandomService.generateString()
 
 		val createNote = client.post("/api/note") {
@@ -131,6 +135,52 @@ class ServerTest {
 		assertEquals(testNoteContent, createNoteResponse.content)
 		assertEquals(Visibility.Public, createNoteResponse.visibility)
 		assertEquals(instanceActor.id.toString(), createNoteResponse.user.id)
+
+		/*
+		* Create unlisted note
+		* */
+
+		val testUnlistedNoteContent = RandomService.generateString()
+
+		val createUnlistedNote = client.post("/api/note") {
+			contentType(ContentType.Application.Json)
+			headers { append("Authorization", "Bearer $token") }
+			setBody(buildJsonObject {
+				put("content", testUnlistedNoteContent)
+				put("visibility", "unlisted")
+			})
+		}
+
+		assertEquals(HttpStatusCode.OK, createUnlistedNote.status)
+
+		val createUnlistedNoteResponse = createUnlistedNote.body<Note>()
+
+		assertEquals(testUnlistedNoteContent, createUnlistedNoteResponse.content)
+		assertEquals(Visibility.Unlisted, createUnlistedNoteResponse.visibility)
+		assertEquals(instanceActor.id.toString(), createUnlistedNoteResponse.user.id)
+
+		/*
+		* Create followers note
+		* */
+
+		val testFollowersNoteContent = RandomService.generateString()
+
+		val testFollowersNote = client.post("/api/note") {
+			contentType(ContentType.Application.Json)
+			headers { append("Authorization", "Bearer $token") }
+			setBody(buildJsonObject {
+				put("content", testFollowersNoteContent)
+				put("visibility", "followers")
+			})
+		}
+
+		assertEquals(HttpStatusCode.OK, testFollowersNote.status)
+
+		val testFollowersNoteResponse = testFollowersNote.body<Note>()
+
+		assertEquals(testFollowersNoteContent, testFollowersNoteResponse.content)
+		assertEquals(Visibility.Followers, testFollowersNoteResponse.visibility)
+		assertEquals(instanceActor.id.toString(), testFollowersNoteResponse.user.id)
 
 		/*
 		* Like
@@ -169,5 +219,28 @@ class ServerTest {
 		assertEquals(createNoteResponse.id, repeatResponse.repeat?.id)
 		assertEquals(1, repeatResponse.repeat?.repeats?.size)
 		assertEquals(true, repeatResponse.repeat?.repeats?.any { it.user.id == instanceActor.id.toString() })
+
+		/*
+		* Reply
+		* */
+
+		val testReplyContent = RandomService.generateString()
+
+		val reply = client.post("/api/note") {
+			contentType(ContentType.Application.Json)
+			headers { append("Authorization", "Bearer $token") }
+			setBody(buildJsonObject {
+				put("content", testReplyContent)
+				put("visibility", "public")
+				put("replyingTo", createNoteResponse.id)
+			})
+		}
+
+		assertEquals(HttpStatusCode.OK, like.status)
+
+		val replyResponse = reply.body<Note>()
+
+		assertNotNull(replyResponse.replyingTo)
+		assertEquals(createNoteResponse.id, replyResponse.replyingTo?.id)
 	}
 }
