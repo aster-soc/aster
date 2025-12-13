@@ -5,7 +5,7 @@ import {IconChartBubble, IconHome, IconPlanet, IconUsers} from "@tabler/icons-re
 import localstore from "../lib/utils/localstore.ts";
 import Timeline from "../lib/components/Timeline.tsx";
 import Note from "../lib/components/Note.tsx";
-import {useQuery} from "@tanstack/react-query";
+import {useInfiniteQuery} from "@tanstack/react-query";
 import {useState} from "react";
 import Tab from "../lib/components/Tab.tsx";
 import Loading from "../lib/components/Loading.tsx";
@@ -23,16 +23,20 @@ function RouteComponent() {
         let previousTimeline = localstore.getParsed('timeline')
         let [timeline, setTimeline] = useState((previousTimeline === undefined) ? "home" : previousTimeline);
 
-        const {isPending, error, data, isFetching, refetch} = useQuery({
-            queryKey: ['timeline'],
-            queryFn: async () => Api.getTimeline(timeline),
-        })
+        const query = useInfiniteQuery({
+            queryKey: [`timeline`],
+            queryFn: ({pageParam}) => Api.getTimeline(timeline, pageParam),
+            initialPageParam: undefined,
+            getNextPageParam: (lastPage) => {
+                return lastPage ? lastPage?.at(-1)?.createdAt : undefined
+            }
+        });
 
         function updateTimeline(timeline: string) {
             setTimeline(timeline);
             localstore.set('timeline', timeline);
             setTimeout(async () => {
-                await refetch()
+                await query.refetch()
             }, 100)
         }
 
@@ -76,12 +80,12 @@ function RouteComponent() {
                     </Tab>
                 </PageHeader>
                 <PageWrapper padding={"full"} center={false}>
-                    {isPending || isFetching ? (
+                    {query.isPending ? (
                         <Loading fill/>
-                    ) : error ? (
-                        <Error error={error} retry={refetch}/>
+                    ) : query.error ? (
+                        <Error error={query.error} retry={query.refetch}/>
                     ) : (
-                        <Timeline data={data} Component={Note}/>
+                        <Timeline query={query} Component={Note}/>
                     )}
                 </PageWrapper>
             </>
