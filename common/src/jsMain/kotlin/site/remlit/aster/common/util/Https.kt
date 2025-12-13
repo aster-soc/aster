@@ -53,6 +53,21 @@ object Https {
 		val request = window.fetch(
 			url, RequestInit(
 				method = "POST",
+				headers = if (auth) createHeaders(Pair("Content-Type", "application/json")) else
+					createHeaders("Content-Type" to "application/json"),
+				body = JSON.stringify(body)
+			)
+		)
+
+		return end(request)
+	}
+
+	fun postRaw(url: String, auth: Boolean = false, body: JsAny? = null): Promise<JsAny> {
+		start()
+
+		val request = window.fetch(
+			url, RequestInit(
+				method = "POST",
 				headers = if (auth) createHeaders() else null,
 				body = body
 			)

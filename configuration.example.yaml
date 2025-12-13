@@ -64,15 +64,14 @@ queue:
 
 ## Timeline ##
 # Default objects:
-#   Too high of a number will allow users to cause more
-#   strain on the server.
+#   Too high of a number will slow down timeline requests.
 # Max objects:
 #   Too high of a number will allow higher amounts if needed,
 #   but not cause as much strain as a high default.
 # Authentication:
 #   You may want to make your timelines require auth if
 #   your infrastructure can't handle extra pressure from
-#   people outside your instance.
+#   people outside your instance or scrapers.
 ##
 timeline:
   defaultObjects: 15
