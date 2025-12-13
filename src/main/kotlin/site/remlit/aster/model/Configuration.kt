@@ -14,8 +14,9 @@ import kotlin.io.path.Path
 import kotlin.io.path.exists
 import kotlin.io.path.isDirectory
 
+val version = System.getenv("CONFIG_VERSION")
 var workingDir = File(".").absolutePath.toString().removeSuffix(".")
-var configPath = workingDir + "configuration.yaml"
+var configPath = if (version == "test") workingDir + "configuration.test.yaml" else workingDir + "configuration.yaml"
 var config = YamlConfig(configPath)
 
 var lastConfigReloadAt = TimeService.now()

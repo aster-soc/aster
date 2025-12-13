@@ -25,9 +25,7 @@ internal object UploadRoutes {
 	private val logger = LoggerFactory.getLogger(UploadRoutes::class.java)
 
 	fun register() = RouteRegistry.registerRoute {
-		staticFiles("/uploads", Configuration.fileStorage.localPath.toFile()) {
-			enableAutoHeadResponse()
-		}
+		staticFiles("/uploads", Configuration.fileStorage.localPath.toFile())
 
 		authentication(
 			required = true,
