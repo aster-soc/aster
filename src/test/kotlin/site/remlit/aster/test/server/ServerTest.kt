@@ -58,7 +58,9 @@ class ServerTest {
 		assertNull(registerResponse.user.host)
 		assertEquals(true, registerResponse.user.activated)
 
-		/* Login */
+		/*
+		* Login
+		* */
 
 		val login = client.post("/api/login") {
 			contentType(ContentType.Application.Json)
@@ -91,7 +93,9 @@ class ServerTest {
 
 		assertEquals(instanceActor.id.toString(), userResponse.id)
 
-		/* Lookup */
+		/*
+		* Lookup
+		* */
 
 		val lookupUser = client.get("/api/lookup/@${instanceActor.username}")
 
@@ -104,7 +108,7 @@ class ServerTest {
 	}
 
 	@Test
-	fun `create note route test`() = setupTestApplication {
+	fun `note routes test`() = setupTestApplication {
 		val instanceActor = UserService.getInstanceActor()
 
 		val token = AuthService.registerToken(instanceActor)
@@ -127,5 +131,43 @@ class ServerTest {
 		assertEquals(testNoteContent, createNoteResponse.content)
 		assertEquals(Visibility.Public, createNoteResponse.visibility)
 		assertEquals(instanceActor.id.toString(), createNoteResponse.user.id)
+
+		/*
+		* Like
+		* */
+
+		val like = client.post("/api/note/${createNoteResponse.id}/like") {
+			headers { append("Authorization", "Bearer $token") }
+		}
+
+		assertEquals(HttpStatusCode.OK, like.status)
+
+		val likeResponse = like.body<Note>()
+
+		assertEquals(createNoteResponse.id, likeResponse.id)
+
+		assertEquals(1, likeResponse.likes.size)
+		assertEquals(true, likeResponse.likes.any { it.id == instanceActor.id.toString() })
+
+		/*
+		* Repeat
+		* */
+
+		val repeat = client.post("/api/note/${createNoteResponse.id}/repeat") {
+			contentType(ContentType.Application.Json)
+			headers { append("Authorization", "Bearer $token") }
+			setBody(buildJsonObject {
+				put("visibility", "public")
+			})
+		}
+
+		assertEquals(HttpStatusCode.OK, like.status)
+
+		val repeatResponse = repeat.body<Note>()
+
+		assertNotNull(repeatResponse.repeat)
+		assertEquals(createNoteResponse.id, repeatResponse.repeat?.id)
+		assertEquals(1, repeatResponse.repeat?.repeats?.size)
+		assertEquals(true, repeatResponse.repeat?.repeats?.any { it.user.id == instanceActor.id.toString() })
 	}
 }
