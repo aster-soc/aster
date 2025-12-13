@@ -13,5 +13,5 @@ data class ApDeleteActivity(
 
 	val actor: String? = null,
 	@Serializable(with = NestedApObjectSerializer::class)
-	val `object`: ApIdOrObject
+	val `object`: ApIdOrObject,
 ) : ApObjectWithContext()

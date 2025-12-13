@@ -34,8 +34,10 @@ import site.remlit.aster.model.Configuration
 import site.remlit.aster.model.Service
 import site.remlit.aster.model.ap.ApIdOrObject
 import site.remlit.aster.model.ap.ApNote
+import site.remlit.aster.model.ap.ApTombstone
 import site.remlit.aster.model.ap.activity.ApAnnounceActivity
 import site.remlit.aster.model.ap.activity.ApCreateActivity
+import site.remlit.aster.model.ap.activity.ApDeleteActivity
 import site.remlit.aster.model.ap.activity.ApLikeActivity
 import site.remlit.aster.model.ap.activity.ApUndoActivity
 import site.remlit.aster.service.ap.ApActorService
@@ -509,6 +511,21 @@ object NoteService : Service {
 		if (entity == null) return@transaction
 
 		NoteDeleteEvent(Note.fromEntity(entity)).call()
+
+		if (entity.user.host == null)
+			ApDeliverService.deliverToFollowers<ApDeleteActivity>(
+				ApDeleteActivity(
+					entity.apId + "/delete",
+					actor = entity.user.apId,
+					`object` = ApIdOrObject.createObject {
+						ApTombstone(
+							entity.apId
+						)
+					}
+				),
+				transaction { entity.user }
+			)
+
 		entity.delete()
 	}
 
