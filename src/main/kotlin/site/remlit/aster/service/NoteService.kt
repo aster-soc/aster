@@ -42,6 +42,7 @@ import site.remlit.aster.service.ap.ApActorService
 import site.remlit.aster.service.ap.ApDeliverService
 import site.remlit.aster.service.ap.ApIdService
 import site.remlit.aster.service.ap.ApVisibilityService
+import site.remlit.aster.util.detached
 import site.remlit.aster.util.model.fromEntities
 import site.remlit.aster.util.model.fromEntity
 import site.remlit.aster.util.sanitizeOrNull
@@ -206,6 +207,8 @@ object NoteService : Service {
 		visibility: Visibility,
 		replyingTo: String? = null,
 	): Note {
+		val localTo = mutableListOf<String>()
+
 		transaction {
 			NoteEntity.new(id) {
 				apId = ApIdService.renderNoteApId(id)
@@ -236,6 +239,7 @@ object NoteService : Service {
 						?: return@forEach
 
 					to.add(resolved.id.toString())
+					if (resolved.host == null) localTo.add(resolved.id.toString())
 				}
 
 				this.to = to
@@ -244,27 +248,40 @@ object NoteService : Service {
 
 		val note = getById(id)!!
 
-		if (user.host == null) {
-			val (to, cc) = ApVisibilityService.visibilityToCc(
-				note.visibility,
-				user.followersUrl,
-				note.to
-			)
-
-			ApDeliverService.deliverToFollowers<ApCreateActivity>(
-				ApCreateActivity(
-					id = note.apId,
-					actor = user.apId,
-					`object` = ApIdOrObject.createObject { ApNote.fromEntity(note) },
-					to = to,
-					cc = cc
-				),
-				user,
-				// TODO: and to
-			)
-		}
-
 		NoteCreateEvent(note).call()
+
+		detached {
+			if (user.host == null) {
+				val (to, cc) = ApVisibilityService.visibilityToCc(
+					note.visibility,
+					user.followersUrl,
+					note.to
+				)
+
+				ApDeliverService.deliverToFollowers<ApCreateActivity>(
+					ApCreateActivity(
+						id = note.apId,
+						actor = user.apId,
+						`object` = ApIdOrObject.createObject { ApNote.fromEntity(note) },
+						to = to,
+						cc = cc
+					),
+					user,
+					// TODO: and to
+				)
+			}
+
+			localTo.forEach {
+				transaction {
+					NotificationService.create(
+						NotificationType.Mention,
+						UserEntity[it],
+						UserEntity[note.user.id],
+						note
+					)
+				}
+			}
+		}
 
 		return note
 	}
@@ -386,8 +403,7 @@ object NoteService : Service {
 				.singleOrNull()
 		}
 
-		if (like == null)
-			throw IllegalArgumentException("Like not found")
+		if (like == null) return
 
 		transaction { like.delete() }
 

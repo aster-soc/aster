@@ -82,7 +82,7 @@ internal object TimelineRoutes {
 					val take = TimelineService.normalizeTake(call.parameters["take"]?.toIntOrNull())
 
 					val notes = NoteService.getMany(
-						where = NoteTable.visibility inList listOf(Visibility.Public, Visibility.Unlisted)
+						where = NoteTable.visibility inList listOf(Visibility.Public)
 								and (UserTable.host eq null)
 								and (NoteTable.createdAt less since),
 						take = take
@@ -105,7 +105,7 @@ internal object TimelineRoutes {
 					val hosts = Configuration.timeline.bubble.hosts
 
 					val notes = NoteService.getMany(
-						where = NoteTable.visibility inList listOf(Visibility.Public, Visibility.Unlisted)
+						where = NoteTable.visibility inList listOf(Visibility.Public)
 								and (UserTable.host inList hosts or (UserTable.host eq null))
 								and (NoteTable.createdAt less since),
 						take = take
@@ -126,7 +126,7 @@ internal object TimelineRoutes {
 					val take = TimelineService.normalizeTake(call.parameters["take"]?.toIntOrNull())
 
 					val notes = NoteService.getMany(
-						NoteTable.visibility inList listOf(Visibility.Public, Visibility.Unlisted)
+						NoteTable.visibility inList listOf(Visibility.Public)
 								and (NoteTable.createdAt less since),
 						take
 					)
