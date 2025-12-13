@@ -36,11 +36,19 @@ object ApNoteService : Service {
 	 * Resolve a note by its ID
 	 *
 	 * @param apId ActivityPub ID of a note
+	 * @param refetch Refetch actor
+	 * @param depth Maximum recursion depth
+	 * @param user User to resolve as
 	 *
 	 * @return Note or null
 	 * */
 	@JvmStatic
-	suspend fun resolve(apId: String, refetch: Boolean = false, depth: Int = 0): Note? {
+	suspend fun resolve(
+		apId: String,
+		refetch: Boolean = false,
+		depth: Int = 0,
+		user: String? = null
+	): Note? {
 		if (depth > Configuration.maxResolveDepth) return null
 
 		InstanceService.resolve(Url(apId).host)
@@ -50,7 +58,7 @@ object ApNoteService : Service {
 			return existingNote
 		}
 
-		val resolveResponse = ResolverService.resolveSigned(apId)
+		val resolveResponse = ResolverService.resolveSigned(apId, user = user)
 
 		if (resolveResponse != null && existingNote == null)
 			return register(toNote(resolveResponse, depth = depth + 1) ?: return null)

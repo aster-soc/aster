@@ -1,5 +1,6 @@
 package site.remlit.aster.service
 
+import kotlinx.coroutines.runBlocking
 import org.jetbrains.exposed.v1.core.JoinType
 import org.jetbrains.exposed.v1.core.Op
 import org.jetbrains.exposed.v1.core.alias
@@ -37,12 +38,15 @@ import site.remlit.aster.model.ap.activity.ApAnnounceActivity
 import site.remlit.aster.model.ap.activity.ApCreateActivity
 import site.remlit.aster.model.ap.activity.ApLikeActivity
 import site.remlit.aster.model.ap.activity.ApUndoActivity
+import site.remlit.aster.service.ap.ApActorService
 import site.remlit.aster.service.ap.ApDeliverService
 import site.remlit.aster.service.ap.ApIdService
 import site.remlit.aster.service.ap.ApVisibilityService
 import site.remlit.aster.util.model.fromEntities
 import site.remlit.aster.util.model.fromEntity
 import site.remlit.aster.util.sanitizeOrNull
+import site.remlit.mfmkt.MfmKt
+import site.remlit.mfmkt.model.MfmMention
 
 /**
  * Service for managing notes.
@@ -225,11 +229,16 @@ object NoteService : Service {
 					this.replyingTo = NoteEntity[replyingTo.id]
 				}
 
-				/*
-				MfmKt.parse(content).map { it is MfmMention }.forEach {
-					it.toString()
-				} then resolve handles with ApActorService
-				* */
+				val to = mutableListOf<String>()
+
+				MfmKt.parse(content).filterIsInstance<MfmMention>().forEach {
+					val resolved = runBlocking { ApActorService.resolveHandle(it.toString()) }
+						?: return@forEach
+
+					to.add(resolved.id.toString())
+				}
+
+				this.to = to
 			}
 		}
 

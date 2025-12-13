@@ -33,6 +33,12 @@ object InstanceService : Service {
 	const val NODEINFO_2_1: String = "http://nodeinfo.diaspora.software/ns/schema/2.1"
 
 	/**
+	 * Currently being processed hosts
+	 * */
+	@JvmStatic
+	var lockedHosts = mutableSetOf<String>()
+
+	/**
 	 * Get an instance entity
 	 *
 	 * @param where Query for finding instance
@@ -55,16 +61,6 @@ object InstanceService : Service {
 	 * */
 	@JvmStatic
 	fun getById(id: String): InstanceEntity? = get(InstanceTable.id eq id)
-
-	/**
-	 * Get an instance entity by host
-	 *
-	 * @param host Host of instance
-	 *
-	 * @return Instance entity, if it exists
-	 * */
-	@JvmStatic
-	fun getByHost(host: String): InstanceEntity? = get(InstanceTable.host eq host)
 
 	/**
 	 * Get an instance entities

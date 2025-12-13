@@ -1,4 +1,4 @@
-package site.remlit.aster.test.server
+package site.remlit.aster.test
 
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.http.*
