@@ -1,5 +1,4 @@
 import * as React from "react";
-import './Input.scss';
 import * as Common from 'aster-common'
 import localstore from "../utils/localstore.ts";
 
