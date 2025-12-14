@@ -6,6 +6,7 @@ import io.ktor.server.http.content.*
 import io.ktor.server.routing.*
 import kotlinx.html.classes
 import kotlinx.html.h2
+import kotlinx.html.p
 import kotlinx.html.table
 import kotlinx.html.td
 import kotlinx.html.th
@@ -18,8 +19,10 @@ import site.remlit.aster.common.model.Meta
 import site.remlit.aster.common.model.type.RoleType
 import site.remlit.aster.db.table.NoteTable
 import site.remlit.aster.db.table.UserTable
+import site.remlit.aster.model.lastConfigReloadAt
 import site.remlit.aster.registry.RouteRegistry
 import site.remlit.aster.service.DriveService
+import site.remlit.aster.service.FormatService
 import site.remlit.aster.service.NoteService
 import site.remlit.aster.service.TimeService
 import site.remlit.aster.service.UserService
@@ -61,6 +64,7 @@ internal object AdminIndexRoutes {
 								}
 							}
 							h2 { +"Statistics" }
+							p { +"Last configuration refresh ${FormatService.relativeTime(lastConfigReloadAt)}" }
 							table {
 								tr {
 									th { +"Known instances" }

@@ -11,6 +11,12 @@ internal object FrontendRoutes {
 		RouteRegistry.registerRoute {
 			staticResources("/uikit", "uikit")
 
+			get("/robots.txt") {
+				call.respondText {
+					"User-agent: *\n" + "Disallow: /"
+				}
+			}
+
 			get("/favicon.ico") {
 				call.respondRedirect("/uikit/branding/favicon.ico")
 			}
