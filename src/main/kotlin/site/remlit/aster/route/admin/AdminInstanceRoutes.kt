@@ -8,6 +8,7 @@ import kotlinx.html.button
 import kotlinx.html.classes
 import kotlinx.html.head
 import kotlinx.html.p
+import kotlinx.html.script
 import kotlinx.html.styleLink
 import kotlinx.html.table
 import kotlinx.html.td
@@ -49,6 +50,7 @@ internal object AdminInstanceRoutes {
 						head {
 							title { +"Instances" }
 							styleLink("/admin/assets/index.css")
+							script { src = "/admin/assets/index.js" }
 						}
 						body {
 							adminHeader("Instances")

@@ -3,7 +3,7 @@
     font-style: normal;
     font-weight: 100;
     font-display: swap;
-    src: url('/assets/fonts/inter/Inter_18pt-Thin.ttf');
+    src: url('/uikit/fonts/inter/Inter_18pt-Thin.ttf');
 }
 
 @font-face {
@@ -11,7 +11,7 @@
     font-style: italic;
     font-weight: 100;
     font-display: swap;
-    src: url('/assets/fonts/inter/Inter_18pt-ThinItalic.ttf');
+    src: url('/uikit/fonts/inter/Inter_18pt-ThinItalic.ttf');
 }
 
 @font-face {
@@ -19,7 +19,7 @@
     font-style: normal;
     font-weight: 200;
     font-display: swap;
-    src: url('/assets/fonts/inter/Inter_18pt-ExtraLight.ttf');
+    src: url('/uikit/fonts/inter/Inter_18pt-ExtraLight.ttf');
 }
 
 @font-face {
@@ -27,7 +27,7 @@
     font-style: italic;
     font-weight: 200;
     font-display: swap;
-    src: url('/assets/fonts/inter/Inter_18pt-ExtraLightItalic.ttf');
+    src: url('/uikit/fonts/inter/Inter_18pt-ExtraLightItalic.ttf');
 }
 
 @font-face {
@@ -35,7 +35,7 @@
     font-style: normal;
     font-weight: 300;
     font-display: swap;
-    src: url('/assets/fonts/inter/Inter_18pt-Light.ttf');
+    src: url('/uikit/fonts/inter/Inter_18pt-Light.ttf');
 }
 
 @font-face {
@@ -43,7 +43,7 @@
     font-style: italic;
     font-weight: 300;
     font-display: swap;
-    src: url('/assets/fonts/inter/Inter_18pt-LightItalic.ttf');
+    src: url('/uikit/fonts/inter/Inter_18pt-LightItalic.ttf');
 }
 
 @font-face {
@@ -51,7 +51,7 @@
     font-style: normal;
     font-weight: 400;
     font-display: swap;
-    src: url('/assets/fonts/inter/Inter_18pt-Regular.ttf');
+    src: url('/uikit/fonts/inter/Inter_18pt-Regular.ttf');
 }
 
 @font-face {
@@ -59,7 +59,7 @@
     font-style: italic;
     font-weight: 400;
     font-display: swap;
-    src: url('/assets/fonts/inter/Inter_18pt-Italic.ttf');
+    src: url('/uikit/fonts/inter/Inter_18pt-Italic.ttf');
 }
 
 @font-face {
@@ -67,7 +67,7 @@
     font-style: normal;
     font-weight: 500;
     font-display: swap;
-    src: url('/assets/fonts/inter/Inter_18pt-Medium.ttf');
+    src: url('/uikit/fonts/inter/Inter_18pt-Medium.ttf');
 }
 
 @font-face {
@@ -75,7 +75,7 @@
     font-style: italic;
     font-weight: 500;
     font-display: swap;
-    src: url('/assets/fonts/inter/Inter_18pt-MediumItalic.ttf');
+    src: url('/uikit/fonts/inter/Inter_18pt-MediumItalic.ttf');
 }
 
 @font-face {
@@ -83,7 +83,7 @@
     font-style: normal;
     font-weight: 600;
     font-display: swap;
-    src: url('/assets/fonts/inter/Inter_18pt-SemiBold.ttf');
+    src: url('/uikit/fonts/inter/Inter_18pt-SemiBold.ttf');
 }
 
 @font-face {
@@ -91,7 +91,7 @@
     font-style: italic;
     font-weight: 600;
     font-display: swap;
-    src: url('/assets/fonts/inter/Inter_18pt-SemiBoldItalic.ttf');
+    src: url('/uikit/fonts/inter/Inter_18pt-SemiBoldItalic.ttf');
 }
 
 @font-face {
@@ -99,7 +99,7 @@
     font-style: normal;
     font-weight: 700;
     font-display: swap;
-    src: url('/assets/fonts/inter/Inter_18pt-Bold.ttf');
+    src: url('/uikit/fonts/inter/Inter_18pt-Bold.ttf');
 }
 
 @font-face {
@@ -107,7 +107,7 @@
     font-style: italic;
     font-weight: 700;
     font-display: swap;
-    src: url('/assets/fonts/inter/Inter_18pt-BoldItalic.ttf');
+    src: url('/uikit/fonts/inter/Inter_18pt-BoldItalic.ttf');
 }
 
 @font-face {
@@ -115,7 +115,7 @@
     font-style: normal;
     font-weight: 800;
     font-display: swap;
-    src: url('/assets/fonts/inter/Inter_18pt-ExtraBold.ttf');
+    src: url('/uikit/fonts/inter/Inter_18pt-ExtraBold.ttf');
 }
 
 @font-face {
@@ -123,7 +123,7 @@
     font-style: italic;
     font-weight: 800;
     font-display: swap;
-    src: url('/assets/fonts/inter/Inter_18pt-ExtraBoldItalic.ttf');
+    src: url('/uikit/fonts/inter/Inter_18pt-ExtraBoldItalic.ttf');
 }
 
 @font-face {
@@ -131,7 +131,7 @@
     font-style: normal;
     font-weight: 900;
     font-display: swap;
-    src: url('/assets/fonts/inter/Inter_18pt-Black.ttf');
+    src: url('/uikit/fonts/inter/Inter_18pt-Black.ttf');
 }
 
 @font-face {
@@ -139,5 +139,5 @@
     font-style: italic;
     font-weight: 900;
     font-display: swap;
-    src: url('/assets/fonts/inter/Inter_18pt-BlackItalic.ttf');
+    src: url('/uikit/fonts/inter/Inter_18pt-BlackItalic.ttf');
 }

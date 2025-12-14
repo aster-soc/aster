@@ -31,6 +31,7 @@ import site.remlit.aster.route.api.MetaRoutes
 import site.remlit.aster.route.api.NoteRoutes
 import site.remlit.aster.route.api.NotificationRoutes
 import site.remlit.aster.route.api.PasswordResetRoutes
+import site.remlit.aster.route.api.PluginRoutes
 import site.remlit.aster.route.api.PolicyRoutes
 import site.remlit.aster.route.api.RegisterRoutes
 import site.remlit.aster.route.api.ReportRoutes
@@ -106,6 +107,7 @@ object RouteRegistry {
 		MetaRoutes.register()
 		NoteRoutes.register()
 		NotificationRoutes.register()
+		PluginRoutes.register()
 		PasswordResetRoutes.register()
 		PolicyRoutes.register()
 		RegisterRoutes.register()

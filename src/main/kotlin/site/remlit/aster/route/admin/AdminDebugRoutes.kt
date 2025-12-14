@@ -11,6 +11,7 @@ import kotlinx.html.code
 import kotlinx.html.head
 import kotlinx.html.input
 import kotlinx.html.pre
+import kotlinx.html.script
 import kotlinx.html.styleLink
 import kotlinx.html.title
 import site.remlit.aster.common.model.type.RoleType
@@ -34,7 +35,7 @@ internal object AdminDebugRoutes {
 					head {
 						title { +"Admin Panel" }
 						styleLink("/admin/assets/index.css")
-						// some autoreload script
+						script { src = "/admin/assets/index.js" }
 					}
 					body {
 						adminHeader("Debug")

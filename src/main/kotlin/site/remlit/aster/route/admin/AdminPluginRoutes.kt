@@ -2,21 +2,17 @@ package site.remlit.aster.route.admin
 
 import io.ktor.http.*
 import io.ktor.server.html.*
-import io.ktor.server.request.*
-import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import kotlinx.html.InputType
 import kotlinx.html.b
 import kotlinx.html.body
+import kotlinx.html.button
 import kotlinx.html.classes
 import kotlinx.html.div
-import kotlinx.html.form
 import kotlinx.html.head
-import kotlinx.html.hidden
-import kotlinx.html.id
-import kotlinx.html.input
 import kotlinx.html.li
+import kotlinx.html.onClick
 import kotlinx.html.p
+import kotlinx.html.script
 import kotlinx.html.styleLink
 import kotlinx.html.title
 import kotlinx.html.ul
@@ -34,31 +30,20 @@ internal object AdminPluginRoutes {
 				required = true,
 				role = RoleType.Admin
 			) {
-				post("/admin/plugins") {
-					val string = call.receive<String>()
-					call.respondText { "$string" }
-				}
-
 				get("/admin/plugins") {
 					call.respondHtml(HttpStatusCode.OK) {
 						head {
 							title { +"Plugins" }
 							styleLink("/admin/assets/index.css")
+							script { src = "/admin/assets/index.js" }
 						}
 						body {
 							adminHeader("Plugins")
 							adminMain {
-								form {
-									input {
-										type = InputType.text
-										id = "action"
-										value = "reload"
-										hidden = true
-									}
-									input {
-										type = InputType.submit
-										value = "Reload"
-									}
+								button {
+									classes = setOf("btn")
+									onClick = "reloadPlugins()"
+									+"Reload Plugins"
 								}
 								div {
 									this.classes = setOf("ctn")

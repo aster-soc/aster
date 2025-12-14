@@ -15,6 +15,7 @@ import kotlinx.html.h2
 import kotlinx.html.head
 import kotlinx.html.li
 import kotlinx.html.p
+import kotlinx.html.script
 import kotlinx.html.span
 import kotlinx.html.styleLink
 import kotlinx.html.title
@@ -89,7 +90,7 @@ internal object AdminQueueRoutes {
 						head {
 							title { +"Queues" }
 							styleLink("/admin/assets/index.css")
-							// some autoreload script
+							script { src = "/admin/assets/index.js" }
 						}
 						body {
 							adminHeader("Queues")

@@ -1,11 +1,11 @@
 package site.remlit.aster.registry
 
-import kotlinx.coroutines.runBlocking
 import org.jetbrains.annotations.ApiStatus
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import site.remlit.aster.model.plugin.AsterPlugin
 import site.remlit.aster.model.plugin.PluginManifest
+import site.remlit.aster.service.PluginService
 
 object PluginRegistry {
 	private val logger: Logger = LoggerFactory.getLogger(PluginRegistry::class.java)
@@ -56,13 +56,20 @@ object PluginRegistry {
 	 * */
 	@ApiStatus.Internal
 	fun disableAll() {
-		runBlocking {
-			try {
-				for (plugin in plugins) {
-					disablePlugin(plugin.second)
-				}
-			} catch (_: Exception) {
+		try {
+			for (plugin in plugins) {
+				disablePlugin(plugin.second)
 			}
+		} catch (_: Exception) {
 		}
+	}
+
+	/**
+	 * Disables all currently active plugins
+	 * */
+	@ApiStatus.Internal
+	fun reloadAll() {
+		disableAll()
+		PluginService.initialize()
 	}
 }

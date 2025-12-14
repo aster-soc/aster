@@ -1,8 +1,8 @@
 <h1>
     <picture>
-        <source media="(prefers-color-scheme: dark)" srcset="frontend/packages/app/public/wmark-dark.svg">
-        <source media="(prefers-color-scheme: light)" srcset="frontend/packages/app/public/wmark-light.svg">
-        <img height="50" alt="A slightly tilted star with a subtle pink to purple gradient, with the text Aster next to it" src="frontend/packages/app/public/wmark-light.svg">
+        <source media="(prefers-color-scheme: dark)" srcset="src/main/resources/uikit/wmark-dark.svg">
+        <source media="(prefers-color-scheme: light)" srcset="src/main/resources/uikit/wmark-light.svg">
+        <img height="50" alt="A slightly tilted star with a subtle pink to purple gradient, with the text Aster next to it" src="src/main/resources/uikit/wmark-light.svg">
     </picture>
 </h1>
 
@@ -59,6 +59,10 @@ Aster uses a markdown format used by Misskey called MFM. In the `mfmkt` module, 
 and JS. It's used for the frontend and backend to handle MFM and scanning user submitted content.
 
 The last module isn't an "official" module, it's `frontend`, the directory that contains the React frontend project.
+
+Aster has two frontends, the server side rendered admin panel and the user facing React frontend. They use a shared UI
+kit that is under the `main` module's resources as "uikit." It's very bare bones, but reduces a lot of variables and
+makes essential assets not dependent on the React frontend being enabled.
 
 ### Development Environment
 

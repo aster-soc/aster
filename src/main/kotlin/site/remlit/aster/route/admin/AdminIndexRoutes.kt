@@ -8,6 +8,7 @@ import kotlinx.html.body
 import kotlinx.html.classes
 import kotlinx.html.h2
 import kotlinx.html.head
+import kotlinx.html.script
 import kotlinx.html.styleLink
 import kotlinx.html.table
 import kotlinx.html.td
@@ -46,7 +47,7 @@ internal object AdminIndexRoutes {
 						head {
 							title { +"Admin Panel" }
 							styleLink("/admin/assets/index.css")
-							// some autoreload script
+							script { src = "/admin/assets/index.js" }
 						}
 						body {
 							adminHeader("Overview")
