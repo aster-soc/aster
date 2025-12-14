@@ -4,17 +4,11 @@ import io.ktor.http.*
 import io.ktor.server.html.*
 import io.ktor.server.routing.*
 import kotlinx.html.a
-import kotlinx.html.body
-import kotlinx.html.button
 import kotlinx.html.classes
-import kotlinx.html.head
 import kotlinx.html.p
-import kotlinx.html.script
-import kotlinx.html.styleLink
 import kotlinx.html.table
 import kotlinx.html.td
 import kotlinx.html.th
-import kotlinx.html.title
 import kotlinx.html.tr
 import org.jetbrains.exposed.v1.core.neq
 import site.remlit.aster.common.model.type.RoleType
@@ -23,9 +17,9 @@ import site.remlit.aster.model.Configuration
 import site.remlit.aster.registry.RouteRegistry
 import site.remlit.aster.service.ReportService
 import site.remlit.aster.util.authentication
-import site.remlit.aster.util.webcomponent.adminHeader
+import site.remlit.aster.util.webcomponent.adminButton
 import site.remlit.aster.util.webcomponent.adminListNav
-import site.remlit.aster.util.webcomponent.adminMain
+import site.remlit.aster.util.webcomponent.adminPage
 
 object AdminReportRoutes {
 	fun register() =
@@ -49,69 +43,61 @@ object AdminReportRoutes {
 					)
 
 					call.respondHtml(HttpStatusCode.OK) {
-						head {
-							title { +"Reports" }
-							styleLink("/admin/assets/index.css")
-							script { src = "/admin/assets/index.js" }
-						}
-						body {
-							adminHeader("Reports")
-							adminMain {
-								table {
+						adminPage(call.route.path) {
+							table {
+								tr {
+									classes = setOf("header")
+									th { +"Sender" }
+									th { +"Resolved" }
+									th { +"Comment" }
+									th { +"Target" }
+									th { +"Actions" }
+								}
+								for (report in reports) {
+									val isResolved = report.resolvedBy != null
+
 									tr {
-										classes = setOf("header")
-										th { +"Sender" }
-										th { +"Resolved" }
-										th { +"Comment" }
-										th { +"Target" }
-										th { +"Actions" }
-									}
-									for (report in reports) {
-										val isResolved = report.resolvedBy != null
+										td {
+											+report.sender.renderHandle()
+										}
+										td {
+											if (isResolved) +"Yes" else +"No"
+										}
+										td {
+											+(report.comment ?: "")
+										}
+										td {
+											if (report.note != null) {
+												a {
+													href = "/note/${report.note!!.id}"
+													+"Note by ${report.note!!.user.renderHandle()}"
+												}
+											}
 
-										tr {
-											td {
-												+report.sender.renderHandle()
-											}
-											td {
-												if (isResolved) +"Yes" else +"No"
-											}
-											td {
-												+(report.comment ?: "")
-											}
-											td {
-												if (report.note != null) {
-													a {
-														href = "/note/${report.note!!.id}"
-														+"Note by ${report.note!!.user.renderHandle()}"
-													}
-												}
-
-												if (report.user != null) {
-													a {
-														href = "/${report.user!!.renderHandle()}"
-														+"User ${report.user!!.renderHandle()}"
-													}
+											if (report.user != null) {
+												a {
+													href = "/${report.user!!.renderHandle()}"
+													+"User ${report.user!!.renderHandle()}"
 												}
 											}
-											td {
-												if (!isResolved) {
-													button {
-														+"Resolve"
-													}
+										}
+										td {
+											if (!isResolved) {
+												adminButton({ "" }) {
+													+"Resolve"
 												}
-												button {
-													+"Delete"
-												}
+											}
+											adminButton({ "" }) {
+												+"Delete"
 											}
 										}
 									}
 								}
-								p {
-									+"${reports.size} reports shown, $totalReports total."
-								}
-								adminListNav(offset, take)
 							}
+							p {
+								+"${reports.size} reports shown, $totalReports total."
+							}
+							adminListNav(offset, take)
 						}
 					}
 				}

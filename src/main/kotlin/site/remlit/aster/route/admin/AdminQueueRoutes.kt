@@ -6,19 +6,14 @@ import io.ktor.server.routing.*
 import io.ktor.server.util.*
 import kotlinx.html.a
 import kotlinx.html.b
-import kotlinx.html.body
 import kotlinx.html.classes
 import kotlinx.html.code
 import kotlinx.html.div
 import kotlinx.html.h1
 import kotlinx.html.h2
-import kotlinx.html.head
 import kotlinx.html.li
 import kotlinx.html.p
-import kotlinx.html.script
 import kotlinx.html.span
-import kotlinx.html.styleLink
-import kotlinx.html.title
 import kotlinx.html.ul
 import org.jetbrains.exposed.v1.core.eq
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
@@ -33,8 +28,7 @@ import site.remlit.aster.registry.RouteRegistry
 import site.remlit.aster.service.QueueService
 import site.remlit.aster.util.authentication
 import site.remlit.aster.util.model.fromEntity
-import site.remlit.aster.util.webcomponent.adminHeader
-import site.remlit.aster.util.webcomponent.adminMain
+import site.remlit.aster.util.webcomponent.adminPage
 
 internal object AdminQueueRoutes {
 	fun register() =
@@ -87,114 +81,106 @@ internal object AdminQueueRoutes {
 					}
 
 					call.respondHtml(HttpStatusCode.OK) {
-						head {
-							title { +"Queues" }
-							styleLink("/admin/assets/index.css")
-							script { src = "/admin/assets/index.js" }
-						}
-						body {
-							adminHeader("Queues")
-							adminMain {
-								h2 { +"Inbox" }
-								transaction {
+						adminPage(call.route.path) {
+							h2 { +"Inbox" }
+							transaction {
+								div {
+									this.classes = setOf("ctn")
 									div {
-										this.classes = setOf("ctn")
-										div {
-											this.classes = setOf("ctn", "column")
-											span {
-												+"${inboxPending.size} jobs pending"
-											}
-											ul {
-												for (job in inboxPending) {
-													li {
-														a {
-															href = "/admin/queues/inbox/job/${job.id}"
-															+"${job.id} ${job.sender?.host}"
-														}
-													}
-												}
-											}
+										this.classes = setOf("ctn", "column")
+										span {
+											+"${inboxPending.size} jobs pending"
 										}
-										div {
-											this.classes = setOf("ctn", "column")
-											span {
-												+"${inboxCompleted.size} jobs completed"
-											}
-											ul {
-												for (job in inboxCompleted) {
-													li {
-														a {
-															href = "/admin/queues/inbox/job/${job.id}"
-															+"${job.id} ${job.sender?.host}"
-														}
-													}
-												}
-											}
-										}
-										div {
-											this.classes = setOf("ctn", "column")
-											span {
-												+"${inboxFailed.size} jobs failed"
-											}
-											ul {
-												for (job in inboxFailed) {
-													li {
-														a {
-															href = "/admin/queues/inbox/job/${job.id}"
-															+"${job.id} ${job.sender?.host}"
-														}
+										ul {
+											for (job in inboxPending) {
+												li {
+													a {
+														href = "/admin/queues/inbox/job/${job.id}"
+														+"${job.id} ${job.sender?.host}"
 													}
 												}
 											}
 										}
 									}
-									h2 { +"Deliver" }
 									div {
-										this.classes = setOf("ctn")
-										div {
-											this.classes = setOf("ctn", "column")
-											span {
-												+"${deliverPending.size} jobs pending"
-											}
-											ul {
-												for (job in deliverPending) {
-													li {
-														a {
-															href = "/admin/queues/deliver/job/${job.id}"
-															+"${job.id} ${job.inbox}"
-														}
+										this.classes = setOf("ctn", "column")
+										span {
+											+"${inboxCompleted.size} jobs completed"
+										}
+										ul {
+											for (job in inboxCompleted) {
+												li {
+													a {
+														href = "/admin/queues/inbox/job/${job.id}"
+														+"${job.id} ${job.sender?.host}"
 													}
 												}
 											}
 										}
-										div {
-											this.classes = setOf("ctn", "column")
-											span {
-												+"${deliverCompleted.size} jobs completed"
-											}
-											ul {
-												for (job in deliverCompleted) {
-													li {
-														a {
-															href = "/admin/queues/deliver/job/${job.id}"
-															+"${job.id} ${job.inbox}"
-														}
+									}
+									div {
+										this.classes = setOf("ctn", "column")
+										span {
+											+"${inboxFailed.size} jobs failed"
+										}
+										ul {
+											for (job in inboxFailed) {
+												li {
+													a {
+														href = "/admin/queues/inbox/job/${job.id}"
+														+"${job.id} ${job.sender?.host}"
 													}
 												}
 											}
 										}
-										div {
-											this.classes = setOf("ctn", "column")
-											span {
-												+"${deliverFailed.size} jobs failed"
+									}
+								}
+								h2 { +"Deliver" }
+								div {
+									this.classes = setOf("ctn")
+									div {
+										this.classes = setOf("ctn", "column")
+										span {
+											+"${deliverPending.size} jobs pending"
+										}
+										ul {
+											for (job in deliverPending) {
+												li {
+													a {
+														href = "/admin/queues/deliver/job/${job.id}"
+														+"${job.id} ${job.inbox}"
+													}
+												}
 											}
-											ul {
-												for (job in deliverFailed) {
-													li {
-														a {
-															href = "/admin/queues/deliver/job/${job.id}"
-															+"${job.id} ${job.inbox}"
-														}
+										}
+									}
+									div {
+										this.classes = setOf("ctn", "column")
+										span {
+											+"${deliverCompleted.size} jobs completed"
+										}
+										ul {
+											for (job in deliverCompleted) {
+												li {
+													a {
+														href = "/admin/queues/deliver/job/${job.id}"
+														+"${job.id} ${job.inbox}"
+													}
+												}
+											}
+										}
+									}
+									div {
+										this.classes = setOf("ctn", "column")
+										span {
+											+"${deliverFailed.size} jobs failed"
+										}
+										ul {
+											for (job in deliverFailed) {
+												li {
+													a {
+														href = "/admin/queues/deliver/job/${job.id}"
+														+"${job.id} ${job.inbox}"
 													}
 												}
 											}
@@ -218,39 +204,32 @@ internal object AdminQueueRoutes {
 							if (job == null) throw IllegalArgumentException("Job not found")
 
 							call.respondHtml {
-								head {
-									title { +"Job $id" }
-									styleLink("/admin/assets/index.css")
-								}
-								body {
-									adminHeader("")
-									adminMain {
-										transaction {
-											h1 { +id }
+								adminPage(call.route.path) {
+									transaction {
+										h1 { +id }
 
-											if (job.sender != null) {
-												b { +"Sender" }
-												p { +"${User.fromEntity(job.sender!!)}" }
-											}
-
-											b { +"Status" }
-											p { +"${job.status}" }
-
-											b { +"Content" }
-											p { code { +String(job.content.bytes) } }
-
-											b { +"Created at" }
-											p { +"${job.createdAt}" }
-
-											b { +"Retry at" }
-											p { +"${job.retryAt}" }
-
-											b { +"Retries" }
-											p { +"${job.retries}" }
-
-											b { +"Stack trace" }
-											p { code { +"${job.stacktrace}" } }
+										if (job.sender != null) {
+											b { +"Sender" }
+											p { +"${User.fromEntity(job.sender!!)}" }
 										}
+
+										b { +"Status" }
+										p { +"${job.status}" }
+
+										b { +"Content" }
+										p { code { +String(job.content.bytes) } }
+
+										b { +"Created at" }
+										p { +"${job.createdAt}" }
+
+										b { +"Retry at" }
+										p { +"${job.retryAt}" }
+
+										b { +"Retries" }
+										p { +"${job.retries}" }
+
+										b { +"Stack trace" }
+										p { code { +"${job.stacktrace}" } }
 									}
 								}
 							}
@@ -263,42 +242,35 @@ internal object AdminQueueRoutes {
 							if (job == null) throw IllegalArgumentException("Job not found")
 
 							call.respondHtml {
-								head {
-									title { +"Job $id" }
-									styleLink("/admin/assets/index.css")
-								}
-								body {
-									adminHeader("")
-									adminMain {
-										transaction {
-											h1 { +id }
+								adminPage(call.route.path) {
+									transaction {
+										h1 { +id }
 
-											if (job.sender != null) {
-												b { +"Sender" }
-												p { +"${User.fromEntity(job.sender!!)}" }
-											}
-
-											b { +"Inbox" }
-											p { +job.inbox }
-
-											b { +"Status" }
-											p { +"${job.status}" }
-
-											b { +"Content" }
-											p { code { +String(job.content.bytes) } }
-
-											b { +"Created at" }
-											p { +"${job.createdAt}" }
-
-											b { +"Retry at" }
-											p { +"${job.retryAt}" }
-
-											b { +"Retries" }
-											p { +"${job.retries}" }
-
-											b { +"Stack trace" }
-											p { code { +"${job.stacktrace}" } }
+										if (job.sender != null) {
+											b { +"Sender" }
+											p { +"${User.fromEntity(job.sender!!)}" }
 										}
+
+										b { +"Inbox" }
+										p { +job.inbox }
+
+										b { +"Status" }
+										p { +"${job.status}" }
+
+										b { +"Content" }
+										p { code { +String(job.content.bytes) } }
+
+										b { +"Created at" }
+										p { +"${job.createdAt}" }
+
+										b { +"Retry at" }
+										p { +"${job.retryAt}" }
+
+										b { +"Retries" }
+										p { +"${job.retries}" }
+
+										b { +"Stack trace" }
+										p { code { +"${job.stacktrace}" } }
 									}
 								}
 							}
