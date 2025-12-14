@@ -94,4 +94,32 @@ object PolicyService : Service {
 
 		return reducedHosts
 	}
+
+	/**
+	 * Create a new federation policy
+	 *
+	 * @param type Type of policy
+	 * @param host Host policy is applied to
+	 * @param content Content, if applicable
+	 *
+	 * @return Created policy
+	 * */
+	@JvmStatic
+	fun create(
+		type: PolicyType,
+		host: String,
+		content: String? = null,
+	): PolicyEntity {
+		val id = IdentifierService.generate()
+
+		transaction {
+			PolicyEntity.new(id) {
+				this.type = type
+				this.host = host
+				this.content = content
+			}
+		}
+
+		return getById(id)!!
+	}
 }
