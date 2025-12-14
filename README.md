@@ -1,8 +1,8 @@
 <h1>
     <picture>
-        <source media="(prefers-color-scheme: dark)" srcset="src/main/resources/uikit/wmark-dark.svg">
-        <source media="(prefers-color-scheme: light)" srcset="src/main/resources/uikit/wmark-light.svg">
-        <img height="50" alt="A slightly tilted star with a subtle pink to purple gradient, with the text Aster next to it" src="src/main/resources/uikit/wmark-light.svg">
+        <source media="(prefers-color-scheme: dark)" srcset="src/main/resources/uikit/branding/wmark-dark.svg">
+        <source media="(prefers-color-scheme: light)" srcset="src/main/resources/uikit/branding/wmark-light.svg">
+        <img height="50" alt="Aster" src="src/main/resources/uikit/branding/wmark-light.svg">
     </picture>
 </h1>
 
