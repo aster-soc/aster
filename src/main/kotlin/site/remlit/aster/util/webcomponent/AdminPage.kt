@@ -31,19 +31,19 @@ fun HTML.adminPage(path: String, content: FlowContent.() -> Unit) {
 					div {
 						classes = setOf("ctn")
 
-						adminButton("/admin", path == "/admin") { +"Overview" }
-						adminButton("/admin/users", path == "/admin/users") { +"Users" }
-						adminButton("/admin/instances", path == "/admin/instances") { +"Instances" }
+						adminButton("/admin", path == "/admin", true) { +"Overview" }
+						adminButton("/admin/users", path == "/admin/users", true) { +"Users" }
+						adminButton("/admin/instances", path == "/admin/instances", true) { +"Instances" }
 
 						if (Configuration.registrations == InstanceRegistrationsType.Invite)
-							adminButton("/admin/invites", path == "/admin/invites") { +"Invites" }
+							adminButton("/admin/invites", path == "/admin/invites", true) { +"Invites" }
 
-						adminButton("/admin/queues", path == "/admin/queues") { +"Queues" }
-						adminButton("/admin/reports", path == "/admin/reports") { +"Reports" }
-						adminButton("/admin/plugins", path == "/admin/plugins") { +"Plugins" }
+						adminButton("/admin/queues", path == "/admin/queues", true) { +"Queues" }
+						adminButton("/admin/reports", path == "/admin/reports", true) { +"Reports" }
+						adminButton("/admin/plugins", path == "/admin/plugins", true) { +"Plugins" }
 
 						if (Configuration.debug)
-							adminButton("/admin/debug", path == "/admin/debug") { +"Debug" }
+							adminButton("/admin/debug", path == "/admin/debug", true) { +"Debug" }
 					}
 				}
 				div("pageWrapper full") {

@@ -1,4 +1,9 @@
 @import "font.css";
+@import "layout.css";
+
+/* Elements */
+@import "button.css";
+@import "input.css";
 
 :root {
     --font: 'Inter', 'Adwaita Sans', 'Arial', 'Helvetica', sans-serif;
@@ -111,16 +116,6 @@ body {
     font-size: var(--fs-md);
 }
 
-#root {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-
-    height: 100vh;
-    width: 100vw;
-    box-sizing: border-box;
-}
-
 /* Elements */
 
 a {
@@ -131,10 +126,6 @@ a {
     &:hover {
         text-decoration-color: var(--ac-1);
     }
-}
-
-.button {
-    cursor: pointer;
 }
 
 .button,
@@ -213,82 +204,5 @@ button.dismiss {
     &:disabled {
         cursor: not-allowed;
         opacity: 75%;
-    }
-}
-
-/* Layout */
-
-.pageHeader {
-    display: flex;
-    align-items: center;
-
-    height: 50px;
-    width: 100%;
-    box-sizing: border-box;
-
-    padding: 12px 16px;
-    gap: 8px;
-
-    .icon {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-
-        color: var(--tx-1);
-    }
-
-    .title {
-        color: var(--tx-1);
-        font-weight: 500;
-
-        width: 100%;
-        box-sizing: border-box;
-    }
-
-    .children {
-        display: flex;
-        align-items: center;
-        justify-content: flex-end;
-
-        flex-grow: 1;
-
-        color: var(--tx-1);
-    }
-}
-
-.pageWrapper {
-    display: flex;
-    flex-direction: column;
-
-    width: 100vw;
-    height: calc(100vh - 50px);
-    box-sizing: border-box;
-
-    max-width: 725px;
-
-    background-color: var(--bg-2);
-    border-radius: var(--br-lg) var(--br-lg) 0 0;
-
-    overflow-x: hidden;
-    overflow-y: scroll;
-
-    scrollbar-width: thin;
-    scrollbar-color: var(--bg-3) var(--bg-2);
-
-    &.center {
-        justify-content: center;
-        align-items: center;
-    }
-
-    &.none {
-        padding: 0;
-    }
-
-    &.timeline {
-        padding: 8px;
-    }
-
-    &.full {
-        padding: 12px;
     }
 }

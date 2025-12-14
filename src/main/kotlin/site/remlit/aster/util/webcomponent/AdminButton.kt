@@ -9,8 +9,9 @@ import kotlinx.html.onClick
 fun FlowContent.adminButton(
 	to: String,
 	selected: Boolean = false,
+	nav: Boolean = false,
 	content: () -> Unit,
-) = adminButton(content, to = to, selected = selected)
+) = adminButton(content, to = to, selected = selected, nav = nav)
 
 fun FlowContent.adminButton(
 	onClick: () -> String,
@@ -21,11 +22,13 @@ fun FlowContent.adminButton(
 	content: () -> Unit,
 	to: String? = null,
 	onClick: String? = null,
-	selected: Boolean = false
+	selected: Boolean = false,
+	nav: Boolean = false
 ) {
 	val classes = mutableSetOf("button")
 
-	if (selected) classes.add("selected")
+	if (selected) classes.add("primary")
+	if (nav) classes.add("nav")
 
 	if (to != null) {
 		a {

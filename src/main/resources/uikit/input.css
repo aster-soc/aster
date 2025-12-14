@@ -1,0 +1,39 @@
+
+.input {
+    width: 225px;
+
+    &.wide {
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    ::placeholder {
+        color: var(--tx-3);
+    }
+}
+
+.inputLabel {
+    display: block;
+
+    color: var(--tx-2);
+    font-size: var(--fs-sm);
+
+    margin: 4px 0;
+}
+
+.inputCtn {
+    &.checkbox {
+        display: flex;
+        align-items: center;
+        text-align: center;
+        gap: 8px;
+
+        .inputLabel {
+            font-size: var(--fs-md);
+        }
+
+        .input {
+            width: auto;
+        }
+    }
+}
