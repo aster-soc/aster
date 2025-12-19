@@ -19,6 +19,7 @@ import site.remlit.aster.db.table.NoteTable
 import site.remlit.aster.db.table.NotificationTable
 import site.remlit.aster.db.table.RelationshipTable
 import site.remlit.aster.db.table.UserTable
+import site.remlit.aster.event.notification.NotificationCreateEvent
 import site.remlit.aster.model.Configuration
 import site.remlit.aster.model.Service
 import site.remlit.aster.util.model.fromEntities
@@ -142,7 +143,11 @@ object NotificationService : Service {
 					this.relationship = relationship
 			}
 		}
-		return getById(id)
+
+        val notification = getById(id)
+        if (notification != null) NotificationCreateEvent(notification).call()
+
+		return notification
 	}
 
 	/**
