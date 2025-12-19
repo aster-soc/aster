@@ -3,11 +3,14 @@ package site.remlit.aster.service
 import org.jetbrains.exposed.v1.core.Op
 import org.jetbrains.exposed.v1.core.eq
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
+import site.remlit.aster.common.model.Policy
 import site.remlit.aster.common.model.type.PolicyType
 import site.remlit.aster.db.entity.PolicyEntity
 import site.remlit.aster.db.table.PolicyTable
+import site.remlit.aster.event.policy.PolicyCreateEvent
 import site.remlit.aster.model.Configuration
 import site.remlit.aster.model.Service
+import site.remlit.aster.util.model.fromEntity
 
 /**
  * Service for managing federation policies.
@@ -120,6 +123,9 @@ object PolicyService : Service {
 			}
 		}
 
-		return getById(id)!!
+        val policy = getById(id)!!
+        PolicyCreateEvent(Policy.fromEntity(policy)).call()
+
+		return policy
 	}
 }
