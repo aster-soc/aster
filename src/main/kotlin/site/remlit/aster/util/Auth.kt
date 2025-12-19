@@ -59,19 +59,20 @@ private fun internalAuth(
 		val authCookie = request.cookies["AsAuthorization"]
 		val token = authHeader?.replace("Bearer ", "") ?: authCookie
 
-		val unauthenticated = ApiException(
-			HttpStatusCode.Unauthorized,
-			"Authentication failed"
-		)
-
 		val authEntity = if (optional && token != null) {
 			AuthService.getByToken(
 				token
 			)
 		} else if (!optional) {
 			AuthService.getByToken(
-				token ?: throw unauthenticated
-			) ?: throw unauthenticated
+				token ?: throw ApiException(
+                    HttpStatusCode.Unauthorized,
+                    "Authentication failed"
+                )
+			) ?: throw ApiException(
+                HttpStatusCode.Unauthorized,
+                "Authentication failed"
+            )
 		} else {
 			null
 		}
@@ -93,10 +94,16 @@ private fun internalAuth(
 			if (requiredRole != null) {
 				when (requiredRole) {
 					RoleType.Mod -> if (highestRole != RoleType.Admin && highestRole != RoleType.Mod)
-						throw unauthenticated
+						throw ApiException(
+                            HttpStatusCode.Unauthorized,
+                            "Authentication failed"
+                        )
 
 					RoleType.Admin -> if (highestRole != RoleType.Admin)
-						throw unauthenticated
+						throw ApiException(
+                            HttpStatusCode.Unauthorized,
+                            "Authentication failed"
+                        )
 
 					else -> {}
 				}
