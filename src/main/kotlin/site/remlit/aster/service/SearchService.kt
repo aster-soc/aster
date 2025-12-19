@@ -11,6 +11,7 @@ import site.remlit.aster.common.model.User
 import site.remlit.aster.common.model.UserSearchResult
 import site.remlit.aster.db.table.NoteTable
 import site.remlit.aster.db.table.UserTable
+import site.remlit.aster.model.Service
 import site.remlit.aster.util.model.fromEntity
 
 /**
@@ -18,7 +19,7 @@ import site.remlit.aster.util.model.fromEntity
  *
  * @since 2025.11.4.0-SNAPSHOT
  * */
-object SearchService {
+object SearchService : Service {
 	/**
 	 * Query to search for notes and users
 	 *

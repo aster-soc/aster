@@ -57,7 +57,7 @@ import site.remlit.mfmkt.model.MfmMention
  * @since 2025.5.1.0-SNAPSHOT
  * */
 object NoteService : Service {
-	private val logger: Logger = LoggerFactory.getLogger(PluginService::class.java)
+	private val logger: Logger = LoggerFactory.getLogger(NoteService::class.java)
 
 	/**
 	 * Reference the "replyingTo" note on a note.
