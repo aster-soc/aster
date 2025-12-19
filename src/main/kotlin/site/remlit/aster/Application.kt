@@ -33,7 +33,6 @@ import site.remlit.aster.registry.PluginRegistry
 import site.remlit.aster.service.CommandLineService
 import site.remlit.aster.service.IdentifierService
 import site.remlit.aster.service.MigrationService
-import site.remlit.aster.service.PluginService
 import site.remlit.aster.service.SetupService
 import site.remlit.aster.util.jsonConfig
 import site.remlit.aster.util.setJsonConfig
@@ -75,7 +74,7 @@ fun Application.module() {
 
 	ApObjectTypeRegistry.registerInternal()
 
-	PluginService.initialize()
+    PluginRegistry.initialize()
 
 	setJsonConfig()
 
