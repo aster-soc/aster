@@ -47,32 +47,6 @@ kotlin {
 	}
 }
 
-// docs
-
-val commonSourcesJar by tasks.registering(Jar::class) {
-	archiveBaseName = project.name
-	archiveClassifier = "sources"
-}
-
-val commonDokkaHtmlZip by tasks.registering(Zip::class) {
-	archiveBaseName = project.name
-	archiveClassifier = "dokka"
-	dependsOn(tasks.dokkaHtml)
-	from(tasks.dokkaHtml.map { it.outputDirectory })
-}
-
-artifacts {
-	add("archives", commonSourcesJar)
-	add("archives", commonDokkaHtmlZip)
-}
-
-// publishing
-
-tasks.publish {
-	dependsOn("commonSourcesJar")
-	dependsOn("commonDokkaHtmlZip")
-}
-
 publishing {
 	repositories {
 		maven {
@@ -93,8 +67,7 @@ publishing {
 			artifactId = "common"
 			version = project.version.toString()
 
-			artifact(commonSourcesJar)
-			artifact(commonDokkaHtmlZip)
+			//artifact()
 
 			pom {
 				name = "common"

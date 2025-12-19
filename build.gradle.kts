@@ -10,6 +10,7 @@ plugins {
 	id("io.ktor.plugin")
 	id("com.gradleup.shadow")
 	id("org.jetbrains.dokka")
+	id("org.jetbrains.dokka-javadoc")
 
 	id("io.gitlab.arturbosch.detekt")
 }
@@ -88,6 +89,8 @@ dependencies {
 
 	api(project(":common"))
 	api(project(":mfmkt"))
+
+	dokkaHtmlPlugin("org.jetbrains.dokka:versioning-plugin:2.1.0")
 }
 
 kotlin {
@@ -126,34 +129,6 @@ detekt {
 
 if ("detekt" !in gradle.startParameter.taskNames) {
 	tasks.detekt { enabled = false }
-}
-
-// docs
-
-val sourcesJar by tasks.registering(Jar::class) {
-	archiveBaseName = project.name
-	archiveClassifier = "sources"
-	mustRunAfter("copyFrontend")
-}
-
-val dokkaJavadocZip by tasks.registering(Zip::class) {
-	archiveBaseName = project.name
-	archiveClassifier = "javadoc"
-	dependsOn(tasks.dokkaJavadoc)
-	from(tasks.dokkaJavadoc.flatMap { it.outputDirectory })
-}
-
-val dokkaHtmlZip by tasks.registering(Zip::class) {
-	archiveBaseName = project.name
-	archiveClassifier = "dokka"
-	dependsOn(tasks.dokkaHtml)
-	from(tasks.dokkaHtml.map { it.outputDirectory })
-}
-
-artifacts {
-	add("archives", sourcesJar)
-	add("archives", dokkaJavadocZip)
-	add("archives", dokkaHtmlZip)
 }
 
 // building
@@ -218,9 +193,9 @@ tasks.build {
 
 tasks.publish {
 	dependsOn(":common:publish")
-	dependsOn("sourcesJar")
-	dependsOn("dokkaHtml")
-	dependsOn("javadoc")
+	dependsOn(":mfmkt:publish")
+
+	dependsOn(":dokkaGenerate")
 }
 
 publishing {
@@ -245,9 +220,7 @@ publishing {
 
 			from(components["java"])
 
-			artifact(sourcesJar)
-			artifact(dokkaJavadocZip)
-			artifact(dokkaHtmlZip)
+			//artifact()
 
 			pom {
 				name = "aster"

@@ -44,32 +44,6 @@ kotlin {
 	}
 }
 
-// docs
-
-val mfmktSourcesJar by tasks.registering(Jar::class) {
-	archiveBaseName = project.name
-	archiveClassifier = "sources"
-}
-
-val mfmktDokkaHtmlZip by tasks.registering(Zip::class) {
-	archiveBaseName = project.name
-	archiveClassifier = "dokka"
-	dependsOn(tasks.dokkaHtml)
-	from(tasks.dokkaHtml.map { it.outputDirectory })
-}
-
-artifacts {
-	add("archives", mfmktSourcesJar)
-	add("archives", mfmktDokkaHtmlZip)
-}
-
-// publishing
-
-tasks.publish {
-	dependsOn("mfmktSourcesJar")
-	dependsOn("mfmktDokkaHtmlZip")
-}
-
 publishing {
 	repositories {
 		maven {
@@ -90,8 +64,7 @@ publishing {
 			artifactId = "mfmkt"
 			version = project.version.toString()
 
-			artifact(mfmktSourcesJar)
-			artifact(mfmktDokkaHtmlZip)
+			//artifact()
 
 			pom {
 				name = "mfmkt"
