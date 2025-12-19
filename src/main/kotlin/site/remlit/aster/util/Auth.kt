@@ -10,6 +10,7 @@ import org.jetbrains.annotations.ApiStatus
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 import site.remlit.aster.common.model.type.RoleType
 import site.remlit.aster.db.entity.UserEntity
+import site.remlit.aster.event.auth.AuthTokenUseEvent
 import site.remlit.aster.model.ApiException
 import site.remlit.aster.service.AuthService
 import site.remlit.aster.service.RoleService
@@ -109,6 +110,8 @@ private fun internalAuth(
 				}
 			}
 		}
+
+        if (authEntity != null) AuthTokenUseEvent(authEntity).call()
 	}
 }
 

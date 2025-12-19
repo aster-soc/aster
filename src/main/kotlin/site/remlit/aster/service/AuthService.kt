@@ -7,6 +7,7 @@ import site.remlit.aster.db.entity.AuthEntity
 import site.remlit.aster.db.entity.UserEntity
 import site.remlit.aster.db.table.AuthTable
 import site.remlit.aster.db.table.UserTable
+import site.remlit.aster.event.auth.AuthTokenCreateEvent
 import site.remlit.aster.model.Service
 
 /**
@@ -81,6 +82,8 @@ object AuthService : Service {
 				this.user = user
 			}
 		}
+
+        AuthTokenCreateEvent(getByToken(generatedToken)!!).call()
 
 		return generatedToken
 	}
