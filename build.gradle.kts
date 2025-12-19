@@ -1,4 +1,5 @@
 import io.ktor.plugin.*
+import org.gradle.internal.extensions.stdlib.capitalized
 
 plugins {
 	application
@@ -89,8 +90,6 @@ dependencies {
 
 	api(project(":common"))
 	api(project(":mfmkt"))
-
-	dokkaHtmlPlugin("org.jetbrains.dokka:versioning-plugin:2.1.0")
 }
 
 kotlin {
@@ -165,8 +164,8 @@ tasks.processResources {
 	val group = project.provider { project.group.toString() }.get()
 	val version = project.provider { project.version.toString() }.get()
 
-	val repo = "https://github.com/aster-soc/aster"
-	val bugTracker = "$repo/issues"
+	val repo = gradle.extra.get("repository") as String
+	val bugTracker = gradle.extra.get("issueTracker") as String
 
 	filesMatching("application.yaml") {
 		filter { line ->
@@ -187,6 +186,14 @@ tasks.shadowJar {
 
 tasks.build {
 	dependsOn("shadowJar")
+}
+
+// docs
+
+dokka {
+	dokkaPublications.html {
+		moduleName.set(project.name.capitalized())
+	}
 }
 
 // publishing

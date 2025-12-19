@@ -47,6 +47,8 @@ kotlin {
 	}
 }
 
+// publishing
+
 publishing {
 	repositories {
 		maven {
@@ -66,8 +68,6 @@ publishing {
 			groupId = "site.remlit.aster"
 			artifactId = "common"
 			version = project.version.toString()
-
-			//artifact()
 
 			pom {
 				name = "common"

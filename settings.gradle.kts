@@ -1,5 +1,7 @@
 rootProject.name = "aster"
 gradle.extra.set("rootVersion", "2025.12.2.2-SNAPSHOT")
+gradle.extra.set("repository", "https://github.com/aster-soc/aster")
+gradle.extra.set("issueTracker", "https://youtrack.remlit.site/projects/AS/issues")
 
 pluginManagement {
 	plugins {
