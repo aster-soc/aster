@@ -8,4 +8,4 @@ import site.remlit.aster.model.event.Event
  *
  * @since 2025.12.2.2-SNAPSHOT
  * */
-open class NotificationEvent(notification: Notification) : Event
+open class NotificationEvent(val notification: Notification) : Event

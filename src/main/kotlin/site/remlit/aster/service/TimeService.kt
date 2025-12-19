@@ -15,6 +15,7 @@ import kotlin.time.ExperimentalTime
  *
  * @since 2025.5.1.0-SNAPSHOT
  * */
+@Suppress("MagicNumber")
 @OptIn(ExperimentalTime::class)
 object TimeService : Service {
 	/**

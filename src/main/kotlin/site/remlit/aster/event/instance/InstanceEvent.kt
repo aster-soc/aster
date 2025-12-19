@@ -8,4 +8,4 @@ import site.remlit.aster.model.event.Event
  *
  * @since 2025.12.2.2-SNAPSHOT
  * */
-open class InstanceEvent(instance: Instance) : Event
+open class InstanceEvent(val instance: Instance) : Event
