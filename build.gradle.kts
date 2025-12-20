@@ -80,6 +80,7 @@ dependencies {
 	implementation("at.favre.lib:bcrypt:0.10.2")
 	implementation("com.googlecode.owasp-java-html-sanitizer:owasp-java-html-sanitizer:20240325.1")
 	implementation("org.jetbrains.kotlin:kotlin-reflect:2.2.21")
+	implementation("site.remlit:effekt:0.1.1")
 
 	compileOnly("org.jetbrains:annotations:26.0.2-1")
 

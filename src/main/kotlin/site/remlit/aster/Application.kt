@@ -28,7 +28,6 @@ import site.remlit.aster.model.Configuration
 import site.remlit.aster.model.ap.ApValidationException
 import site.remlit.aster.model.ap.ApValidationExceptionType
 import site.remlit.aster.registry.ApObjectTypeRegistry
-import site.remlit.aster.registry.EventRegistry
 import site.remlit.aster.registry.PluginRegistry
 import site.remlit.aster.service.CommandLineService
 import site.remlit.aster.service.IdentifierService
@@ -69,12 +68,11 @@ fun Application.module() {
 		this.log.info("Shutting down...")
 		ApplicationBeginShutdownEvent().call()
 		PluginRegistry.disableAll()
-		EventRegistry.clearListeners()
 	})
 
 	ApObjectTypeRegistry.registerInternal()
 
-    PluginRegistry.initialize()
+	PluginRegistry.initialize()
 
 	setJsonConfig()
 

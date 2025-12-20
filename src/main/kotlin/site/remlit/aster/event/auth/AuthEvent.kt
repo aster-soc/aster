@@ -1,7 +1,7 @@
 package site.remlit.aster.event.auth
 
 import site.remlit.aster.db.entity.AuthEntity
-import site.remlit.aster.model.event.Event
+import site.remlit.effekt.Event
 
 /**
  * Event related to authentication
