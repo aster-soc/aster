@@ -1,3 +1,5 @@
+import org.gradle.internal.extensions.stdlib.capitalized
+
 plugins {
 	`maven-publish`
 
@@ -47,6 +49,20 @@ kotlin {
 	}
 }
 
+// docs
+
+dokka {
+	dokkaPublications.html {
+		moduleName.set(project.name.capitalized())
+	}
+}
+
+val dokkaZip by tasks.registering(Zip::class) {
+	dependsOn("dokkaGenerateHtml")
+	archiveClassifier.set("dokka")
+	from(layout.buildDirectory.dir("dokka/html"))
+}
+
 // publishing
 
 publishing {
@@ -68,6 +84,8 @@ publishing {
 			groupId = "site.remlit.aster"
 			artifactId = "common"
 			version = project.version.toString()
+
+			artifact(dokkaZip)
 
 			pom {
 				name = "common"

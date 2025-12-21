@@ -197,6 +197,30 @@ dokka {
 	}
 }
 
+val dokkaZip by tasks.registering(Zip::class) {
+	dependsOn("dokkaGenerateHtml")
+	archiveClassifier.set("dokka")
+	from(layout.buildDirectory.dir("dokka/html"))
+}
+
+val javadocJar by tasks.registering(Jar::class) {
+	dependsOn("dokkaGenerateJavadoc")
+	archiveClassifier.set("javadoc")
+	from(layout.buildDirectory.dir("dokka/javadoc"))
+}
+
+val javadocZip by tasks.registering(Zip::class) {
+	dependsOn("dokkaGenerateJavadoc")
+	archiveClassifier.set("javadoc")
+	from(layout.buildDirectory.dir("dokka/javadoc"))
+}
+
+val sourcesJar by tasks.registering(Jar::class) {
+	mustRunAfter("processResources")
+	archiveClassifier.set("sources")
+	from(sourceSets.main.get().allSource)
+}
+
 // publishing
 
 tasks.publish {
@@ -228,7 +252,10 @@ publishing {
 
 			from(components["java"])
 
-			//artifact()
+			artifact(dokkaZip)
+			artifact(javadocJar)
+			artifact(javadocZip)
+			artifact(sourcesJar)
 
 			pom {
 				name = "aster"
