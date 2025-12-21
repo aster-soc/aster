@@ -119,4 +119,12 @@ object RouteRegistry {
 		FrontendRoutes.register()
 		UploadRoutes.register()
 	}
+
+	/**
+	 * Internal method to clear the registered routes
+	 * */
+	@ApiStatus.Internal
+	fun clearRoutes() {
+		routes.clear()
+	}
 }

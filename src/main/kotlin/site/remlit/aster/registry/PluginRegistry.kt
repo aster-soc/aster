@@ -6,7 +6,7 @@ import kotlinx.serialization.json.decodeFromStream
 import org.jetbrains.annotations.ApiStatus
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import site.remlit.aster.model.Configuration
+import site.remlit.aster.event.internal.InternalRouterReloadEvent
 import site.remlit.aster.model.plugin.AsterPlugin
 import site.remlit.aster.model.plugin.PluginManifest
 import java.io.InputStream
@@ -33,53 +33,53 @@ object PluginRegistry {
 	val plugins: MutableList<Pair<PluginManifest, AsterPlugin>> =
 		emptyList<Pair<PluginManifest, AsterPlugin>>().toMutableList()
 
-    /**
-     * Directory plugins are expected to be stored in
-     * */
-    @JvmStatic
-    val pluginDir = Path("plugins")
+	/**
+	 * Directory plugins are expected to be stored in
+	 * */
+	@JvmStatic
+	val pluginDir = Path("plugins")
 
-    /**
-     * Find and enable plugins in plugins directory.
-     * */
-    @ApiStatus.Internal
-    @OptIn(ExperimentalSerializationApi::class)
-    fun initialize() {
-        if (!pluginDir.exists()) pluginDir.createDirectories()
+	/**
+	 * Find and enable plugins in plugins directory.
+	 * */
+	@ApiStatus.Internal
+	@OptIn(ExperimentalSerializationApi::class)
+	fun initialize() {
+		if (!pluginDir.exists()) pluginDir.createDirectories()
 
-        pluginDir.listDirectoryEntries()
-            .filter { it.extension == "jar" || it.isRegularFile() }
-            .forEach { jar ->
-                ZipFile(jar.toFile()).use { zip ->
-                    val pluginManifest = zip.getEntry("plugin.json")
-                    if (pluginManifest == null) {
-                        logger.warn("Plugin manifest missing for ${jar.name}, skipping")
-                        return@use
-                    }
+		pluginDir.listDirectoryEntries()
+			.filter { it.extension == "jar" || it.isRegularFile() }
+			.forEach { jar ->
+				ZipFile(jar.toFile()).use { zip ->
+					val pluginManifest = zip.getEntry("plugin.json")
+					if (pluginManifest == null) {
+						logger.warn("Plugin manifest missing for ${jar.name}, skipping")
+						return@use
+					}
 
-                    try {
-                        fun getInputStream(entry: ZipEntry): InputStream = zip.getInputStream(entry)
+					try {
+						fun getInputStream(entry: ZipEntry): InputStream = zip.getInputStream(entry)
 
-                        getInputStream(pluginManifest).use { manifestStream ->
-                            val manifest = Json.decodeFromStream<PluginManifest>(manifestStream)
+						getInputStream(pluginManifest).use { manifestStream ->
+							val manifest = Json.decodeFromStream<PluginManifest>(manifestStream)
 
-                            val classLoader = URLClassLoader(
-                                arrayOf(URI("file://${jar.absolutePathString()}").toURL()),
-                                this::class.java.classLoader
-                            )
+							val classLoader = URLClassLoader(
+								arrayOf(URI("file://${jar.absolutePathString()}").toURL()),
+								this::class.java.classLoader
+							)
 
-                            val mainClass = classLoader.loadClass(manifest.mainClass)
-                            enablePlugin(
-                                manifest,
-                                mainClass.getDeclaredConstructor().newInstance() as AsterPlugin
-                            )
-                        }
-                    } catch (e: Throwable) {
-                        logger.error("Failed to load plugin ${jar.name}!", e)
-                    }
-                }
-            }
-    }
+							val mainClass = classLoader.loadClass(manifest.mainClass)
+							enablePlugin(
+								manifest,
+								mainClass.getDeclaredConstructor().newInstance() as AsterPlugin
+							)
+						}
+					} catch (e: Throwable) {
+						logger.error("Failed to load plugin ${jar.name}!", e)
+					}
+				}
+			}
+	}
 
 	/**
 	 * Adds plugin to registry and runs it's enable hook.
@@ -133,7 +133,10 @@ object PluginRegistry {
 	 * */
 	@ApiStatus.Internal
 	fun reloadAll() {
+		RouteRegistry.clearRoutes()
+		InternalRouterReloadEvent().call()
+		
 		disableAll()
-        initialize()
+		initialize()
 	}
 }

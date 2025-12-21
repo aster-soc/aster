@@ -5,6 +5,7 @@ import io.ktor.server.html.*
 import io.ktor.server.routing.*
 import kotlinx.html.b
 import kotlinx.html.classes
+import kotlinx.html.code
 import kotlinx.html.div
 import kotlinx.html.li
 import kotlinx.html.p
@@ -36,11 +37,12 @@ internal object AdminPluginRoutes {
 									ul {
 										for (plugin in PluginRegistry.plugins) {
 											li {
-												b { +"${plugin.first.name} ${plugin.first.version}" }
-												p { +plugin.first.mainClass }
+												b { +"${plugin.first.name} (${plugin.first.version})" }
+												p { code { +plugin.first.mainClass } }
 												div {
-													for (page in plugin.first.adminPages)
-														adminButton(page) { +page }
+													plugin.first.adminPages.forEach { (name, href) ->
+														adminButton(href) { +name }
+													}
 												}
 											}
 										}

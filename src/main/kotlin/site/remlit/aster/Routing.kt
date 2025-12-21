@@ -6,7 +6,7 @@ import org.jetbrains.annotations.ApiStatus
 import site.remlit.aster.registry.RouteRegistry
 
 @ApiStatus.Internal
-fun Application.configureRouting() {
+internal fun Application.configureRouting() {
 	RouteRegistry.registerBuiltinRoutes()
 
 	routing {

@@ -23,6 +23,7 @@ import site.remlit.aster.event.application.ApplicationBeginShutdownEvent
 import site.remlit.aster.event.application.ApplicationBeginStartEvent
 import site.remlit.aster.event.application.ApplicationFinishShutdownEvent
 import site.remlit.aster.event.application.ApplicationFinishStartEvent
+import site.remlit.aster.event.internal.InternalRouterReloadEvent
 import site.remlit.aster.model.ApiException
 import site.remlit.aster.model.Configuration
 import site.remlit.aster.model.ap.ApValidationException
@@ -35,6 +36,7 @@ import site.remlit.aster.service.MigrationService
 import site.remlit.aster.service.SetupService
 import site.remlit.aster.util.jsonConfig
 import site.remlit.aster.util.setJsonConfig
+import site.remlit.effekt.effect
 
 internal fun main(args: Array<String>) {
 	if (args.isNotEmpty() && !args[0].startsWith("-")) {
@@ -169,6 +171,10 @@ fun Application.module() {
 	}
 
 	configureRouting()
+
+	effect<InternalRouterReloadEvent> {
+		log.warn("Currently, the router cannot reload. Please restart Aster for routes to update.")
+	}
 
 	ApplicationFinishStartEvent().call()
 }
