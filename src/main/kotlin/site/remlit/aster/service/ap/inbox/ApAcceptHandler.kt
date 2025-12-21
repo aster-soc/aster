@@ -33,7 +33,7 @@ class ApAcceptHandler : ApInboxHandler {
 		}
 	}
 
-	fun handleFollow(apId: String) {
+	private fun handleFollow(apId: String) {
 		RelationshipService.acceptByApId(apId)
 	}
 }

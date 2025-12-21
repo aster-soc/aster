@@ -38,6 +38,10 @@ internal object AdminPluginRoutes {
 											li {
 												b { +"${plugin.first.name} ${plugin.first.version}" }
 												p { +plugin.first.mainClass }
+												div {
+													for (page in plugin.first.adminPages)
+														adminButton(page) { +page }
+												}
 											}
 										}
 									}

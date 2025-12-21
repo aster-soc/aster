@@ -40,7 +40,10 @@ class ApCreateHandler : ApInboxHandler {
 		}
 	}
 
-	suspend fun handleNote(note: ApNote, resolveAs: String?) {
+	private suspend fun handleNote(
+		note: ApNote,
+		resolveAs: String?
+	) {
 		ApNoteService.resolve(note.id, user = resolveAs)
 			?: throw IllegalArgumentException("Note ${note.id} not found")
 	}

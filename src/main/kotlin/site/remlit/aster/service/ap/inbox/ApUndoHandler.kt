@@ -50,7 +50,10 @@ class ApUndoHandler : ApInboxHandler {
 		}
 	}
 
-	suspend fun handleLike(like: ApLikeActivity, sender: UserEntity) {
+	private suspend fun handleLike(
+		like: ApLikeActivity,
+		sender: UserEntity
+	) {
 		if (like.`object` is ApIdOrObject.Object)
 			throw IllegalArgumentException("Undo Like object must not be an ID")
 

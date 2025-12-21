@@ -42,7 +42,10 @@ class ApDeleteHandler : ApInboxHandler {
 		}
 	}
 
-	fun handleAll(apId: String, sender: UserEntity? = null) {
+	private fun handleAll(
+		apId: String,
+		sender: UserEntity? = null
+	) {
 		val note = NoteService.getByApId(apId)
 		if (note != null && note.user.id == sender?.id.toString()) {
 			NoteService.deleteById(note.id)
