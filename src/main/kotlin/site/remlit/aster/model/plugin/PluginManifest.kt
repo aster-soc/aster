@@ -8,4 +8,5 @@ data class PluginManifest(
 	val mainClass: String,
 	val version: String,
 	val authors: List<String>,
+	val adminPages: List<String>,
 )
