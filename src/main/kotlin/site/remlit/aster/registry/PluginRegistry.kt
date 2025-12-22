@@ -135,7 +135,7 @@ object PluginRegistry {
 	fun reloadAll() {
 		RouteRegistry.clearRoutes()
 		InternalRouterReloadEvent().call()
-		
+
 		disableAll()
 		initialize()
 	}

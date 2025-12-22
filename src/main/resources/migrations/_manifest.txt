@@ -65,6 +65,4 @@
 1766426260292_Migration_role.sql
 1766426260299_Migration_user.sql
 1766426260306_Migration_user_private.sql
-1766426513896_Migration_note_attachment.sql
-1766426588128_Migration_note_attachment.sql
 1766426964325_Migration_note_attachment.sql
