@@ -10,17 +10,20 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
     danger?: boolean;
     nav?: boolean;
     to?: string;
+    realLink?: boolean;
     ref?: RefObject<HTMLButtonElement | HTMLAnchorElement | null>;
     children: React.ReactNode;
 }
 
-function Button({wide, thin, center, primary, danger, nav, to, ref, children, ...props}: ButtonProps) {
+function Button({wide, thin, center, primary, danger, nav, to, realLink, ref, children, ...props}: ButtonProps) {
     const navigate = useNavigate();
 
     if (to !== undefined) {
-        props.onClick = (e) => {
-            e.preventDefault() // annoying hack
-            navigate({to: to})
+        if (!realLink) {
+            props.onClick = (e) => {
+                e.preventDefault() // annoying hack
+                navigate({to: to})
+            }
         }
 
         return (

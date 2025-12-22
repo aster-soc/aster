@@ -2,24 +2,28 @@ import {createFileRoute} from "@tanstack/react-router";
 import PageHeader from "../lib/components/PageHeader.tsx";
 import {IconFolder, IconPlus} from "@tabler/icons-react";
 import PageWrapper from "../lib/components/PageWrapper.tsx";
-import {useQuery} from "@tanstack/react-query";
+import {useInfiniteQuery} from "@tanstack/react-query";
 import localstore from "../lib/utils/localstore.ts";
 import DriveFile from "../lib/components/DriveFile.tsx";
-import Container from "../lib/components/Container.tsx";
 import Loading from "../lib/components/Loading.tsx";
 import Error from "../lib/components/Error.tsx";
 import Button from "../lib/components/Button.tsx";
 import type {ChangeEvent} from "react";
 import {Api} from 'aster-common'
+import Timeline from "../lib/components/Timeline.tsx";
 
 export const Route = createFileRoute('/drive')({
     component: RouteComponent,
 })
 
 function RouteComponent() {
-    const {data, error, isPending, isFetching, refetch} = useQuery({
+    const query = useInfiniteQuery({
         queryKey: [`drive_${localstore.getSelf()?.id}`],
-        queryFn: () => Api.getDrive(),
+        queryFn: ({pageParam}) => Api.getDrive(pageParam),
+        initialPageParam: undefined,
+        getNextPageParam: (lastPage) => {
+            return lastPage ? lastPage?.at(-1)?.createdAt : undefined
+        }
     });
 
     function upload(e: ChangeEvent<HTMLInputElement>) {
@@ -53,16 +57,12 @@ function RouteComponent() {
                 />
             </PageHeader>
             <PageWrapper padding={"full"} center={false}>
-                {isPending || isFetching ? (
+                {query.isPending ? (
                     <Loading fill/>
-                ) : error ? (
-                    <Error error={error} retry={refetch}/>
+                ) : query.error ? (
+                    <Error error={query.error} retry={query.refetch}/>
                 ) : (
-                    <Container gap={"md"} align={"horizontal"}>
-                        {data?.map((file) => (
-                            <DriveFile data={file}/>
-                        ))}
-                    </Container>
+                    <Timeline query={query} Component={DriveFile} grid/>
                 )}
             </PageWrapper>
         </>

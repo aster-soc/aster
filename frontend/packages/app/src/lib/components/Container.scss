@@ -10,6 +10,10 @@
     }
   }
 
+  &.wrap {
+    flex-wrap: wrap;
+  }
+
   &.center {
     width: 100%;
     align-items: center;

@@ -5,7 +5,7 @@ const queryClient = new QueryClient({
         queries: {
             retry: 2,
             retryDelay: 5000,
-            refetchOnWindowFocus: false,
+            refetchOnWindowFocus: false
         }
     }
 });

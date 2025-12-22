@@ -6,10 +6,6 @@ import Container from "../lib/components/Container.tsx";
 import Button from "../lib/components/Button.tsx";
 import Input from "../lib/components/Input.tsx";
 import {useForm} from "@tanstack/react-form";
-import Timeline from "../lib/components/Timeline.tsx";
-import {useState} from "react";
-import Search from "../lib/components/Search.tsx";
-import * as Common from 'aster-common'
 import {Api} from 'aster-common'
 
 export const Route = createFileRoute('/search')({
@@ -17,15 +13,12 @@ export const Route = createFileRoute('/search')({
 })
 
 function RouteComponent() {
-    const [data, setData] = useState(new Common.SearchResults(false, []))
-
     const form = useForm({
         defaultValues: {
             query: "",
         },
         onSubmit: async (values) => {
             Api.search(values.value.query).then((data) => {
-                setData(data);
             });
         }
     });
@@ -72,7 +65,7 @@ function RouteComponent() {
                         </Container>
                     </form>
                     <Container>
-                        <Timeline data={data.results} Component={Search}/>
+                        {/* <Timeline query={} Component={Search}/> */}
                     </Container>
                 </Container>
             </PageWrapper>

@@ -37,6 +37,10 @@ export default defineConfig({
                 target: 'http://localhost:9978',
                 changeOrigin: false,
             },
+            '/favicon.ico': {
+                target: 'http://localhost:9978',
+                changeOrigin: false,
+            },
             '/uikit': {
                 target: 'http://localhost:9978',
                 changeOrigin: false,

@@ -2,7 +2,7 @@ import * as React from "react";
 import './Container.scss'
 
 function Container(
-    {gap, align, border, padding, clazz, fill, children, ...props}:
+    {gap, align, border, padding, clazz, fill, wrap, children, ...props}:
     {
         gap?: "sm" | "md" | "lg" | "xl" | undefined,
         align?: 'center' | 'left' | 'right' | 'horizontal' | 'horizontalCenter' | 'horizontalRight' | 'startHorizontal',
@@ -10,13 +10,14 @@ function Container(
         padding?: string | undefined,
         clazz?: string,
         fill?: boolean,
+        wrap?: boolean,
         children: React.ReactNode,
         props?: never
     }
 ) {
     return (
         <div
-            className={`container${gap ? " gap-" + gap : ""}${align ? " " + align : ""}${border ? " border-" + border : ""}${clazz ? " " + clazz : ""}${fill ? " fill" : ""}`}
+            className={`container${gap ? " gap-" + gap : ""}${align ? " " + align : ""}${border ? " border-" + border : ""}${clazz ? " " + clazz : ""}${fill ? " fill" : ""}${wrap ? " wrap" : ""}`}
             style={padding ? `padding:${padding};` : ""}
             {...props}
         >

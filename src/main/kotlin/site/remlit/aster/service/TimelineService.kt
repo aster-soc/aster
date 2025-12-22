@@ -3,6 +3,9 @@ package site.remlit.aster.service
 import kotlinx.datetime.LocalDateTime
 import site.remlit.aster.model.Configuration
 import site.remlit.aster.model.Service
+import site.remlit.aster.util.toLocalDateTime
+import kotlin.time.Clock
+import kotlin.time.Instant
 
 /**
  * Service for timeline related utilities.
@@ -40,7 +43,7 @@ object TimelineService : Service {
 	 * */
 	@JvmStatic
 	fun normalizeSince(since: String?): LocalDateTime {
-		val now = TimeService.now().toString()
-		return LocalDateTime.parse(since ?: now)
+		return (if (since != null) Instant.parse(since) else Clock.System.now())
+			.toLocalDateTime()
 	}
 }
