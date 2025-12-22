@@ -6,6 +6,7 @@ import ApiError from "../utils/ApiError.ts";
 function Error(
     {error, retry}: { error: ApiError | Error, retry?: () => {} }
 ) {
+    console.log("Error Caught!", error)
     return (
         <div className={"error"}>
             <span className={"title"}>Something went wrong</span>
@@ -31,7 +32,8 @@ function Error(
                     <IconReload size={18}/>
                     Retry
                 </Button>
-                <Button>
+                <Button onClick={() => {
+                }}>
                     <IconBug size={18}/>
                     Report Bug
                 </Button>

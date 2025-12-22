@@ -5,14 +5,20 @@ import org.jetbrains.exposed.v1.core.Op
 import org.jetbrains.exposed.v1.core.eq
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 import org.slf4j.LoggerFactory
+import site.remlit.aster.common.model.Instance
 import site.remlit.aster.common.model.generated.PartialInstance
 import site.remlit.aster.db.entity.InstanceEntity
 import site.remlit.aster.db.table.InstanceTable
+import site.remlit.aster.event.instance.InstanceDiscoverEvent
+import site.remlit.aster.event.instance.InstanceEditEvent
 import site.remlit.aster.model.Configuration
 import site.remlit.aster.model.Service
 import site.remlit.aster.util.extractArray
 import site.remlit.aster.util.extractObject
 import site.remlit.aster.util.extractString
+import site.remlit.aster.util.model.fromEntity
+import site.remlit.aster.util.toLocalDateTime
+import kotlin.time.Clock
 
 /**
  * Service for managing remote instances and resolving nodeinfo.
@@ -31,6 +37,12 @@ object InstanceService : Service {
 	 * Reference for NodeInfo 2.1
 	 * */
 	const val NODEINFO_2_1: String = "http://nodeinfo.diaspora.software/ns/schema/2.1"
+
+	/**
+	 * Currently being processed hosts
+	 * */
+	@JvmStatic
+	var lockedHosts = mutableSetOf<String>()
 
 	/**
 	 * Get an instance entity
@@ -55,16 +67,6 @@ object InstanceService : Service {
 	 * */
 	@JvmStatic
 	fun getById(id: String): InstanceEntity? = get(InstanceTable.id eq id)
-
-	/**
-	 * Get an instance entity by host
-	 *
-	 * @param host Host of instance
-	 *
-	 * @return Instance entity, if it exists
-	 * */
-	@JvmStatic
-	fun getByHost(host: String): InstanceEntity? = get(InstanceTable.host eq host)
 
 	/**
 	 * Get an instance entities
@@ -184,7 +186,7 @@ object InstanceService : Service {
 			contact = contact,
 
 			createdAt = null,
-			updatedAt = if (existing != null) TimeService.now() else null,
+			updatedAt = if (existing != null) Clock.System.now() else null,
 		)
 	}
 
@@ -212,11 +214,14 @@ object InstanceService : Service {
 					it.version = instance.version
 					it.contact = instance.contact
 
-					it.updatedAt = instance.updatedAt
+					it.updatedAt = instance.updatedAt?.toLocalDateTime()
 				}
 			}
 
-			return getById(instance.id!!)
+			val instance = getById(instance.id!!)!!
+			InstanceEditEvent(Instance.fromEntity(instance)).call()
+
+			return instance
 		} catch (_: Exception) {
 			return null
 		}
@@ -246,11 +251,14 @@ object InstanceService : Service {
 					this.version = instance.version
 					this.contact = instance.contact
 
-					this.updatedAt = instance.updatedAt
+					this.updatedAt = instance.updatedAt?.toLocalDateTime()
 				}
 			}
 
-			return getById(instance.id!!)
+			val instance = getById(instance.id!!)!!
+			InstanceDiscoverEvent(Instance.fromEntity(instance)).call()
+
+			return instance
 		} catch (_: Exception) {
 			return null
 		}

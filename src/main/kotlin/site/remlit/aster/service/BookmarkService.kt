@@ -13,6 +13,7 @@ import site.remlit.aster.db.table.NoteBookmarkTable
 import site.remlit.aster.event.note.NoteBookmarkEvent
 import site.remlit.aster.event.note.NoteUnbookmarkEvent
 import site.remlit.aster.model.Configuration
+import site.remlit.aster.model.Service
 import site.remlit.aster.util.model.fromEntities
 
 /**
@@ -20,7 +21,7 @@ import site.remlit.aster.util.model.fromEntities
  *
  * @since 2025.11.4.0-SNAPSHOT
  * */
-object BookmarkService {
+object BookmarkService : Service {
 	// No get, but may add later on. It seems really useless here.
 
 	/**

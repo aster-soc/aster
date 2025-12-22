@@ -1,8 +1,8 @@
 package site.remlit.aster.common.model
 
-import kotlinx.datetime.LocalDateTime
 import kotlinx.serialization.Serializable
 import kotlin.js.JsExport
+import kotlin.time.Instant
 
 @JsExport
 @Serializable
@@ -24,8 +24,8 @@ data class Note(
 
 	val repeat: Note? = null,
 
-	val createdAt: LocalDateTime,
-	val updatedAt: LocalDateTime? = null,
+	val createdAt: Instant,
+	val updatedAt: Instant? = null,
 
 	val likes: List<SmallUser> = emptyList(),
 	val reactions: List<SmallUser> = emptyList(),

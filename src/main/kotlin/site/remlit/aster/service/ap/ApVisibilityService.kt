@@ -63,7 +63,7 @@ object ApVisibilityService : Service {
 			"direct" -> return Visibility.Direct
 		}
 
-		if (to.contains(followersUrl) && !to.contains(AS_PUBLIC))
+		if (to.contains(followersUrl) && !cc.contains(AS_PUBLIC))
 			return Visibility.Followers
 
 		if (to.contains(followersUrl) && cc.contains(AS_PUBLIC))

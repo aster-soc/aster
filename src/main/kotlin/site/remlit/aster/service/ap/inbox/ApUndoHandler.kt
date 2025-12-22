@@ -50,12 +50,15 @@ class ApUndoHandler : ApInboxHandler {
 		}
 	}
 
-	suspend fun handleLike(like: ApLikeActivity, sender: UserEntity) {
+	private suspend fun handleLike(
+		like: ApLikeActivity,
+		sender: UserEntity
+	) {
 		if (like.`object` is ApIdOrObject.Object)
 			throw IllegalArgumentException("Undo Like object must not be an ID")
 
 		val note = ApNoteService.resolve((like.`object` as ApIdOrObject.Id).value)
-			?: throw IllegalArgumentException("Undo Like object not found")
+			?: return
 
 		NoteService.unlike(
 			User.fromEntity(sender),

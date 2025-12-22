@@ -84,7 +84,7 @@ function UserPage(
     return (
         <div className={"userPage"}>
             <PageHeader icon={(data === undefined) ? <IconUser size={18}/> : <Avatar size={"sm"} user={data}/>}
-                        title={displayName}/>
+                        title={displayName + (displayName ? " (" + Common.renderHandle(data) + ")" : null)}/>
             <PageWrapper padding={"full"} center={false}>
                 {isLoading ? (
                     <Loading fill={true}/>

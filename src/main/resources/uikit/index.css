@@ -1,0 +1,208 @@
+@import "font.css";
+@import "layout.css";
+
+/* Elements */
+@import "button.css";
+@import "input.css";
+
+:root {
+    --font: 'Inter', 'Adwaita Sans', 'Arial', 'Helvetica', sans-serif;
+    --font-features: 'cv05', 'cv08';
+
+    --fs-xxs: 10px;
+    --fs-xs: 12px;
+    --fs-sm: 13px;
+    --fs-md: 14px;
+    --fs-lg: 16px;
+    --fs-xl: 18px;
+    --fs-xxl: 20px;
+
+    --br-mn: 0px;
+    --br-xxs: 2px;
+    --br-xs: 4px;
+    --br-sm: 6px;
+    --br-md: 10px;
+    --br-lg: 12px;
+    --br-xl: 14px;
+    --br-xxl: 18px;
+    --br-mx: 99999px;
+
+    --blur-xs: 2px;
+    --blur-sm: 4px;
+    --blur-md: 8px;
+    --blur-lg: 12px;
+    --blur-xl: 20px;
+
+    --funky-effect: inset 0 -0.1rem 3px #00000020, inset 0 0.035rem 1px #ffffff05,
+    inset 0 0.055rem 3px #ffffff05;
+
+    --bg-1: #140e1b;
+    --bg-2: #1a1423;
+    --bg-3: #261e37;
+    --bg-4: #3f325a;
+
+    --bg-1-99: #140e1b99;
+    --bg-2-99: #1a142399;
+    --bg-3-99: #261e3799;
+    --bg-4-99: #3f325a99;
+
+    --bg-1-50: #140e1b50;
+    --bg-2-50: #1a142350;
+    --bg-3-50: #261e3750;
+    --bg-4-50: #3f325a50;
+
+    --bg-1-25: #140e1b25;
+    --bg-2-25: #1a142325;
+    --bg-3-25: #261e3725;
+    --bg-4-25: #3f325a25;
+
+    --ac-1: #8e6bed;
+    --ac-1-50: #8e6bed50;
+    --ac-1-25: #8e6bed25;
+
+    --success: #38b84d;
+    --warn: #e39244;
+    --danger: #e65448;
+
+    --success-99: #38b84d99;
+    --warn-99: #e3924499;
+    --danger-99: #e6544899;
+
+    --success-50: #38b84d50;
+    --warn-50: #e3924450;
+    --danger-50: #e6544850;
+
+    --success-25: #38b84d25;
+    --warn-25: #e3924425;
+    --danger-25: #e6544825;
+
+    --repeat: #53d167;
+    --like: #ecbd51;
+
+    --repeat-99: #53d16799;
+    --like-99: #ecbd5199;
+
+    --repeat-50: #53d16750;
+    --like-50: #ecbd5150;
+
+    --repeat-25: #53d16725;
+    --like-25: #ecbd5125;
+
+    --tx-1: #f3efff;
+    --tx-2: #d8cdf1;
+    --tx-3: #9688bd;
+
+    --tx-1-75: #f3efff75;
+    --tx-2-75: #d8cdf175;
+    --tx-3-75: #9688bd75;
+}
+
+html {
+    color-scheme: light dark;
+
+    font-family: var(--font);
+    font-feature-settings: var(--font-features);
+    font-size: var(--fs-md);
+
+    background-color: var(--bg-1);
+    color: var(--tx-2);
+}
+
+body {
+    margin: 0;
+
+    font-family: var(--font);
+    font-feature-settings: var(--font-features);
+    font-size: var(--fs-md);
+}
+
+/* Elements */
+
+a {
+    color: var(--ac-1);
+    text-decoration: underline;
+    text-decoration-color: var(--ac-1-50);
+
+    &:hover {
+        text-decoration-color: var(--ac-1);
+    }
+}
+
+.button,
+.input {
+    display: flex;
+    align-items: center;
+
+    padding: 8px 10px;
+    box-sizing: border-box;
+
+    color: var(--tx-2);
+    background-color: var(--bg-3);
+
+    box-shadow: var(--funky-effect);
+    border-radius: var(--br-md);
+    border: none;
+
+    font-family: var(--font);
+    font-feature-settings: var(--font-features);
+    font-size: var(--fs-md);
+
+    text-decoration: none;
+
+    transition: 0.1s,
+    width 0s,
+    height 0s,
+    border 0s;
+}
+
+.input,
+.button,
+.highlightable {
+    transition: 0.1s,
+    border 0s,
+    outline 0s,
+    outline-offset 0s;
+
+    &:disabled {
+        cursor: not-allowed;
+
+        color: var(--tx-3);
+        opacity: 75%;
+    }
+
+    &:focus-visible {
+        outline: 2px solid var(--ac-1-50);
+        outline-offset: 1px;
+    }
+}
+
+button.dismiss {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: inherit;
+    background-color: transparent;
+
+    border-radius: var(--br-md);
+    border: none;
+
+    transition: 0.1s,
+    width 0s,
+    height 0s,
+    border 0s,
+    outline 0s,
+    outline-offset 0s;
+
+    &:focus-visible {
+        border: 1px solid var(--ac-1);
+
+        outline: 2px solid var(--ac-1-50);
+        outline-offset: 1px;
+    }
+
+    &:disabled {
+        cursor: not-allowed;
+        opacity: 75%;
+    }
+}

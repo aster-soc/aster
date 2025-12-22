@@ -36,6 +36,10 @@ export default defineConfig({
             '/admin': {
                 target: 'http://localhost:9978',
                 changeOrigin: false,
+            },
+            '/uikit': {
+                target: 'http://localhost:9978',
+                changeOrigin: false,
             }
         }
     }

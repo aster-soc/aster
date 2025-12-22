@@ -11,6 +11,7 @@ import site.remlit.aster.db.entity.NoteLikeEntity
 import site.remlit.aster.db.table.NoteLikeTable
 import site.remlit.aster.db.table.NoteTable
 import site.remlit.aster.service.NoteService
+import site.remlit.aster.util.toLocalInstant
 
 
 fun Note.Companion.fromEntity(entity: NoteEntity, depth: Int = 0): Note {
@@ -32,8 +33,8 @@ fun Note.Companion.fromEntity(entity: NoteEntity, depth: Int = 0): Note {
 			entity.repeat!!,
 			1
 		) else null,
-		createdAt = entity.createdAt,
-		updatedAt = entity.updatedAt,
+		createdAt = entity.createdAt.toLocalInstant(),
+		updatedAt = entity.updatedAt?.toLocalInstant(),
 		likes = findLikes(entity.id.toString()),
 		repeats = findRepeats(entity.id.toString())
 	)

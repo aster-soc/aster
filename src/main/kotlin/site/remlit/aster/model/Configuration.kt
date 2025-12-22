@@ -14,8 +14,9 @@ import kotlin.io.path.Path
 import kotlin.io.path.exists
 import kotlin.io.path.isDirectory
 
+val version = System.getenv("CONFIG_VERSION")
 var workingDir = File(".").absolutePath.toString().removeSuffix(".")
-var configPath = workingDir + "configuration.yaml"
+var configPath = if (version == "test") workingDir + "configuration.test.yaml" else workingDir + "configuration.yaml"
 var config = YamlConfig(configPath)
 
 var lastConfigReloadAt = TimeService.now()
@@ -114,20 +115,19 @@ class ConfigurationDatabase : ConfigurationObject {
 class ConfigurationQueue : ConfigurationObject {
 	val inbox: ConfigurationSpecificQueue
 		get() = ConfigurationSpecificQueue(
-			(config?.propertyOrNull("queue.inbox.concurrency")?.getString()?.toInt() ?: 8)
+			(config?.propertyOrNull("queue.inbox.concurrency")?.getString()?.toInt() ?: 8),
+			((config?.propertyOrNull("queue.deliver.maxRetries")?.getString()?.toInt()) ?: 10)
 		)
 	val deliver: ConfigurationSpecificQueue
 		get() = ConfigurationSpecificQueue(
-			((config?.propertyOrNull("queue.deliver.concurrency")?.getString()?.toInt()) ?: 6)
-		)
-	val system: ConfigurationSpecificQueue
-		get() = ConfigurationSpecificQueue(
-			((config?.propertyOrNull("queue.system.concurrency")?.getString()?.toInt()) ?: 4)
+			((config?.propertyOrNull("queue.deliver.concurrency")?.getString()?.toInt()) ?: 6),
+			((config?.propertyOrNull("queue.deliver.maxRetries")?.getString()?.toInt()) ?: 15)
 		)
 }
 
 data class ConfigurationSpecificQueue(
-	val concurrency: Int
+	val concurrency: Int,
+	val maxRetries: Int
 ) : ConfigurationObject
 
 @Suppress("MagicNumber")

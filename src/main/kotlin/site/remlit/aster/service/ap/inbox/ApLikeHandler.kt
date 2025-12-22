@@ -23,7 +23,7 @@ class ApLikeHandler : ApInboxHandler {
 		val obj = when (activity.`object`) {
 			is ApIdOrObject.Id -> ApNoteService.resolve(activity.`object`.value)
 			else -> throw IllegalArgumentException("Target must be represented as an ID")
-		} ?: throw IllegalArgumentException("Target cannot be found")
+		} ?: return
 
 		if (RelationshipService.eitherBlocking(actor.id.toString(), obj.user.id))
 			throw IllegalArgumentException("Relationship prohibits this action")

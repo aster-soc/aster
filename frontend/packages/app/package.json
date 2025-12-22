@@ -20,6 +20,7 @@
     "mfm-js": "^0.25.0",
     "preact": "^10.27.2",
     "@preact/compat": "^18.3.1",
+    "@preact/signals": "^2.5.1",
     "aster-common": "link:../common/build/dist/js/productionLibrary"
   },
   "devDependencies": {

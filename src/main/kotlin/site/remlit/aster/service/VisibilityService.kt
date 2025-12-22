@@ -40,28 +40,23 @@ object VisibilityService : Service {
 				?: throw IllegalArgumentException("User not found")
 		)
 
+		var ignoreBlock = ignoreBlock
+
+		// if neither are local, we don't have to take blocks into account
+		if (author.host != null && user.host != null)
+			ignoreBlock = true
+
 		if (!ignoreBlock && RelationshipService.eitherBlocking(user.id, author.id))
 			return false
 
 		if (to != null && to.contains(user.id))
 			return true
 
-		when (visibility) {
-			Visibility.Public -> {
-				return true
-			}
-
-			Visibility.Unlisted -> {
-				return true
-			}
-
-			Visibility.Followers -> {
-				return false
-			}
-
-			Visibility.Direct -> {
-				return false
-			}
+		return when (visibility) {
+			Visibility.Public -> true
+			Visibility.Unlisted -> true
+			Visibility.Followers -> false
+			Visibility.Direct -> false
 		}
 	}
 }

@@ -1,7 +1,6 @@
 package site.remlit.aster.service.ap
 
 import io.ktor.http.*
-import kotlinx.datetime.LocalDateTime
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.decodeFromJsonElement
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
@@ -17,12 +16,14 @@ import site.remlit.aster.service.IdentifierService
 import site.remlit.aster.service.InstanceService
 import site.remlit.aster.service.NoteService
 import site.remlit.aster.service.ResolverService
-import site.remlit.aster.service.TimeService
 import site.remlit.aster.service.UserService
 import site.remlit.aster.util.extractString
 import site.remlit.aster.util.ifFails
 import site.remlit.aster.util.jsonConfig
 import site.remlit.aster.util.model.fromEntity
+import site.remlit.aster.util.toLocalDateTime
+import kotlin.time.Clock
+import kotlin.time.Instant
 
 /**
  * Service to handle ActivityPub notes.
@@ -36,11 +37,19 @@ object ApNoteService : Service {
 	 * Resolve a note by its ID
 	 *
 	 * @param apId ActivityPub ID of a note
+	 * @param refetch Refetch actor
+	 * @param depth Maximum recursion depth
+	 * @param user User to resolve as
 	 *
 	 * @return Note or null
 	 * */
 	@JvmStatic
-	suspend fun resolve(apId: String, refetch: Boolean = false, depth: Int = 0): Note? {
+	suspend fun resolve(
+		apId: String,
+		refetch: Boolean = false,
+		depth: Int = 0,
+		user: String? = null
+	): Note? {
 		if (depth > Configuration.maxResolveDepth) return null
 
 		InstanceService.resolve(Url(apId).host)
@@ -50,7 +59,7 @@ object ApNoteService : Service {
 			return existingNote
 		}
 
-		val resolveResponse = ResolverService.resolveSigned(apId)
+		val resolveResponse = ResolverService.resolveSigned(apId, user = user)
 
 		if (resolveResponse != null && existingNote == null)
 			return register(toNote(resolveResponse, depth = depth + 1) ?: return null)
@@ -92,11 +101,10 @@ object ApNoteService : Service {
 		val content = extractString { json["content"] }
 		val misskeyContent = extractString { json["_misskey_content"] }
 
-		val published = extractString { json["published"] }.let {
-			if (it != null) ifFails({ LocalDateTime.parse(it) }) {
-				TimeService.now()
-			} else TimeService.now()
-		}
+		val extractedPublished = extractString { json["published"] }
+		val published = if (extractedPublished != null)
+			ifFails({ Instant.parse(extractedPublished) }) { Clock.System.now() }
+		else Clock.System.now()
 
 		val to = jsonConfig.decodeFromJsonElement<List<String>>(json["to"] ?: return null)
 		val cc = jsonConfig.decodeFromJsonElement<List<String>>(json["cc"] ?: return null)
@@ -132,7 +140,7 @@ object ApNoteService : Service {
 			repeats = existing?.repeats,
 
 			createdAt = published,
-			updatedAt = if (existing != null) TimeService.now() else null,
+			updatedAt = if (existing != null) Clock.System.now() else null,
 		)
 	}
 
@@ -164,7 +172,7 @@ object ApNoteService : Service {
 					// todo: emojis
 					// todo: repeat
 
-					it.createdAt = note.createdAt!!
+					it.createdAt = note.createdAt!!.toLocalDateTime()
 				}
 			}
 
@@ -203,7 +211,7 @@ object ApNoteService : Service {
 					// todo: emojis
 					// todo: repeat
 
-					this.createdAt = note.createdAt!!
+					this.createdAt = note.createdAt!!.toLocalDateTime()
 				}
 			}
 

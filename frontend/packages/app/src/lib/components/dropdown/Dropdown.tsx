@@ -72,8 +72,13 @@ function Dropdown(
                 renderedItems.push(
                     <div className={`item${(item.type) ? " " + item.type : ""}`} key={"DropdownChild-Item-" + random}
                          onClick={() => {
-                             if (item.to) navigate({to: item.to})
-                             if (item.onClick) item.onClick()
+                             if (item.to && item.to.startsWith("http")) window.open(item.to, "_blank")
+                             if (item.to && !item.to.startsWith("http")) navigate({to: item.to})
+
+                             if (item.onClick) {
+                                 item.onClick()
+                                 setOpen(false)
+                             }
                          }} role={"button"}
                          tabIndex={0}>
                         {item.icon}

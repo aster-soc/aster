@@ -16,6 +16,7 @@ import site.remlit.aster.event.report.ReportDeleteEvent
 import site.remlit.aster.event.report.ReportResolveEvent
 import site.remlit.aster.exception.InsertFailureException
 import site.remlit.aster.model.Configuration
+import site.remlit.aster.model.Service
 import site.remlit.aster.util.model.fromEntities
 import site.remlit.aster.util.model.fromEntity
 
@@ -24,7 +25,7 @@ import site.remlit.aster.util.model.fromEntity
  *
  * 2025.11.4.0-SNAPSHOT
  * */
-object ReportService {
+object ReportService : Service {
 	/**
 	 * Reference the "sender" user on a report.
 	 * For usage in queries.

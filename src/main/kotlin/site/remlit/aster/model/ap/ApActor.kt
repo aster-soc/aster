@@ -3,8 +3,9 @@ package site.remlit.aster.model.ap
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import site.remlit.aster.db.entity.UserEntity
-import site.remlit.aster.service.FormatService
 import site.remlit.aster.service.ap.ApIdService
+import site.remlit.aster.util.toLocalInstant
+import kotlin.time.Instant
 
 /**
  * ActivityPub representation of User
@@ -38,7 +39,7 @@ data class ApActor(
 	@SerialName("vcard:Address")
 	val vcardAddress: String? = null,
 
-	val published: String,
+	val published: Instant,
 
 	val inbox: String,
 	val outbox: String? = null,
@@ -83,7 +84,7 @@ data class ApActor(
 				vcardBday = user.birthday,
 				vcardAddress = user.location,
 
-				published = FormatService.formatToStandardDateTime(user.createdAt),
+				published = user.createdAt.toLocalInstant(),
 
 				inbox = user.inbox,
 				outbox = user.outbox,

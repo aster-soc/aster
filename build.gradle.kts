@@ -1,4 +1,5 @@
 import io.ktor.plugin.*
+import org.gradle.internal.extensions.stdlib.capitalized
 
 plugins {
 	application
@@ -10,6 +11,7 @@ plugins {
 	id("io.ktor.plugin")
 	id("com.gradleup.shadow")
 	id("org.jetbrains.dokka")
+	id("org.jetbrains.dokka-javadoc")
 
 	id("io.gitlab.arturbosch.detekt")
 }
@@ -45,20 +47,22 @@ dependencies {
 	implementation("io.ktor:ktor-server-forwarded-header-jvm:3.3.3")
 	implementation("io.ktor:ktor-server-openapi-jvm:3.3.3")
 	implementation("io.ktor:ktor-server-swagger-jvm:3.3.3")
+	implementation("io.ktor:ktor-server-status-pages-jvm:3.3.3")
+	implementation("io.ktor:ktor-server-auto-head-response-jvm:3.3.3")
 
 	// templating
 	implementation("io.ktor:ktor-server-html-builder-jvm:3.3.3")
 	implementation("org.jetbrains.kotlinx:kotlinx-html:0.12.0")
 
 	// serialization
+	implementation("org.jetbrains.kotlinx:kotlinx-serialization-core-jvm:1.9.0")
+	implementation("org.jetbrains.kotlinx:kotlinx-serialization-json-jvm:1.9.0")
 	implementation("io.ktor:ktor-server-content-negotiation-jvm:3.3.3")
 	implementation("io.ktor:ktor-serialization-kotlinx-json-jvm:3.3.3")
 
 	// ktor client
 	implementation("io.ktor:ktor-client-core-jvm:3.3.3")
 	implementation("io.ktor:ktor-client-cio-jvm:3.3.3")
-	implementation("io.ktor:ktor-server-status-pages-jvm:3.3.3")
-	implementation("io.ktor:ktor-server-auto-head-response-jvm:3.3.3")
 	implementation("io.ktor:ktor-client-content-negotiation-jvm:3.3.3")
 
 	// database
@@ -76,8 +80,13 @@ dependencies {
 	implementation("at.favre.lib:bcrypt:0.10.2")
 	implementation("com.googlecode.owasp-java-html-sanitizer:owasp-java-html-sanitizer:20240325.1")
 	implementation("org.jetbrains.kotlin:kotlin-reflect:2.2.21")
+	implementation("site.remlit:effekt:0.1.1")
 
 	compileOnly("org.jetbrains:annotations:26.0.2-1")
+
+	// test
+	testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4")
+	testImplementation("io.ktor:ktor-server-test-host:2.2.21")
 	testImplementation(kotlin("test"))
 
 	api(project(":common"))
@@ -86,6 +95,10 @@ dependencies {
 
 kotlin {
 	jvmToolchain(21)
+}
+
+tasks.withType<Test>().configureEach {
+	environment("CONFIG_VERSION", "test")
 }
 
 application {
@@ -118,35 +131,12 @@ if ("detekt" !in gradle.startParameter.taskNames) {
 	tasks.detekt { enabled = false }
 }
 
-// docs
-
-val sourcesJar by tasks.registering(Jar::class) {
-	archiveBaseName = project.name
-	archiveClassifier = "sources"
-	mustRunAfter("copyFrontend")
-}
-
-val dokkaJavadocZip by tasks.registering(Zip::class) {
-	archiveBaseName = project.name
-	archiveClassifier = "javadoc"
-	dependsOn(tasks.dokkaJavadoc)
-	from(tasks.dokkaJavadoc.flatMap { it.outputDirectory })
-}
-
-val dokkaHtmlZip by tasks.registering(Zip::class) {
-	archiveBaseName = project.name
-	archiveClassifier = "dokka"
-	dependsOn(tasks.dokkaHtml)
-	from(tasks.dokkaHtml.map { it.outputDirectory })
-}
-
-artifacts {
-	add("archives", sourcesJar)
-	add("archives", dokkaJavadocZip)
-	add("archives", dokkaHtmlZip)
-}
-
 // building
+
+tasks.register("preCommit") {
+	dependsOn("detekt")
+	dependsOn("test")
+}
 
 tasks.register<Exec>("cleanFrontend") {
 	executable("./scripts/clean-frontend.sh")
@@ -175,8 +165,8 @@ tasks.processResources {
 	val group = project.provider { project.group.toString() }.get()
 	val version = project.provider { project.version.toString() }.get()
 
-	val repo = "https://github.com/aster-soc/aster"
-	val bugTracker = "$repo/issues"
+	val repo = gradle.extra.get("repository") as String
+	val bugTracker = gradle.extra.get("issueTracker") as String
 
 	filesMatching("application.yaml") {
 		filter { line ->
@@ -199,13 +189,45 @@ tasks.build {
 	dependsOn("shadowJar")
 }
 
+// docs
+
+dokka {
+	dokkaPublications.html {
+		moduleName.set(project.name.capitalized())
+	}
+}
+
+val dokkaZip by tasks.registering(Zip::class) {
+	dependsOn("dokkaGenerateHtml")
+	archiveClassifier.set("dokka")
+	from(layout.buildDirectory.dir("dokka/html"))
+}
+
+val javadocJar by tasks.registering(Jar::class) {
+	dependsOn("dokkaGenerateJavadoc")
+	archiveClassifier.set("javadoc")
+	from(layout.buildDirectory.dir("dokka/javadoc"))
+}
+
+val javadocZip by tasks.registering(Zip::class) {
+	dependsOn("dokkaGenerateJavadoc")
+	archiveClassifier.set("javadoc")
+	from(layout.buildDirectory.dir("dokka/javadoc"))
+}
+
+val sourcesJar by tasks.registering(Jar::class) {
+	mustRunAfter("processResources")
+	archiveClassifier.set("sources")
+	from(sourceSets.main.get().allSource)
+}
+
 // publishing
 
 tasks.publish {
 	dependsOn(":common:publish")
-	dependsOn("sourcesJar")
-	dependsOn("dokkaHtml")
-	dependsOn("javadoc")
+	dependsOn(":mfmkt:publish")
+
+	dependsOn(":dokkaGenerate")
 }
 
 publishing {
@@ -230,9 +252,10 @@ publishing {
 
 			from(components["java"])
 
+			artifact(dokkaZip)
+			artifact(javadocJar)
+			artifact(javadocZip)
 			artifact(sourcesJar)
-			artifact(dokkaJavadocZip)
-			artifact(dokkaHtmlZip)
 
 			pom {
 				name = "aster"

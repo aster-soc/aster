@@ -1,7 +1,7 @@
 package site.remlit.aster.event.application
 
 import org.jetbrains.annotations.ApiStatus
-import site.remlit.aster.model.event.Event
+import site.remlit.effekt.Event
 
 /**
  * Event related to an Application

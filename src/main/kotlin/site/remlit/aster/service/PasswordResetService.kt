@@ -4,13 +4,16 @@ import at.favre.lib.crypto.bcrypt.BCrypt
 import org.jetbrains.exposed.v1.core.eq
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 import org.slf4j.LoggerFactory
+import site.remlit.aster.common.model.User
 import site.remlit.aster.db.entity.PasswordResetCodeEntity
 import site.remlit.aster.db.entity.UserEntity
 import site.remlit.aster.db.entity.UserPrivateEntity
 import site.remlit.aster.db.table.PasswordResetCodeTable
+import site.remlit.aster.event.user.UserPasswordResetEvent
 import site.remlit.aster.model.Service
 import site.remlit.aster.util.PASSWORD_HASH_COST
 import site.remlit.aster.util.PASSWORD_MIN_LENGTH
+import site.remlit.aster.util.model.fromEntity
 
 /**
  * Service for managing password resets.
@@ -64,7 +67,6 @@ object PasswordResetService : Service {
 	 * Mark a password reset code as used and set new password.
 	 *
 	 * @param code Password reset code string
-	 * @param user User resetting password
 	 * @param password User's new password
 	 * */
 	@JvmStatic
@@ -93,5 +95,7 @@ object PasswordResetService : Service {
 				it.usedAt = TimeService.now()
 			}
 		}
+
+        UserPasswordResetEvent(User.fromEntity(user)).call()
 	}
 }

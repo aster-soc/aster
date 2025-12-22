@@ -23,20 +23,20 @@ import site.remlit.aster.event.application.ApplicationBeginShutdownEvent
 import site.remlit.aster.event.application.ApplicationBeginStartEvent
 import site.remlit.aster.event.application.ApplicationFinishShutdownEvent
 import site.remlit.aster.event.application.ApplicationFinishStartEvent
+import site.remlit.aster.event.internal.InternalRouterReloadEvent
 import site.remlit.aster.model.ApiException
 import site.remlit.aster.model.Configuration
 import site.remlit.aster.model.ap.ApValidationException
 import site.remlit.aster.model.ap.ApValidationExceptionType
 import site.remlit.aster.registry.ApObjectTypeRegistry
-import site.remlit.aster.registry.EventRegistry
 import site.remlit.aster.registry.PluginRegistry
 import site.remlit.aster.service.CommandLineService
 import site.remlit.aster.service.IdentifierService
 import site.remlit.aster.service.MigrationService
-import site.remlit.aster.service.PluginService
 import site.remlit.aster.service.SetupService
 import site.remlit.aster.util.jsonConfig
 import site.remlit.aster.util.setJsonConfig
+import site.remlit.effekt.effect
 
 internal fun main(args: Array<String>) {
 	if (args.isNotEmpty() && !args[0].startsWith("-")) {
@@ -70,12 +70,11 @@ fun Application.module() {
 		this.log.info("Shutting down...")
 		ApplicationBeginShutdownEvent().call()
 		PluginRegistry.disableAll()
-		EventRegistry.clearListeners()
 	})
 
 	ApObjectTypeRegistry.registerInternal()
 
-	PluginService.initialize()
+	PluginRegistry.initialize()
 
 	setJsonConfig()
 
@@ -85,19 +84,19 @@ fun Application.module() {
 	MigrationService.isUpToDate()
 	configureQueue()
 
-	runBlocking {
-		SetupService.setup()
-	}
+	SetupService.setup()
 
 	install(CallLogging) {
 		filter { call ->
 			!call.request.uri.startsWith("/metrics") &&
 					!call.request.uri.startsWith("/assets") &&
 					!call.request.uri.startsWith("/admin/assets") &&
+					!call.request.uri.startsWith("/uikit") &&
 					!call.request.uri.startsWith("/favicon") &&
 					!call.request.uri.startsWith("/installHook.js") &&
 					!call.request.uri.startsWith("/admin/installHook.js") &&
-					!call.request.uri.startsWith("/manifest.json")
+					!call.request.uri.startsWith("/manifest.json") &&
+					!call.request.uri.startsWith("/robots.txt")
 		}
 		format { call ->
 			val method = call.request.httpMethod.value
@@ -172,6 +171,10 @@ fun Application.module() {
 	}
 
 	configureRouting()
+
+	effect<InternalRouterReloadEvent> {
+		log.warn("Unable to restart router. Please restart Aster for routes to update.")
+	}
 
 	ApplicationFinishStartEvent().call()
 }

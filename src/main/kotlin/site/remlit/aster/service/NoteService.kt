@@ -1,5 +1,6 @@
 package site.remlit.aster.service
 
+import kotlinx.coroutines.runBlocking
 import org.jetbrains.exposed.v1.core.JoinType
 import org.jetbrains.exposed.v1.core.Op
 import org.jetbrains.exposed.v1.core.alias
@@ -33,16 +34,22 @@ import site.remlit.aster.model.Configuration
 import site.remlit.aster.model.Service
 import site.remlit.aster.model.ap.ApIdOrObject
 import site.remlit.aster.model.ap.ApNote
+import site.remlit.aster.model.ap.ApTombstone
 import site.remlit.aster.model.ap.activity.ApAnnounceActivity
 import site.remlit.aster.model.ap.activity.ApCreateActivity
+import site.remlit.aster.model.ap.activity.ApDeleteActivity
 import site.remlit.aster.model.ap.activity.ApLikeActivity
 import site.remlit.aster.model.ap.activity.ApUndoActivity
+import site.remlit.aster.service.ap.ApActorService
 import site.remlit.aster.service.ap.ApDeliverService
 import site.remlit.aster.service.ap.ApIdService
 import site.remlit.aster.service.ap.ApVisibilityService
+import site.remlit.aster.util.detached
 import site.remlit.aster.util.model.fromEntities
 import site.remlit.aster.util.model.fromEntity
 import site.remlit.aster.util.sanitizeOrNull
+import site.remlit.mfmkt.MfmKt
+import site.remlit.mfmkt.model.MfmMention
 
 /**
  * Service for managing notes.
@@ -50,7 +57,7 @@ import site.remlit.aster.util.sanitizeOrNull
  * @since 2025.5.1.0-SNAPSHOT
  * */
 object NoteService : Service {
-	private val logger: Logger = LoggerFactory.getLogger(PluginService::class.java)
+	private val logger: Logger = LoggerFactory.getLogger(NoteService::class.java)
 
 	/**
 	 * Reference the "replyingTo" note on a note.
@@ -202,6 +209,8 @@ object NoteService : Service {
 		visibility: Visibility,
 		replyingTo: String? = null,
 	): Note {
+		val localTo = mutableListOf<String>()
+
 		transaction {
 			NoteEntity.new(id) {
 				apId = ApIdService.renderNoteApId(id)
@@ -225,37 +234,56 @@ object NoteService : Service {
 					this.replyingTo = NoteEntity[replyingTo.id]
 				}
 
-				/*
-				MfmKt.parse(content).map { it is MfmMention }.forEach {
-					it.toString()
-				} then resolve handles with ApActorService
-				* */
+				val to = mutableListOf<String>()
+
+				MfmKt.parse(content).filterIsInstance<MfmMention>().forEach {
+					val resolved = runBlocking { ApActorService.resolveHandle(it.toString()) }
+						?: return@forEach
+
+					to.add(resolved.id.toString())
+					if (resolved.host == null) localTo.add(resolved.id.toString())
+				}
+
+				this.to = to
 			}
 		}
 
 		val note = getById(id)!!
 
-		if (user.host == null) {
-			val (to, cc) = ApVisibilityService.visibilityToCc(
-				note.visibility,
-				user.followersUrl,
-				note.to
-			)
-
-			ApDeliverService.deliverToFollowers<ApCreateActivity>(
-				ApCreateActivity(
-					id = note.apId,
-					actor = user.apId,
-					`object` = ApIdOrObject.createObject { ApNote.fromEntity(note) },
-					to = to,
-					cc = cc
-				),
-				user,
-				// TODO: and to
-			)
-		}
-
 		NoteCreateEvent(note).call()
+
+		detached {
+			if (user.host == null) {
+				val (to, cc) = ApVisibilityService.visibilityToCc(
+					note.visibility,
+					user.followersUrl,
+					note.to
+				)
+
+				ApDeliverService.deliverToFollowers<ApCreateActivity>(
+					ApCreateActivity(
+						id = note.apId,
+						actor = user.apId,
+						`object` = ApIdOrObject.createObject { ApNote.fromEntity(note) },
+						to = to,
+						cc = cc
+					),
+					user,
+					// TODO: and to
+				)
+			}
+
+			localTo.forEach {
+				transaction {
+					NotificationService.create(
+						NotificationType.Mention,
+						UserEntity[it],
+						UserEntity[note.user.id],
+						note
+					)
+				}
+			}
+		}
 
 		return note
 	}
@@ -377,8 +405,7 @@ object NoteService : Service {
 				.singleOrNull()
 		}
 
-		if (like == null)
-			throw IllegalArgumentException("Like not found")
+		if (like == null) return
 
 		transaction { like.delete() }
 
@@ -459,7 +486,6 @@ object NoteService : Service {
 				ApAnnounceActivity(
 					repeat.id + "/activity",
 					actor = user.apId,
-					published = repeat.createdAt, // todo: format?
 					`object` = ApIdOrObject.Id(note.apId),
 					to = to,
 					cc = cc
@@ -484,6 +510,21 @@ object NoteService : Service {
 		if (entity == null) return@transaction
 
 		NoteDeleteEvent(Note.fromEntity(entity)).call()
+
+		if (entity.user.host == null)
+			ApDeliverService.deliverToFollowers<ApDeleteActivity>(
+				ApDeleteActivity(
+					entity.apId + "/delete",
+					actor = entity.user.apId,
+					`object` = ApIdOrObject.createObject {
+						ApTombstone(
+							entity.apId
+						)
+					}
+				),
+				transaction { entity.user }
+			)
+
 		entity.delete()
 	}
 

@@ -1,21 +1,21 @@
 package site.remlit.aster.service.ap
 
 import io.ktor.http.*
-import kotlinx.datetime.LocalDateTime
 import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.decodeFromJsonElement
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 import org.slf4j.LoggerFactory
 import site.remlit.aster.common.model.User
 import site.remlit.aster.common.model.generated.PartialUser
 import site.remlit.aster.db.entity.UserEntity
 import site.remlit.aster.model.Service
+import site.remlit.aster.model.WellKnown
 import site.remlit.aster.model.ap.ApImage
 import site.remlit.aster.service.FormatService
 import site.remlit.aster.service.IdentifierService
 import site.remlit.aster.service.InstanceService
 import site.remlit.aster.service.ResolverService
 import site.remlit.aster.service.SanitizerService
-import site.remlit.aster.service.TimeService
 import site.remlit.aster.service.UserService
 import site.remlit.aster.util.extractBoolean
 import site.remlit.aster.util.extractObject
@@ -23,6 +23,9 @@ import site.remlit.aster.util.extractString
 import site.remlit.aster.util.ifFails
 import site.remlit.aster.util.jsonConfig
 import site.remlit.aster.util.model.fromEntity
+import site.remlit.aster.util.toLocalDateTime
+import kotlin.time.Clock
+import kotlin.time.Instant
 
 /**
  * Service to handle ActivityPub actors.
@@ -56,6 +59,33 @@ object ApActorService : Service {
 			return update(toUser(resolveResponse, User.fromEntity(existing)) ?: return null)
 
 		return null
+	}
+
+	/**
+	 * Resolve an actor by their handle
+	 *
+	 * @param handle Handle starting with @, potentially also containing a host
+	 *
+	 * @return UserEntity or null
+	 * */
+	@JvmStatic
+	suspend fun resolveHandle(handle: String): UserEntity? {
+		val split = handle.split("@")
+
+		val username = split.getOrNull(1) ?: return null
+		val host = split.getOrNull(2) ?: return UserService.getByUsername(username)
+
+		InstanceService.resolve(host)
+		val webfingerResponse = jsonConfig.decodeFromString<WellKnown>(
+			jsonConfig.encodeToString(
+				ResolverService.resolveSigned("https://$host/.well-known/webfinger?resource=acct:@$username@$host")
+			)
+		)
+
+		val apId = webfingerResponse.links?.firstOrNull { it.rel == "self" }?.href
+			?: return null
+
+		return resolve(apId)
 	}
 
 	// partials used here since a regular user has the expectation of being real,
@@ -105,11 +135,13 @@ object ApActorService : Service {
 
 		val summary = extractedMisskeySummary ?: extractedSummary
 
-		val extractedIcon = extractString { json["icon"] }
-		val extractedImage = extractString { json["image"] }
+		val extractedIcon = json["icon"]
+		val extractedImage = json["image"]
 
-		val icon = if (extractedIcon != null) jsonConfig.decodeFromString<ApImage>(extractedIcon) else null
-		val image = if (extractedImage != null) jsonConfig.decodeFromString<ApImage>(extractedImage) else null
+		val icon = if (extractedIcon is JsonObject)
+			jsonConfig.decodeFromJsonElement<ApImage>(extractedIcon) else null
+		val image = if (extractedImage is JsonObject)
+			jsonConfig.decodeFromJsonElement<ApImage>(extractedImage) else null
 
 		val extractedPublicKey = extractString {
 			extractObject { json["publicKey"] }?.get("publicKeyPem")
@@ -123,11 +155,10 @@ object ApActorService : Service {
 		val followers = extractString { json["followers"] }
 		val following = extractString { json["following"] }
 
-		val published = extractString { json["published"] }.let {
-			if (it != null) ifFails({ LocalDateTime.parse(it) }) {
-				TimeService.now()
-			} else TimeService.now()
-		}
+		val extractedPublished = extractString { json["published"] }
+		val published = if (extractedPublished != null)
+			ifFails({ Instant.parse(extractedPublished) }) { Clock.System.now() }
+		else Clock.System.now()
 
 		return PartialUser(
 			id = existing?.id ?: IdentifierService.generate(),
@@ -164,7 +195,7 @@ object ApActorService : Service {
 			followingUrl = following,
 
 			createdAt = published,
-			updatedAt = if (existing != null) TimeService.now() else null,
+			updatedAt = if (existing != null) Clock.System.now() else null,
 
 			publicKey = existing?.publicKey ?: extractedPublicKey,
 		)
@@ -214,8 +245,8 @@ object ApActorService : Service {
 					it.followersUrl = user.followersUrl
 					it.followingUrl = user.followingUrl
 
-					it.createdAt = user.createdAt ?: TimeService.now()
-					it.updatedAt = user.updatedAt
+					it.createdAt = (user.createdAt ?: Clock.System.now()).toLocalDateTime()
+					it.updatedAt = user.updatedAt?.toLocalDateTime()
 
 					it.publicKey = user.publicKey!!
 				}
@@ -272,8 +303,8 @@ object ApActorService : Service {
 					this.followersUrl = user.followersUrl
 					this.followingUrl = user.followingUrl
 
-					this.createdAt = user.createdAt ?: TimeService.now()
-					this.updatedAt = user.updatedAt
+					this.createdAt = (user.createdAt ?: Clock.System.now()).toLocalDateTime()
+					this.updatedAt = user.updatedAt?.toLocalDateTime()
 
 					this.publicKey = user.publicKey!!
 				}

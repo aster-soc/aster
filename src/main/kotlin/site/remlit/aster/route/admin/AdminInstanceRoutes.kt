@@ -3,16 +3,11 @@ package site.remlit.aster.route.admin
 import io.ktor.http.*
 import io.ktor.server.html.*
 import io.ktor.server.routing.*
-import kotlinx.html.body
-import kotlinx.html.button
 import kotlinx.html.classes
-import kotlinx.html.head
 import kotlinx.html.p
-import kotlinx.html.styleLink
 import kotlinx.html.table
 import kotlinx.html.td
 import kotlinx.html.th
-import kotlinx.html.title
 import kotlinx.html.tr
 import org.jetbrains.exposed.v1.core.neq
 import site.remlit.aster.common.model.type.RoleType
@@ -21,9 +16,9 @@ import site.remlit.aster.model.Configuration
 import site.remlit.aster.registry.RouteRegistry
 import site.remlit.aster.service.InstanceService
 import site.remlit.aster.util.authentication
-import site.remlit.aster.util.webcomponent.adminHeader
+import site.remlit.aster.util.webcomponent.adminButton
 import site.remlit.aster.util.webcomponent.adminListNav
-import site.remlit.aster.util.webcomponent.adminMain
+import site.remlit.aster.util.webcomponent.adminPage
 
 internal object AdminInstanceRoutes {
 	fun register() =
@@ -46,39 +41,32 @@ internal object AdminInstanceRoutes {
 					)
 
 					call.respondHtml(HttpStatusCode.OK) {
-						head {
-							title { +"Instances" }
-							styleLink("/admin/assets/index.css")
-						}
-						body {
-							adminHeader("Instances")
-							adminMain {
-								table {
+						adminPage(call.route.path) {
+							table {
+								tr {
+									classes = setOf("header")
+									th { +"Host" }
+									th { +"Software" }
+									th { +"Description" }
+									th { +"Actions" }
+								}
+								for (instance in instances) {
 									tr {
-										classes = setOf("header")
-										th { +"Host" }
-										th { +"Software" }
-										th { +"Description" }
-										th { +"Actions" }
-									}
-									for (instance in instances) {
-										tr {
-											td { +instance.host }
-											td { +"${instance.software} ${instance.version}" }
-											td { +(instance.description.orEmpty()) }
-											td {
-												button {
-													+"Suspend"
-												}
+										td { +instance.host }
+										td { +"${instance.software} ${instance.version}" }
+										td { +(instance.description.orEmpty()) }
+										td {
+											adminButton({ "" }) {
+												+"Block"
 											}
 										}
 									}
 								}
-								p {
-									+"${instances.size} instances shown, $totalInstances total."
-								}
-								adminListNav(offset, take)
 							}
+							p {
+								+"${instances.size} instances shown, $totalInstances total."
+							}
+							adminListNav(offset, take)
 						}
 					}
 				}

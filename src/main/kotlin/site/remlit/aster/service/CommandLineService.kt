@@ -52,7 +52,7 @@ object CommandLineService : Service {
 	}
 
 	suspend fun execute(args: Array<String>) {
-		println("debug: ${args.joinToString(" ")}")
+		logger.debug("Arguments: ${args.joinToString(" ")}")
 
 		Database.connection
 
@@ -111,41 +111,28 @@ object CommandLineService : Service {
 					val roles = RoleService.getAll()
 
 					for (role in roles) {
-						println("${role.id}	${role.name}	(${role.type})	${role.createdAt}	${role.updatedAt}")
+						logger.info("${role.id}	${role.name}	(${role.type})	${role.createdAt}	${role.updatedAt}")
 					}
 					return
 				}
 
-				"role:create" -> {
-					println("TODO")
-					return
-				}
+				"role:create" -> throw NotImplementedError()
 
 				"role:give" -> {
 					val userId = args[1]
 					val roleId = args[2]
 
-					if (userId.isEmpty()) {
+					if (userId.isEmpty())
 						throw IllegalArgumentException("User ID required as second argument")
-					}
 
-					if (roleId.isEmpty()) {
+					if (roleId.isEmpty())
 						throw IllegalArgumentException("Role ID required as third argument")
-					}
 
 					val user = UserService.getById(userId)
-
-					if (user == null) {
-						println("User $userId not found")
-						return
-					}
+						?: throw IllegalArgumentException("User $userId not found")
 
 					val role = RoleService.getById(roleId)
-
-					if (role == null) {
-						println("Role $roleId not found")
-						return
-					}
+						?: throw IllegalArgumentException("Role $roleId not found")
 
 					transaction {
 						val roles = user.roles.toMutableList()
@@ -155,34 +142,24 @@ object CommandLineService : Service {
 						user.flush()
 					}
 
-					println("Gave role ${role.name} to ${user.displayName ?: user.username}")
+					logger.info("Gave role ${role.name} to ${user.displayName ?: user.username}")
 				}
 
 				"role:revoke" -> {
 					val userId = args[1]
 					val roleId = args[2]
 
-					if (userId.isEmpty()) {
+					if (userId.isEmpty())
 						throw IllegalArgumentException("User ID required as second argument")
-					}
 
-					if (roleId.isEmpty()) {
+					if (roleId.isEmpty())
 						throw IllegalArgumentException("Role ID required as third argument")
-					}
 
 					val user = UserService.getById(userId)
-
-					if (user == null) {
-						println("User $userId not found")
-						return
-					}
+						?: throw IllegalArgumentException("User $userId not found")
 
 					val role = RoleService.getById(roleId)
-
-					if (role == null) {
-						println("Role $roleId not found")
-						return
-					}
+						?: throw IllegalArgumentException("Role $roleId not found")
 
 					transaction {
 						val roles = user.roles.toMutableList()
@@ -192,7 +169,7 @@ object CommandLineService : Service {
 						user.storeWrittenValues()
 					}
 
-					println("Revoked role ${role.name} from ${user.displayName ?: user.username}")
+					logger.info("Revoked role ${role.name} from ${user.displayName ?: user.username}")
 				}
 
 				"invite:generate" -> {
@@ -208,7 +185,7 @@ object CommandLineService : Service {
 						}
 					}
 
-					println("Created new invite: $code")
+					logger.info("Created new invite: $code")
 				}
 
 				else -> println("Unknown command ${args[0]}. Run with 'help' for commands.")

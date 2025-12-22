@@ -10,6 +10,7 @@ import org.jetbrains.annotations.ApiStatus
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 import site.remlit.aster.common.model.type.RoleType
 import site.remlit.aster.db.entity.UserEntity
+import site.remlit.aster.event.auth.AuthTokenUseEvent
 import site.remlit.aster.model.ApiException
 import site.remlit.aster.service.AuthService
 import site.remlit.aster.service.RoleService
@@ -59,19 +60,20 @@ private fun internalAuth(
 		val authCookie = request.cookies["AsAuthorization"]
 		val token = authHeader?.replace("Bearer ", "") ?: authCookie
 
-		val unauthenticated = ApiException(
-			HttpStatusCode.Unauthorized,
-			"Authentication failed"
-		)
-
 		val authEntity = if (optional && token != null) {
 			AuthService.getByToken(
 				token
 			)
 		} else if (!optional) {
 			AuthService.getByToken(
-				token ?: throw unauthenticated
-			) ?: throw unauthenticated
+				token ?: throw ApiException(
+                    HttpStatusCode.Unauthorized,
+                    "Authentication failed"
+                )
+			) ?: throw ApiException(
+                HttpStatusCode.Unauthorized,
+                "Authentication failed"
+            )
 		} else {
 			null
 		}
@@ -93,15 +95,23 @@ private fun internalAuth(
 			if (requiredRole != null) {
 				when (requiredRole) {
 					RoleType.Mod -> if (highestRole != RoleType.Admin && highestRole != RoleType.Mod)
-						throw unauthenticated
+						throw ApiException(
+                            HttpStatusCode.Unauthorized,
+                            "Authentication failed"
+                        )
 
 					RoleType.Admin -> if (highestRole != RoleType.Admin)
-						throw unauthenticated
+						throw ApiException(
+                            HttpStatusCode.Unauthorized,
+                            "Authentication failed"
+                        )
 
 					else -> {}
 				}
 			}
 		}
+
+        if (authEntity != null) AuthTokenUseEvent(authEntity).call()
 	}
 }
 

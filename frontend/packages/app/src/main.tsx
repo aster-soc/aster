@@ -4,6 +4,7 @@ import {createRoot} from 'react-dom/client'
 import {RouterProvider} from "@tanstack/react-router";
 import router from "./lib/router.tsx";
 import './main.scss'
+import "preact/debug";
 
 const rootElement = document.getElementById('root')!
 if (!rootElement.innerHTML) {

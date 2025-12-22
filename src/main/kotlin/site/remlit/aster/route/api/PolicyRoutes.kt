@@ -11,11 +11,9 @@ import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 import site.remlit.aster.common.model.Policy
 import site.remlit.aster.common.model.type.PolicyType
 import site.remlit.aster.common.model.type.RoleType
-import site.remlit.aster.db.entity.PolicyEntity
 import site.remlit.aster.db.table.PolicyTable
 import site.remlit.aster.model.ApiException
 import site.remlit.aster.registry.RouteRegistry
-import site.remlit.aster.service.IdentifierService
 import site.remlit.aster.service.PolicyService
 import site.remlit.aster.service.TimelineService
 import site.remlit.aster.util.authentication
@@ -59,20 +57,7 @@ internal object PolicyRoutes {
 					)
 						throw ApiException(HttpStatusCode.BadRequest, "This policy type requires content")
 
-					val id = IdentifierService.generate()
-
-					transaction {
-						PolicyEntity.new(id) {
-							type = body.type
-							host = body.host
-							content = body.content
-						}
-					}
-
-					val policy = PolicyService.getById(id) ?: throw ApiException(
-						HttpStatusCode.NotFound,
-						"Policy doesn't exist"
-					)
+					val policy = PolicyService.create(body.type, body.host, body.content)
 
 					call.respond(Policy.fromEntity(policy))
 				}

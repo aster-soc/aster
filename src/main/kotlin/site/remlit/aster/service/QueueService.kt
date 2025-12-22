@@ -130,7 +130,8 @@ object QueueService : Service {
 			InboxQueueEntity
 				.find {
 					(InboxQueueTable.status eq QueueStatus.PENDING) and (InboxQueueTable.id notInList lockedIds) or
-							(InboxQueueTable.status eq QueueStatus.FAILED and (InboxQueueTable.retryAt lessEq TimeService.now()))
+							(InboxQueueTable.status eq QueueStatus.FAILED and (InboxQueueTable.retryAt lessEq TimeService.now())
+									and (InboxQueueTable.retries lessEq Configuration.queue.inbox.maxRetries))
 				}
 				.take(Configuration.queue.inbox.concurrency)
 				.toList()
@@ -154,7 +155,8 @@ object QueueService : Service {
 			DeliverQueueEntity
 				.find {
 					(DeliverQueueTable.status eq QueueStatus.PENDING) and (DeliverQueueTable.id notInList lockedIds) or
-							(DeliverQueueTable.status eq QueueStatus.FAILED and (DeliverQueueTable.retryAt lessEq TimeService.now()))
+							(DeliverQueueTable.status eq QueueStatus.FAILED and (DeliverQueueTable.retryAt lessEq TimeService.now())
+									and (DeliverQueueTable.retries lessEq Configuration.queue.deliver.maxRetries))
 				}
 				.take(Configuration.queue.deliver.concurrency)
 				.toList()

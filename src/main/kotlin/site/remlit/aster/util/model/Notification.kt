@@ -5,6 +5,7 @@ import site.remlit.aster.common.model.Notification
 import site.remlit.aster.common.model.Relationship
 import site.remlit.aster.common.model.User
 import site.remlit.aster.db.entity.NotificationEntity
+import site.remlit.aster.util.toLocalInstant
 
 fun Notification.Companion.fromEntity(entity: NotificationEntity): Notification = Notification(
 	id = entity.id.toString(),
@@ -13,7 +14,7 @@ fun Notification.Companion.fromEntity(entity: NotificationEntity): Notification 
 	from = User.fromEntity(entity.from),
 	note = if (entity.note != null) Note.fromEntity(entity.note!!) else null,
 	relationship = if (entity.relationship != null) Relationship.fromEntity(entity.relationship!!) else null,
-	createdAt = entity.createdAt,
+	createdAt = entity.createdAt.toLocalInstant(),
 )
 
 fun Notification.Companion.fromEntities(entities: List<NotificationEntity>): List<Notification> =

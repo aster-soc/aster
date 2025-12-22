@@ -123,7 +123,7 @@ class Api {
 
 		@JsStatic
 		fun deleteNote(id: String) =
-			Https.delete("/api/note/$id/like")
+			Https.delete("/api/note/$id")
 				.unsafeCast<Promise<Note?>>()
 
 		@JsStatic
@@ -152,6 +152,6 @@ class Api {
 
 		@JsStatic
 		fun upload(data: FormData) =
-			Https.post("/upload", true, data)
+			Https.postRaw("/upload", true, data)
 	}
 }

@@ -3,11 +3,14 @@ package site.remlit.aster.service
 import org.jetbrains.exposed.v1.core.Op
 import org.jetbrains.exposed.v1.core.eq
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
+import site.remlit.aster.common.model.Policy
 import site.remlit.aster.common.model.type.PolicyType
 import site.remlit.aster.db.entity.PolicyEntity
 import site.remlit.aster.db.table.PolicyTable
+import site.remlit.aster.event.policy.PolicyCreateEvent
 import site.remlit.aster.model.Configuration
 import site.remlit.aster.model.Service
+import site.remlit.aster.util.model.fromEntity
 
 /**
  * Service for managing federation policies.
@@ -93,5 +96,36 @@ object PolicyService : Service {
 		}
 
 		return reducedHosts
+	}
+
+	/**
+	 * Create a new federation policy
+	 *
+	 * @param type Type of policy
+	 * @param host Host policy is applied to
+	 * @param content Content, if applicable
+	 *
+	 * @return Created policy
+	 * */
+	@JvmStatic
+	fun create(
+		type: PolicyType,
+		host: String,
+		content: String? = null,
+	): PolicyEntity {
+		val id = IdentifierService.generate()
+
+		transaction {
+			PolicyEntity.new(id) {
+				this.type = type
+				this.host = host
+				this.content = content
+			}
+		}
+
+        val policy = getById(id)!!
+        PolicyCreateEvent(Policy.fromEntity(policy)).call()
+
+		return policy
 	}
 }

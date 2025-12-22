@@ -1,3 +1,5 @@
+import org.gradle.internal.extensions.stdlib.capitalized
+
 plugins {
 	`maven-publish`
 
@@ -49,29 +51,19 @@ kotlin {
 
 // docs
 
-val commonSourcesJar by tasks.registering(Jar::class) {
-	archiveBaseName = project.name
-	archiveClassifier = "sources"
+dokka {
+	dokkaPublications.html {
+		moduleName.set(project.name.capitalized())
+	}
 }
 
-val commonDokkaHtmlZip by tasks.registering(Zip::class) {
-	archiveBaseName = project.name
-	archiveClassifier = "dokka"
-	dependsOn(tasks.dokkaHtml)
-	from(tasks.dokkaHtml.map { it.outputDirectory })
-}
-
-artifacts {
-	add("archives", commonSourcesJar)
-	add("archives", commonDokkaHtmlZip)
+val dokkaZip by tasks.registering(Zip::class) {
+	dependsOn("dokkaGenerateHtml")
+	archiveClassifier.set("dokka")
+	from(layout.buildDirectory.dir("dokka/html"))
 }
 
 // publishing
-
-tasks.publish {
-	dependsOn("commonSourcesJar")
-	dependsOn("commonDokkaHtmlZip")
-}
 
 publishing {
 	repositories {
@@ -93,8 +85,7 @@ publishing {
 			artifactId = "common"
 			version = project.version.toString()
 
-			artifact(commonSourcesJar)
-			artifact(commonDokkaHtmlZip)
+			artifact(dokkaZip)
 
 			pom {
 				name = "common"

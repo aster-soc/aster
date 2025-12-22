@@ -6,7 +6,7 @@ import site.remlit.aster.registry.InboxHandlerRegistry
 import site.remlit.aster.service.QueueService
 
 @ApiStatus.Internal
-fun Application.configureQueue() {
+internal fun Application.configureQueue() {
 	InboxHandlerRegistry.registerDefaults()
 	QueueService.initialize()
 }

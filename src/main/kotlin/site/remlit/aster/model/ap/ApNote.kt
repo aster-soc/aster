@@ -4,8 +4,8 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import site.remlit.aster.common.model.Note
 import site.remlit.aster.common.model.Visibility
-import site.remlit.aster.service.FormatService
 import site.remlit.aster.service.ap.ApVisibilityService
+import kotlin.time.Instant
 
 @Serializable
 data class ApNote(
@@ -28,7 +28,7 @@ data class ApNote(
 	//val attachment: List<ApDocument>? = null,
 	//val tag: List<ApTag>? = null
 
-	val published: String,
+	val published: Instant,
 	val visibility: Visibility? = null,
 
 	val to: List<String>,
@@ -49,7 +49,7 @@ data class ApNote(
 				inReplyTo = note.replyingTo?.apId,
 				content = note.content,
 				misskeyContent = note.content,
-				published = FormatService.formatToStandardDateTime(note.createdAt),
+				published = note.createdAt,
 				visibility = note.visibility,
 				to = to,
 				cc = cc

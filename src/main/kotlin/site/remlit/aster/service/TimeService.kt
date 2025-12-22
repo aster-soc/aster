@@ -15,6 +15,8 @@ import kotlin.time.ExperimentalTime
  *
  * @since 2025.5.1.0-SNAPSHOT
  * */
+@Suppress("MagicNumber")
+@OptIn(ExperimentalTime::class)
 object TimeService : Service {
 	/**
 	 * Gets current LocalDateTime
@@ -22,10 +24,30 @@ object TimeService : Service {
 	 * @return Current LocalDateTime
 	 * */
 	@JvmStatic
-	@OptIn(ExperimentalTime::class)
-	fun now(): LocalDateTime {
-		return Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
+	fun now(): LocalDateTime = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
+
+	/**
+	 * Creates a LocalDateTime a specified amount of seconds in the past.
+	 *
+	 * @param seconds Number of seconds in the past
+	 *
+	 * @return Created LocalDateTime
+	 * */
+	@JvmStatic
+	fun secondsAgo(seconds: Long): LocalDateTime {
+		return now()
+			.toJavaLocalDateTime().minus(seconds, ChronoUnit.SECONDS).toKotlinLocalDateTime()
 	}
+
+	/**
+	 * Creates a LocalDateTime a specified amount of minutes in the past.
+	 *
+	 * @param minutes Number of minutes in the past
+	 *
+	 * @return Created LocalDateTime
+	 * */
+	@JvmStatic
+	fun minutesAgo(minutes: Long): LocalDateTime = secondsAgo(minutes * 60)
 
 	/**
 	 * Creates a LocalDateTime a specified amount of hours in the past.
@@ -35,10 +57,7 @@ object TimeService : Service {
 	 * @return Created LocalDateTime
 	 * */
 	@JvmStatic
-	fun hoursAgo(hours: Long): LocalDateTime {
-		return now()
-			.toJavaLocalDateTime().minus(hours, ChronoUnit.HOURS).toKotlinLocalDateTime()
-	}
+	fun hoursAgo(hours: Long): LocalDateTime = minutesAgo(hours * 60)
 
 	/**
 	 * Creates a LocalDateTime a specified amount of days in the past.
@@ -49,4 +68,14 @@ object TimeService : Service {
 	 * */
 	@JvmStatic
 	fun daysAgo(days: Long): LocalDateTime = hoursAgo(days * 24)
+
+	/**
+	 * Creates a LocalDateTime a specified amount of weeks in the past.
+	 *
+	 * @param weeks Number of weeks in the past
+	 *
+	 * @return Created LocalDateTime
+	 * */
+	@JvmStatic
+	fun weeksAgo(weeks: Long): LocalDateTime = daysAgo(weeks * 7)
 }
