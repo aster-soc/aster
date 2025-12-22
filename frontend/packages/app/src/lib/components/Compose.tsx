@@ -15,6 +15,7 @@ import {store} from "../utils/state.ts";
 import NoteSimple from "./NoteSimple.tsx";
 import {useQuery} from "@tanstack/react-query";
 import {Api} from 'aster-common'
+import alert, {Alert, AlertType} from "../utils/alert.ts";
 
 function Compose() {
     const replyingTo = useStore(store, (state) => state["replyingTo"]);
@@ -89,6 +90,8 @@ function Compose() {
                 store.setState((state) => {
                     return {...state, ["replyingTo"]: undefined, ["quoting"]: undefined}
                 })
+
+                alert.add(new Alert("", AlertType.Success, "Posted note"))
             }
         })
     }

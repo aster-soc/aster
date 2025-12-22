@@ -6,12 +6,12 @@ import site.remlit.aster.common.model.Note
 import site.remlit.aster.common.model.SmallNote
 import site.remlit.aster.common.model.SmallUser
 import site.remlit.aster.common.model.User
+import site.remlit.aster.common.util.toLocalInstant
 import site.remlit.aster.db.entity.NoteEntity
 import site.remlit.aster.db.entity.NoteLikeEntity
 import site.remlit.aster.db.table.NoteLikeTable
 import site.remlit.aster.db.table.NoteTable
 import site.remlit.aster.service.NoteService
-import site.remlit.aster.util.toLocalInstant
 
 
 fun Note.Companion.fromEntity(entity: NoteEntity, depth: Int = 0): Note {

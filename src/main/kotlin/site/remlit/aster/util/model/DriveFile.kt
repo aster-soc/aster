@@ -2,8 +2,8 @@ package site.remlit.aster.util.model
 
 import site.remlit.aster.common.model.DriveFile
 import site.remlit.aster.common.model.User
+import site.remlit.aster.common.util.toLocalInstant
 import site.remlit.aster.db.entity.DriveFileEntity
-import site.remlit.aster.util.toLocalInstant
 
 fun DriveFile.Companion.fromEntity(entity: DriveFileEntity): DriveFile = DriveFile(
 	id = entity.id.toString(),

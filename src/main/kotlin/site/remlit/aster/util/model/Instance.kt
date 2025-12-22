@@ -1,8 +1,8 @@
 package site.remlit.aster.util.model
 
 import site.remlit.aster.common.model.Instance
+import site.remlit.aster.common.util.toLocalInstant
 import site.remlit.aster.db.entity.InstanceEntity
-import site.remlit.aster.util.toLocalInstant
 
 fun Instance.Companion.fromEntity(entity: InstanceEntity): Instance = Instance(
 	id = entity.id.toString(),

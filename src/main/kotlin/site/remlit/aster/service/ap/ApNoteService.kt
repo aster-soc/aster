@@ -9,6 +9,9 @@ import site.remlit.aster.common.model.Note
 import site.remlit.aster.common.model.User
 import site.remlit.aster.common.model.Visibility
 import site.remlit.aster.common.model.generated.PartialNote
+import site.remlit.aster.common.util.extractString
+import site.remlit.aster.common.util.orNull
+import site.remlit.aster.common.util.toLocalDateTime
 import site.remlit.aster.db.entity.NoteEntity
 import site.remlit.aster.model.Configuration
 import site.remlit.aster.model.Service
@@ -17,11 +20,8 @@ import site.remlit.aster.service.InstanceService
 import site.remlit.aster.service.NoteService
 import site.remlit.aster.service.ResolverService
 import site.remlit.aster.service.UserService
-import site.remlit.aster.util.extractString
-import site.remlit.aster.util.ifFails
 import site.remlit.aster.util.jsonConfig
 import site.remlit.aster.util.model.fromEntity
-import site.remlit.aster.util.toLocalDateTime
 import kotlin.time.Clock
 import kotlin.time.Instant
 
@@ -103,7 +103,7 @@ object ApNoteService : Service {
 
 		val extractedPublished = extractString { json["published"] }
 		val published = if (extractedPublished != null)
-			ifFails({ Instant.parse(extractedPublished) }) { Clock.System.now() }
+			orNull { Instant.parse(extractedPublished) } ?: Clock.System.now()
 		else Clock.System.now()
 
 		val to = jsonConfig.decodeFromJsonElement<List<String>>(json["to"] ?: return null)

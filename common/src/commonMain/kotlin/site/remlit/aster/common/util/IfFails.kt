@@ -1,4 +1,4 @@
-package site.remlit.aster.util
+package site.remlit.aster.common.util
 
 inline fun <T> ifFails(block: () -> T, backup: () -> T): T =
 	try {

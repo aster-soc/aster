@@ -7,6 +7,11 @@ import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 import org.slf4j.LoggerFactory
 import site.remlit.aster.common.model.User
 import site.remlit.aster.common.model.generated.PartialUser
+import site.remlit.aster.common.util.extractBoolean
+import site.remlit.aster.common.util.extractObject
+import site.remlit.aster.common.util.extractString
+import site.remlit.aster.common.util.orNull
+import site.remlit.aster.common.util.toLocalDateTime
 import site.remlit.aster.db.entity.UserEntity
 import site.remlit.aster.model.Service
 import site.remlit.aster.model.WellKnown
@@ -17,13 +22,8 @@ import site.remlit.aster.service.InstanceService
 import site.remlit.aster.service.ResolverService
 import site.remlit.aster.service.SanitizerService
 import site.remlit.aster.service.UserService
-import site.remlit.aster.util.extractBoolean
-import site.remlit.aster.util.extractObject
-import site.remlit.aster.util.extractString
-import site.remlit.aster.util.ifFails
 import site.remlit.aster.util.jsonConfig
 import site.remlit.aster.util.model.fromEntity
-import site.remlit.aster.util.toLocalDateTime
 import kotlin.time.Clock
 import kotlin.time.Instant
 
@@ -157,7 +157,7 @@ object ApActorService : Service {
 
 		val extractedPublished = extractString { json["published"] }
 		val published = if (extractedPublished != null)
-			ifFails({ Instant.parse(extractedPublished) }) { Clock.System.now() }
+			orNull { Instant.parse(extractedPublished) } ?: Clock.System.now()
 		else Clock.System.now()
 
 		return PartialUser(

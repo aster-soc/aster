@@ -1,8 +1,8 @@
 package site.remlit.aster.util.model
 
 import site.remlit.aster.common.model.Policy
+import site.remlit.aster.common.util.toLocalInstant
 import site.remlit.aster.db.entity.PolicyEntity
-import site.remlit.aster.util.toLocalInstant
 
 
 fun Policy.Companion.fromEntity(entity: PolicyEntity): Policy = Policy(

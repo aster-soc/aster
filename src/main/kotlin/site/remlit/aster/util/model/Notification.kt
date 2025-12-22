@@ -4,8 +4,8 @@ import site.remlit.aster.common.model.Note
 import site.remlit.aster.common.model.Notification
 import site.remlit.aster.common.model.Relationship
 import site.remlit.aster.common.model.User
+import site.remlit.aster.common.util.toLocalInstant
 import site.remlit.aster.db.entity.NotificationEntity
-import site.remlit.aster.util.toLocalInstant
 
 fun Notification.Companion.fromEntity(entity: NotificationEntity): Notification = Notification(
 	id = entity.id.toString(),

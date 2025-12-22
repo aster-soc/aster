@@ -2,9 +2,9 @@ package site.remlit.aster.model.ap
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import site.remlit.aster.common.util.toLocalInstant
 import site.remlit.aster.db.entity.UserEntity
 import site.remlit.aster.service.ap.ApIdService
-import site.remlit.aster.util.toLocalInstant
 import kotlin.time.Instant
 
 /**

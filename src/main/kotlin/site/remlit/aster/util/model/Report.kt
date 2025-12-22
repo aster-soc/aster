@@ -3,8 +3,8 @@ package site.remlit.aster.util.model
 import site.remlit.aster.common.model.Note
 import site.remlit.aster.common.model.Report
 import site.remlit.aster.common.model.User
+import site.remlit.aster.common.util.toLocalInstant
 import site.remlit.aster.db.entity.ReportEntity
-import site.remlit.aster.util.toLocalInstant
 
 fun Report.Companion.fromEntity(entity: ReportEntity): Report = Report(
 	id = entity.id.toString(),

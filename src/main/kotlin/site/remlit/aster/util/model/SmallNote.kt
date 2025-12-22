@@ -3,8 +3,8 @@ package site.remlit.aster.util.model
 import site.remlit.aster.common.model.SmallNote
 import site.remlit.aster.common.model.SmallUser
 import site.remlit.aster.common.model.User
+import site.remlit.aster.common.util.toLocalInstant
 import site.remlit.aster.db.entity.NoteEntity
-import site.remlit.aster.util.toLocalInstant
 
 fun SmallNote.Companion.fromEntity(entity: NoteEntity): SmallNote {
 	return SmallNote(

@@ -1,4 +1,4 @@
-package site.remlit.aster.util
+package site.remlit.aster.common.util
 
 fun List<Int>.median(): Int {
 	val n = this.sorted()

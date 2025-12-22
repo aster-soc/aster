@@ -1,8 +1,8 @@
 package site.remlit.aster.util.model
 
 import site.remlit.aster.common.model.Emoji
+import site.remlit.aster.common.util.toLocalInstant
 import site.remlit.aster.db.entity.EmojiEntity
-import site.remlit.aster.util.toLocalInstant
 
 fun Emoji.Companion.fromEntity(entity: EmojiEntity): Emoji =
 	Emoji(

@@ -1,4 +1,4 @@
-package site.remlit.aster.util
+package site.remlit.aster.common.util
 
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement

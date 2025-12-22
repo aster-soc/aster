@@ -2,8 +2,8 @@ package site.remlit.aster.util.model
 
 import site.remlit.aster.common.model.Invite
 import site.remlit.aster.common.model.User
+import site.remlit.aster.common.util.toLocalInstant
 import site.remlit.aster.db.entity.InviteEntity
-import site.remlit.aster.util.toLocalInstant
 
 
 fun Invite.Companion.fromEntity(entity: InviteEntity): Invite = Invite(

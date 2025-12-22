@@ -1,4 +1,4 @@
-package site.remlit.aster.util
+package site.remlit.aster.common.util
 
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
