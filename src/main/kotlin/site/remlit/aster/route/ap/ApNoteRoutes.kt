@@ -43,7 +43,6 @@ internal object ApNoteRoutes {
 						ApAnnounceActivity(
 							note.apId,
 							actor = note.user.apId,
-							published = note.createdAt,
 							`object` = ApIdOrObject.Id(note.repeat!!.apId),
 							to = to,
 							cc = cc

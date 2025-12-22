@@ -173,7 +173,7 @@ fun Application.module() {
 	configureRouting()
 
 	effect<InternalRouterReloadEvent> {
-		log.warn("Currently, the router cannot reload. Please restart Aster for routes to update.")
+		log.warn("Unable to restart router. Please restart Aster for routes to update.")
 	}
 
 	ApplicationFinishStartEvent().call()

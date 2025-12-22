@@ -486,7 +486,6 @@ object NoteService : Service {
 				ApAnnounceActivity(
 					repeat.id + "/activity",
 					actor = user.apId,
-					published = repeat.createdAt, // todo: format?
 					`object` = ApIdOrObject.Id(note.apId),
 					to = to,
 					cc = cc
