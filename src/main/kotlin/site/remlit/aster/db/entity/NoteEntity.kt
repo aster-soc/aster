@@ -25,6 +25,8 @@ class NoteEntity(id: EntityID<String>) : Entity<String>(id) {
 
 	var repeat by NoteEntity optionalReferencedOn NoteTable.repeat
 
+	var attachments by NoteTable.attachments
+
 	var createdAt by NoteTable.createdAt
 	var updatedAt by NoteTable.updatedAt
 }

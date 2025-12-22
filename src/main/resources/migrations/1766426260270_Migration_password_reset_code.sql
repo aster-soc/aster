@@ -1,0 +1,1 @@
+ALTER TABLE password_reset_code ALTER COLUMN code TYPE VARCHAR(150);

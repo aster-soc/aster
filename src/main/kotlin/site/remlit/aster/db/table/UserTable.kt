@@ -5,47 +5,79 @@ import org.jetbrains.exposed.v1.core.dao.id.EntityID
 import org.jetbrains.exposed.v1.core.dao.id.IdTable
 import org.jetbrains.exposed.v1.datetime.CurrentDateTime
 import org.jetbrains.exposed.v1.datetime.datetime
+import site.remlit.aster.util.TEXT_LONG
+import site.remlit.aster.util.TEXT_MEDIUM
+import site.remlit.aster.util.TEXT_SMALL
+import site.remlit.aster.util.TEXT_SMALLER
+import site.remlit.aster.util.TEXT_TINY
 
 object UserTable : IdTable<String>("user") {
-	override val id: Column<EntityID<String>> = varchar("id", length = 125).uniqueIndex("unique_user_id").entityId()
+	override val id: Column<EntityID<String>> = varchar("id", length = TEXT_TINY)
+		.uniqueIndex().entityId()
 
-	val apId = varchar("apId", length = 1025).uniqueIndex("unique_user_apId")
-	val inbox = varchar("inbox", length = 1025)
-	val outbox = varchar("outbox", length = 1025).nullable()
+	val apId = varchar("apId", length = TEXT_MEDIUM)
+		.uniqueIndex()
+	val inbox = varchar("inbox", length = TEXT_MEDIUM)
+	val outbox = varchar("outbox", length = TEXT_MEDIUM)
+		.nullable()
 
-	val username = varchar("username", length = 250)
-	val host = varchar("host", length = 500).nullable()
-	val displayName = varchar("displayName", length = 500).nullable()
-	val bio = varchar("bio", length = 25000).nullable()
-	val location = varchar("location", length = 1025).nullable()
-	val birthday = varchar("birthday", length = 1025).nullable()
+	val username = varchar("username", length = TEXT_SMALLER)
+	val host = varchar("host", length = TEXT_MEDIUM)
+		.nullable()
+	val displayName = varchar("displayName", length = TEXT_SMALL)
+		.nullable()
+	val bio = varchar("bio", length = TEXT_LONG)
+		.nullable()
+	val location = varchar("location", length = TEXT_SMALL)
+		.nullable()
+	val birthday = varchar("birthday", length = TEXT_SMALL)
+		.nullable()
 
-	val avatar = varchar("avatar", length = 1025).nullable()
-	val avatarAlt = varchar("avatarAlt", length = 25000).nullable()
-	val banner = varchar("banner", length = 1025).nullable()
-	val bannerAlt = varchar("bannerAlt", length = 25000).nullable()
+	val avatar = varchar("avatar", length = TEXT_MEDIUM)
+		.nullable()
+	val avatarAlt = varchar("avatarAlt", length = TEXT_LONG)
+		.nullable()
+	val banner = varchar("banner", length = TEXT_MEDIUM)
+		.nullable()
+	val bannerAlt = varchar("bannerAlt", length = TEXT_LONG)
+		.nullable()
 
-	val locked = bool("locked").default(false)
-	val suspended = bool("suspended").default(false)
-	val activated = bool("activated").default(false)
-	val automated = bool("automated").default(false)
-	val discoverable = bool("discoverable").default(false)
-	val indexable = bool("indexable").default(false)
-	val sensitive = bool("sensitive").default(false)
+	val locked = bool("locked")
+		.default(false)
+	val suspended = bool("suspended")
+		.default(false)
+	val activated = bool("activated")
+		.default(false)
+	val automated = bool("automated")
+		.default(false)
+	val discoverable = bool("discoverable")
+		.default(false)
+	val indexable = bool("indexable")
+		.default(false)
+	val sensitive = bool("sensitive")
+		.default(false)
 
-	val roles = array<String>("roles").default(listOf())
-	val emojis = array<String>("emojis").default(listOf())
+	val roles = array<String>("roles")
+		.default(listOf())
+	val emojis = array<String>("emojis")
+		.default(listOf())
 
-	val isCat = bool("isCat").default(false)
-	val speakAsCat = bool("speakAsCat").default(false)
+	val isCat = bool("isCat")
+		.default(false)
+	val speakAsCat = bool("speakAsCat")
+		.default(false)
 
-	val followingUrl = varchar("followingUrl", length = 1025).uniqueIndex("unique_user_followingUrl").nullable()
-	val followersUrl = varchar("followersUrl", length = 1025).uniqueIndex("unique_user_followersUrl").nullable()
+	val followingUrl = varchar("followingUrl", length = TEXT_MEDIUM)
+		.uniqueIndex().nullable()
+	val followersUrl = varchar("followersUrl", length = TEXT_MEDIUM)
+		.uniqueIndex().nullable()
 
-	val createdAt = datetime("createdAt").defaultExpression(CurrentDateTime)
-	val updatedAt = datetime("updatedAt").nullable()
+	val createdAt = datetime("createdAt")
+		.defaultExpression(CurrentDateTime)
+	val updatedAt = datetime("updatedAt")
+		.nullable()
 
-	val publicKey = varchar("publicKey", length = 5000)
+	val publicKey = varchar("publicKey", length = TEXT_LONG)
 
 	override val primaryKey = PrimaryKey(id)
 }

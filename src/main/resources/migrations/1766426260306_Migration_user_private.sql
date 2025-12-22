@@ -1,0 +1,2 @@
+ALTER TABLE user_private ALTER COLUMN "password" TYPE VARCHAR(1000);
+ALTER TABLE user_private ALTER COLUMN "privateKey" TYPE VARCHAR(10000);

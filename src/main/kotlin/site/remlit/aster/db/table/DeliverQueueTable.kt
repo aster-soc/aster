@@ -5,21 +5,28 @@ import org.jetbrains.exposed.v1.core.dao.id.IdTable
 import org.jetbrains.exposed.v1.datetime.CurrentDateTime
 import org.jetbrains.exposed.v1.datetime.datetime
 import site.remlit.aster.model.QueueStatus
+import site.remlit.aster.util.TEXT_LONG
+import site.remlit.aster.util.TEXT_TINY
 
 object DeliverQueueTable : IdTable<String>("deliver_queue") {
-	override val id = varchar("id", length = 125).uniqueIndex("unique_deliver_queue_id").entityId()
+	override val id = varchar("id", length = TEXT_TINY)
+		.uniqueIndex().entityId()
 
 	val status = enumeration<QueueStatus>("status")
 
 	val content = blob("content")
 	val sender = optReference("sender", UserTable.id, ReferenceOption.CASCADE)
-	val inbox = varchar("inbox", length = 5000)
+	val inbox = varchar("inbox", length = TEXT_LONG)
 
-	val createdAt = datetime("createdAt").defaultExpression(CurrentDateTime)
-
-	val stacktrace = text("stacktrace").nullable()
-	val retryAt = datetime("retryAt").nullable()
+	val stacktrace = text("stacktrace")
+		.nullable()
+	val retryAt = datetime("retryAt")
+		.nullable()
 	val retries = integer("retries")
+		.default(0)
+
+	val createdAt = datetime("createdAt")
+		.defaultExpression(CurrentDateTime)
 
 	override val primaryKey = PrimaryKey(id)
 }

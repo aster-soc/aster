@@ -14,6 +14,7 @@ import site.remlit.aster.db.table.EmojiTable
 import site.remlit.aster.db.table.InboxQueueTable
 import site.remlit.aster.db.table.InstanceTable
 import site.remlit.aster.db.table.InviteTable
+import site.remlit.aster.db.table.NoteAttachmentTable
 import site.remlit.aster.db.table.NoteBookmarkTable
 import site.remlit.aster.db.table.NoteLikeTable
 import site.remlit.aster.db.table.NoteTable
@@ -106,6 +107,7 @@ object MigrationService : Service {
 				InviteTable,
 				ReportTable,
 				NoteTable,
+				NoteAttachmentTable,
 				NoteBookmarkTable,
 				NoteLikeTable,
 				NotificationTable,

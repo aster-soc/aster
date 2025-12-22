@@ -5,19 +5,29 @@ import org.jetbrains.exposed.v1.core.dao.id.EntityID
 import org.jetbrains.exposed.v1.core.dao.id.IdTable
 import org.jetbrains.exposed.v1.datetime.CurrentDateTime
 import org.jetbrains.exposed.v1.datetime.datetime
+import site.remlit.aster.util.TEXT_LONG
+import site.remlit.aster.util.TEXT_MEDIUM
+import site.remlit.aster.util.TEXT_SMALL
+import site.remlit.aster.util.TEXT_TINY
 
 object EmojiTable : IdTable<String>("emoji") {
-	override val id: Column<EntityID<String>> = varchar("id", length = 125).uniqueIndex("unique_emoji_id").entityId()
+	override val id: Column<EntityID<String>> = varchar("id", length = TEXT_TINY)
+		.uniqueIndex().entityId()
 
-	val apId = varchar("apId", length = 1025).uniqueIndex("unique_emoji_apId")
+	val apId = varchar("apId", length = TEXT_MEDIUM)
+		.uniqueIndex()
 
-	val name = varchar("name", length = 5000)
-    val category = varchar("category", length = 250).nullable()
-	val host = varchar("host", length = 500).nullable()
-	val src = varchar("src", length = 1025)
+	val name = varchar("name", length = TEXT_SMALL)
+	val category = varchar("category", length = TEXT_SMALL)
+		.nullable()
+	val host = varchar("host", length = TEXT_MEDIUM)
+		.nullable()
+	val src = varchar("src", length = TEXT_LONG)
 
-	val createdAt = datetime("createdAt").defaultExpression(CurrentDateTime)
-	val updatedAt = datetime("updatedAt").nullable()
+	val createdAt = datetime("createdAt")
+		.defaultExpression(CurrentDateTime)
+	val updatedAt = datetime("updatedAt")
+		.nullable()
 
 	override val primaryKey = PrimaryKey(id)
 }

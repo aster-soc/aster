@@ -1,0 +1,1 @@
+ALTER TABLE relationship ALTER COLUMN "activityId" TYPE VARCHAR(100000);

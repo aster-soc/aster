@@ -5,35 +5,45 @@ import org.jetbrains.exposed.v1.core.dao.id.IdTable
 import org.jetbrains.exposed.v1.datetime.CurrentDateTime
 import org.jetbrains.exposed.v1.datetime.datetime
 import site.remlit.aster.common.model.Visibility
+import site.remlit.aster.util.TEXT_LONG
+import site.remlit.aster.util.TEXT_MEDIUM
+import site.remlit.aster.util.TEXT_TINY
 
 object NoteTable : IdTable<String>("note") {
-	override val id = varchar("id", length = 125).uniqueIndex("unique_note_id").entityId()
+	override val id = varchar("id", length = TEXT_TINY)
+		.uniqueIndex().entityId()
 
-	val apId = varchar("apId", length = 1025).uniqueIndex("unique_note_apId")
-	val conversation = varchar("conversation", length = 1025).nullable()
+	val apId = varchar("apId", length = TEXT_MEDIUM)
+		.uniqueIndex()
+	val conversation = varchar("conversation", length = TEXT_MEDIUM)
+		.nullable()
 
 	val user = reference("user", UserTable.id, onDelete = ReferenceOption.CASCADE)
 	val replyingTo = optReference("replyingTo", NoteTable, onDelete = ReferenceOption.CASCADE)
 
-	val cw = varchar("cw", length = 5000).index("note_cw_index").nullable()
-	val content = varchar("content", length = 25000).index("note_content_index").nullable()
+	val cw = varchar("cw", length = TEXT_MEDIUM)
+		.index().nullable()
+	val content = varchar("content", length = TEXT_LONG)
+		.index().nullable()
 
 	val visibility = enumeration("visibility", Visibility::class)
 
-	val to = array<String>("to").default(listOf())
-	val tags = array<String>("tags").default(listOf())
-	val emojis = array<String>("emojis").default(listOf())
+	val to = array<String>("to")
+		.default(listOf())
+	val tags = array<String>("tags")
+		.default(listOf())
+	val emojis = array<String>("emojis")
+		.default(listOf())
 
 	val repeat = optReference("repeat", NoteTable, onDelete = ReferenceOption.CASCADE)
 
-	val createdAt = datetime("createdAt").defaultExpression(CurrentDateTime)
-	val updatedAt = datetime("updatedAt").nullable()
+	val attachments = array<String>("attachments")
+		.default(listOf())
+
+	val createdAt = datetime("createdAt")
+		.defaultExpression(CurrentDateTime)
+	val updatedAt = datetime("updatedAt")
+		.nullable()
 
 	override val primaryKey = PrimaryKey(id)
-
-	init {
-		// https://www.postgresql.org/docs/current/gin.html
-		index("note_cw_index", false, cw, indexType = "GIN")
-		index("note_content_index", false, content, indexType = "GIN")
-	}
 }
