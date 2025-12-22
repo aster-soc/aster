@@ -16,6 +16,6 @@ fun SmallUser.Companion.fromUser(user: User): SmallUser {
 		sensitive = user.sensitive,
 		isCat = user.isCat,
 		createdAt = user.createdAt,
-		updatedAt = user.updatedAt
+		updatedAt = user.updatedAt,
 	)
 }

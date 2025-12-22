@@ -3,6 +3,7 @@ package site.remlit.aster.util.model
 import site.remlit.aster.common.model.Relationship
 import site.remlit.aster.common.model.User
 import site.remlit.aster.db.entity.RelationshipEntity
+import site.remlit.aster.util.toLocalInstant
 
 
 fun Relationship.Companion.fromEntity(entity: RelationshipEntity) = Relationship(
@@ -15,8 +16,8 @@ fun Relationship.Companion.fromEntity(entity: RelationshipEntity) = Relationship
 
 	pending = entity.pending,
 
-	createdAt = entity.createdAt,
-	updatedAt = entity.updatedAt
+	createdAt = entity.createdAt.toLocalInstant(),
+	updatedAt = entity.updatedAt?.toLocalInstant(),
 )
 
 fun Relationship.Companion.fromEntities(entities: List<RelationshipEntity>): List<Relationship> =

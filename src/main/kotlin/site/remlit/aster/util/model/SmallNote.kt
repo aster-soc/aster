@@ -4,6 +4,7 @@ import site.remlit.aster.common.model.SmallNote
 import site.remlit.aster.common.model.SmallUser
 import site.remlit.aster.common.model.User
 import site.remlit.aster.db.entity.NoteEntity
+import site.remlit.aster.util.toLocalInstant
 
 fun SmallNote.Companion.fromEntity(entity: NoteEntity): SmallNote {
 	return SmallNote(
@@ -15,8 +16,8 @@ fun SmallNote.Companion.fromEntity(entity: NoteEntity): SmallNote {
 		visibility = entity.visibility,
 		to = entity.to,
 		tags = entity.tags,
-		createdAt = entity.createdAt,
-		updatedAt = entity.updatedAt,
+		createdAt = entity.createdAt.toLocalInstant(),
+		updatedAt = entity.updatedAt?.toLocalInstant(),
 	)
 }
 

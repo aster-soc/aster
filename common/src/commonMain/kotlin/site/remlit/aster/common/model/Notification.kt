@@ -1,8 +1,8 @@
 package site.remlit.aster.common.model
 
-import kotlinx.datetime.LocalDateTime
 import kotlinx.serialization.Serializable
 import kotlin.js.JsExport
+import kotlin.time.Instant
 
 @JsExport
 @Serializable
@@ -16,5 +16,5 @@ data class Notification(
 	val note: Note?,
 	val relationship: Relationship?,
 
-	val createdAt: LocalDateTime
+	val createdAt: Instant
 )

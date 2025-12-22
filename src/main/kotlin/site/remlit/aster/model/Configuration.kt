@@ -115,20 +115,19 @@ class ConfigurationDatabase : ConfigurationObject {
 class ConfigurationQueue : ConfigurationObject {
 	val inbox: ConfigurationSpecificQueue
 		get() = ConfigurationSpecificQueue(
-			(config?.propertyOrNull("queue.inbox.concurrency")?.getString()?.toInt() ?: 8)
+			(config?.propertyOrNull("queue.inbox.concurrency")?.getString()?.toInt() ?: 8),
+			((config?.propertyOrNull("queue.deliver.maxRetries")?.getString()?.toInt()) ?: 10)
 		)
 	val deliver: ConfigurationSpecificQueue
 		get() = ConfigurationSpecificQueue(
-			((config?.propertyOrNull("queue.deliver.concurrency")?.getString()?.toInt()) ?: 6)
-		)
-	val system: ConfigurationSpecificQueue
-		get() = ConfigurationSpecificQueue(
-			((config?.propertyOrNull("queue.system.concurrency")?.getString()?.toInt()) ?: 4)
+			((config?.propertyOrNull("queue.deliver.concurrency")?.getString()?.toInt()) ?: 6),
+			((config?.propertyOrNull("queue.deliver.maxRetries")?.getString()?.toInt()) ?: 15)
 		)
 }
 
 data class ConfigurationSpecificQueue(
-	val concurrency: Int
+	val concurrency: Int,
+	val maxRetries: Int
 ) : ConfigurationObject
 
 @Suppress("MagicNumber")

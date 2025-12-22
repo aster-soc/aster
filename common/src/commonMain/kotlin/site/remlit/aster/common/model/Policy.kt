@@ -1,8 +1,8 @@
 package site.remlit.aster.common.model
 
-import kotlinx.datetime.LocalDateTime
 import kotlinx.serialization.Serializable
 import kotlin.js.JsExport
+import kotlin.time.Instant
 
 @JsExport
 @Serializable
@@ -14,6 +14,6 @@ data class Policy(
 	val host: String,
 	val content: String? = null,
 
-	val createdAt: LocalDateTime,
-	val updatedAt: LocalDateTime? = null
+	val createdAt: Instant,
+	val updatedAt: Instant? = null
 )

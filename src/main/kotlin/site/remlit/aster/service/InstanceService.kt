@@ -17,6 +17,8 @@ import site.remlit.aster.util.extractArray
 import site.remlit.aster.util.extractObject
 import site.remlit.aster.util.extractString
 import site.remlit.aster.util.model.fromEntity
+import site.remlit.aster.util.toLocalDateTime
+import kotlin.time.Clock
 
 /**
  * Service for managing remote instances and resolving nodeinfo.
@@ -184,7 +186,7 @@ object InstanceService : Service {
 			contact = contact,
 
 			createdAt = null,
-			updatedAt = if (existing != null) TimeService.now() else null,
+			updatedAt = if (existing != null) Clock.System.now() else null,
 		)
 	}
 
@@ -212,14 +214,14 @@ object InstanceService : Service {
 					it.version = instance.version
 					it.contact = instance.contact
 
-					it.updatedAt = instance.updatedAt
+					it.updatedAt = instance.updatedAt?.toLocalDateTime()
 				}
 			}
 
-            val instance = getById(instance.id!!)!!
-            InstanceEditEvent(Instance.fromEntity(instance)).call()
+			val instance = getById(instance.id!!)!!
+			InstanceEditEvent(Instance.fromEntity(instance)).call()
 
-            return instance
+			return instance
 		} catch (_: Exception) {
 			return null
 		}
@@ -249,12 +251,12 @@ object InstanceService : Service {
 					this.version = instance.version
 					this.contact = instance.contact
 
-					this.updatedAt = instance.updatedAt
+					this.updatedAt = instance.updatedAt?.toLocalDateTime()
 				}
 			}
 
-            val instance = getById(instance.id!!)!!
-            InstanceDiscoverEvent(Instance.fromEntity(instance)).call()
+			val instance = getById(instance.id!!)!!
+			InstanceDiscoverEvent(Instance.fromEntity(instance)).call()
 
 			return instance
 		} catch (_: Exception) {

@@ -50,17 +50,17 @@ database:
   password: aster
 
 ## Queue ##
-# Queues are how Aster handles federating and system tasks
-#   threads: how many threads to have for a queue
-#   concurrency: how many jobs can be run on a thread at a time
+# Queues are how Aster handles federating
+#   concurrency: how many jobs can be run at a time
+#   maxRetries: how many times a job can be retries before discarded
 ##
 queue:
   inbox:
     concurrency: 8
+    maxRetries: 10
   deliver:
     concurrency: 6
-  system:
-    concurrency: 4
+    maxRetries: 15
 
 ## Timeline ##
 # Default objects:

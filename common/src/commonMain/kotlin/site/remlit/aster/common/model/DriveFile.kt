@@ -1,8 +1,8 @@
 package site.remlit.aster.common.model
 
-import kotlinx.datetime.LocalDateTime
 import kotlinx.serialization.Serializable
 import kotlin.js.JsExport
+import kotlin.time.Instant
 
 @JsExport
 @Serializable
@@ -17,6 +17,6 @@ data class DriveFile(
 
 	val user: User,
 
-	val createdAt: LocalDateTime,
-	val updatedAt: LocalDateTime?,
+	val createdAt: Instant,
+	val updatedAt: Instant? = null,
 )
