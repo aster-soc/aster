@@ -6,7 +6,6 @@ import {
     IconDashboard,
     IconDots,
     IconFolder,
-    IconHash,
     IconHome,
     IconSearch,
     IconSettings,
@@ -29,12 +28,6 @@ function NavigationWidget() {
                 <Button wide nav primary={pathname === "/notifications"} to={'/notifications'}>
                     <IconBell size={18}/>
                     Notifications
-                </Button>
-            </li>
-            <li>
-                <Button wide nav primary={pathname === "/explore"} to={'/explore'}>
-                    <IconHash size={18}/>
-                    Explore
                 </Button>
             </li>
             <li>
@@ -70,7 +63,7 @@ function NavigationWidget() {
                 </Button>
             </li>
             <li>
-                <Button wide nav primary={pathname === "/admin"} to={'/admin'}>
+                <Button wide nav primary={pathname === "/admin"} to={'/admin'} realLink>
                     <IconDashboard size={18}/>
                     Dashboard
                 </Button>
