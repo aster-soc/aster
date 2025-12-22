@@ -21,6 +21,14 @@ internal object FrontendRoutes {
 				call.respondRedirect("/uikit/branding/favicon.ico")
 			}
 
+			get("/apple-touch-icon.png") {
+				call.respondRedirect("/uikit/branding/apple-touch-icon.png")
+			}
+
+			get("/apple-touch-icon-120x120.png") {
+				call.respondRedirect("/uikit/branding/apple-touch-icon-120x120.png")
+			}
+
 			if (Configuration.builtinFrontend)
 				singlePageApplication {
 					useResources = true
