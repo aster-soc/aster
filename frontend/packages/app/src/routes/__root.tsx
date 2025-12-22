@@ -6,6 +6,7 @@ import alert from '../lib/utils/alert.ts'
 import {useState} from "react";
 import Container from "../lib/components/Container.tsx";
 import {IconAlertTriangle, IconCheck, IconInfoCircle, IconX} from "@tabler/icons-react";
+import BottomBar from "../lib/components/BottomBar.tsx";
 
 export const Route = createRootRoute({
     component: RootComponent,
@@ -47,6 +48,7 @@ function RootComponent() {
                 <Sidebar left/>
                 <main>
                     <Outlet/>
+                    <BottomBar/>
                 </main>
                 <Sidebar right/>
             </QueryClientProvider>

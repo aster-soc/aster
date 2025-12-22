@@ -1,0 +1,18 @@
+.bottomBar {
+  display: none;
+
+  align-items: center;
+  justify-content: space-between;
+
+  width: 100vw;
+  height: calc(65px + env(safe-area-inset-bottom));
+  box-sizing: border-box;
+
+  padding: 0 10% calc(10px + env(safe-area-inset-bottom)) 10%;
+
+  background-color: var(--bg-2-50);
+
+  @media screen and (max-width: 780px) {
+    display: flex;
+  }
+}

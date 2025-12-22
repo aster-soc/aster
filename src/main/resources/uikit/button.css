@@ -2,8 +2,28 @@
     gap: 8px;
     cursor: pointer;
 
+    @media screen and (max-width: 1215px) {
+        &.nav.collapse {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            font-size: 0;
+            gap: 0;
+
+            height: 40px;
+            width: 40px;
+
+            border-radius: var(--br-mx);
+        }
+    }
+
     &.thin {
         padding: 6px 8px;
+    }
+
+    &.circle {
+        border-radius: var(--br-mx);
     }
 
     &.wide {

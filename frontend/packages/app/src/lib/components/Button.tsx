@@ -9,14 +9,34 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
     primary?: boolean;
     danger?: boolean;
     nav?: boolean;
+    circle?: boolean;
+    collapse?: boolean;
     to?: string;
     realLink?: boolean;
     ref?: RefObject<HTMLButtonElement | HTMLAnchorElement | null>;
     children: React.ReactNode;
 }
 
-function Button({wide, thin, center, primary, danger, nav, to, realLink, ref, children, ...props}: ButtonProps) {
+function Button({
+                    wide,
+                    thin,
+                    center,
+                    primary,
+                    danger,
+                    nav,
+                    circle,
+                    collapse,
+                    to,
+                    realLink,
+                    ref,
+                    children,
+                    ...props
+                }: ButtonProps) {
     const navigate = useNavigate();
+
+    function renderClasses() {
+        return `button${wide ? " wide" : ""}${thin ? " thin" : ""}${center ? " center" : ""}${primary ? " primary" : ""}${danger ? " danger" : ""}${nav ? " nav" : ""}${circle ? " circle" : ""}${collapse ? " collapse" : ""}`
+    }
 
     if (to !== undefined) {
         if (!realLink) {
@@ -29,7 +49,7 @@ function Button({wide, thin, center, primary, danger, nav, to, realLink, ref, ch
         return (
             <a
                 href={to}
-                className={`button${wide ? " wide" : ""}${thin ? " thin" : ""}${center ? " center" : ""}${primary ? " primary" : ""}${danger ? " danger" : ""}${nav ? " nav" : ""}`}
+                className={renderClasses()}
                 ref={ref}
                 {...props}
             >
@@ -40,7 +60,7 @@ function Button({wide, thin, center, primary, danger, nav, to, realLink, ref, ch
 
     return (
         <button
-            className={`button${wide ? " wide" : ""}${thin ? " thin" : ""}${center ? " center" : ""}${primary ? " primary" : ""}${danger ? " danger" : ""}${nav ? " nav" : ""}`}
+            className={renderClasses()}
             ref={ref}
             {...props}
         >

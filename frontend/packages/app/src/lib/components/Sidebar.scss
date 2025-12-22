@@ -12,6 +12,31 @@
   padding-bottom: 10px;
   gap: 10px;
 
+  @media screen and (max-width: 780px) {
+    &.left {
+      display: none;
+    }
+  }
+
+  @media screen and (max-width: 1025px) {
+    &.right {
+      display: none;
+    }
+  }
+
+
+  @media screen and (max-width: 1215px) {
+    &.left {
+      max-width: 60px;
+      min-width: 55px;
+      justify-content: center;
+    }
+
+    .widget {
+      align-items: end;
+    }
+  }
+
   .widget {
     width: 100%;
     box-sizing: border-box;

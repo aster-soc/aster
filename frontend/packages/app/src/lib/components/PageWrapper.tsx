@@ -5,7 +5,7 @@ function PageWrapper({padding = "full", center = false, children}: {
     center: boolean,
     children: React.ReactNode
 }) {
-    return <div className={`pageWrapper ${padding} ${center ? ' center' : ''}`} role={"main"}>
+    return <div className={`pageWrapper hasBottomBar ${padding} ${center ? ' center' : ''}`} role={"main"}>
         {children}
     </div>
 }

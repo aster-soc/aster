@@ -15,4 +15,18 @@
       font-weight: 600;
     }
   }
+
+  @media screen and (max-width: 1215px) {
+    justify-content: end;
+    gap: 0;
+
+    .names {
+      display: none;
+    }
+
+    .avatarCtn .avatar {
+      height: 40px;
+      width: 40px;
+    }
+  }
 }

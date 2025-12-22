@@ -93,7 +93,9 @@ object ApNoteService : Service {
 
 		// todo: maximum depth, otherwise this gets messy fast
 		val inReplyTo = extractString { json["inReplyTo"] }
-		val replyingTo = if (inReplyTo.isNullOrBlank()) null else resolve(inReplyTo, depth = depth + 1)
+		val replyingTo = if (inReplyTo.isNullOrBlank())
+			null
+		else orNull { resolve(inReplyTo, depth = depth + 1) }
 
 		val summary = extractString { json["summary"] }
 		val misskeySummary = extractString { json["_misskey_summary"] }
