@@ -53,7 +53,7 @@ internal object TimelineRoutes {
 					val local = call.request.queryParameters["local"]?.toBoolean() ?: true
 					val following = RelationshipService.getFollowing(authenticatedUser).map { it.id }
 
-					var where = (NoteTable.createdAt less since) and (
+					var where = (
 							(NoteTable.visibility inList listOf(
 								Visibility.Public,
 								Visibility.Unlisted,
@@ -67,7 +67,7 @@ internal object TimelineRoutes {
 							and (UserTable.host eq null)))
 
 					val notes = NoteService.getMany(
-						where = where,
+						where = (where) and (NoteTable.createdAt less since),
 						take = take
 					)
 

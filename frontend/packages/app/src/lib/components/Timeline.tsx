@@ -15,22 +15,19 @@ function Timeline(
 
     let noMore = false
 
-    React.useEffect(() => {
-        const observer = new IntersectionObserver(async (entries) => {
-            if (!noMore)
-                for (const entry of entries) {
-                    console.log(entry)
-                    if (entry.isIntersecting) {
-                        query?.fetchNextPage()
-                        break
-                    }
-                }
-        }, {
-            threshold: 0.8
-        });
+    const observer = new IntersectionObserver(async (entries) => {
+        if (!noMore) {
+            console.log("Intersection observed")
+            if (entries[0]?.isIntersecting) query?.fetchNextPage()
+        }
+    }, {
+        threshold: 0.8
+    });
 
-        if (intersectionRef.current) observer.observe(intersectionRef.current);
-    }, intersectionRef)
+    React.useEffect(() => {
+        if (intersectionRef?.current)
+            observer.observe(intersectionRef.current);
+    })
 
     function renderBaseTimeline() {
         if (query?.data && query.data?.pages && query.data.pages.length > 0) {
@@ -66,7 +63,7 @@ function Timeline(
         </div>
         <div id={"intersection-" + intersectionId} ref={intersectionRef}>
             <Container align={"center"} padding={"12px 0"}>
-                {query.isFetchingNextPage ? <Loading/> : null}
+                {query?.isFetchingNextPage ? <Loading/> : null}
             </Container>
         </div>
     </>
