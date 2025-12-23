@@ -13,7 +13,7 @@ jobs:
       - name: Setup Java
         uses: actions/setup-java@v5
         with:
-          distribution: 'jetbrains'
+          distribution: 'zulu'
           java-version: '21'
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v5
