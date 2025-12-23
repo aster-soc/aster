@@ -132,6 +132,11 @@ if ("detekt" !in gradle.startParameter.taskNames) {
 	tasks.detekt { enabled = false }
 }
 
+tasks.distTar { enabled = false }
+tasks.distZip { enabled = false }
+tasks.shadowDistTar { enabled = false }
+tasks.shadowDistZip { enabled = false }
+
 // building
 
 tasks.register("preCommit") {

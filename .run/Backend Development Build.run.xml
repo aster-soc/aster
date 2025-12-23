@@ -4,7 +4,7 @@
       <option name="executionName" />
       <option name="externalProjectPath" value="$PROJECT_DIR$" />
       <option name="externalSystemIdString" value="GRADLE" />
-      <option name="scriptParameters" value="-x cleanFrontend -x compileFrontend -x dokkaHtml -x dokkaJavadoc -x distTar -x distZip -x shadowDistTar -x shadowDistZip -x test" />
+      <option name="scriptParameters" value="-x :frontend:clean -x :frontend:build -x dokkaGenerate -x common:dokkaGenerate -x test" />
       <option name="taskDescriptions">
         <list />
       </option>
