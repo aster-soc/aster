@@ -494,6 +494,15 @@ object NoteService : Service {
 			)
 		}
 
+		if (note.user.host == null) {
+			NotificationService.create(
+				NotificationType.Repeat,
+				transaction { UserEntity[note.user.id] },
+				transaction { UserEntity[user.id] },
+				note
+			)
+		}
+
 		return repeat
 	}
 

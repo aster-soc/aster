@@ -13,6 +13,8 @@ import site.remlit.aster.common.util.extractString
 import site.remlit.aster.common.util.orNull
 import site.remlit.aster.common.util.toLocalDateTime
 import site.remlit.aster.db.entity.NoteEntity
+import site.remlit.aster.event.note.NoteCreateEvent
+import site.remlit.aster.event.note.NoteEditEvent
 import site.remlit.aster.model.Configuration
 import site.remlit.aster.model.Service
 import site.remlit.aster.service.IdentifierService
@@ -155,6 +157,8 @@ object ApNoteService : Service {
 	 * */
 	@JvmStatic
 	fun update(note: PartialNote): Note? {
+		val old = NoteService.getById(note.id!!) ?: return null
+
 		try {
 			transaction {
 				NoteEntity.findByIdAndUpdate(note.id!!) {
@@ -178,7 +182,11 @@ object ApNoteService : Service {
 				}
 			}
 
-			return NoteService.getById(note.id!!)
+			val new = NoteService.getById(note.id!!) ?: return null
+
+			NoteEditEvent(new, old).call()
+
+			return new
 		} catch (e: Exception) {
 			logger.error(e.message, e)
 			return null
@@ -217,7 +225,11 @@ object ApNoteService : Service {
 				}
 			}
 
-			return NoteService.getById(note.id!!)
+			val note = NoteService.getById(note.id!!) ?: return null
+
+			NoteCreateEvent(note).call()
+
+			return note
 		} catch (e: Exception) {
 			logger.error(e.message, e)
 			return null
