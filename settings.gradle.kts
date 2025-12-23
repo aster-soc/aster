@@ -1,5 +1,5 @@
 rootProject.name = "aster"
-gradle.extra.set("rootVersion", "2025.12.5.0-SNAPSHOT")
+gradle.extra.set("rootVersion", "2025.12.6.0-SNAPSHOT")
 gradle.extra.set("repository", "https://github.com/aster-soc/aster")
 gradle.extra.set("issueTracker", "https://youtrack.remlit.site/projects/AS/issues")
 

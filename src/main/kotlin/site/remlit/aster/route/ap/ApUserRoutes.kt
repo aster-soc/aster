@@ -28,5 +28,9 @@ internal object ApUserRoutes {
 			get("/users/{id}/following") {
 				throw ApiException(HttpStatusCode.NotImplemented)
 			}
+
+			get("/users/{id}/outbox") {
+				throw ApiException(HttpStatusCode.NotImplemented)
+			}
 		}
 }

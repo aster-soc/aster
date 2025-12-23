@@ -160,7 +160,10 @@ object ApValidationService : Service {
 
 			if (typedObj?.type == "Delete") {
 				logger.debug("[{}] Actor not found and activity is Delete, pretending to process.", validationRequestId)
-				return null
+				throw ApValidationException(
+					ApValidationExceptionType.Ignore,
+					"Actor not found and activity is Delete, ignoring."
+				)
 			}
 
 			logger.debug("[{}] Actor not found.", validationRequestId)
