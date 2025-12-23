@@ -10,14 +10,17 @@ import kotlinx.datetime.toKotlinLocalDateTime
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import site.remlit.aster.common.model.type.PolicyType
+import site.remlit.aster.common.util.orNull
 import site.remlit.aster.db.entity.UserEntity
 import site.remlit.aster.model.Configuration
 import site.remlit.aster.model.Service
+import site.remlit.aster.model.ap.ApTypedObject
 import site.remlit.aster.model.ap.ApValidationException
 import site.remlit.aster.model.ap.ApValidationExceptionType
 import site.remlit.aster.service.IdentifierService
 import site.remlit.aster.service.KeypairService
 import site.remlit.aster.service.PolicyService
+import site.remlit.aster.util.jsonConfig
 import java.security.PublicKey
 import java.time.ZoneId
 import java.time.ZonedDateTime
@@ -40,6 +43,7 @@ object ApValidationService : Service {
 	 *
 	 * @param request Routing request
 	 * @param body Request body
+	 * @param string Request body as string
 	 *
 	 * @return Requesting user
 	 * */
@@ -47,8 +51,9 @@ object ApValidationService : Service {
 	@Suppress("LongMethod", "CyclomaticComplexMethod")
 	suspend fun validate(
 		request: RoutingRequest,
-		body: ByteArray? = null
-	): UserEntity {
+		body: ByteArray? = null,
+		string: String? = null
+	): UserEntity? {
 		val validationRequestId = IdentifierService.generate()
 
 		val blockPolicies = PolicyService.getAllByType(PolicyType.Block)
@@ -149,6 +154,15 @@ object ApValidationService : Service {
 
 		val actor = ApActorService.resolve(actorApId)
 		if (actor == null) {
+			val typedObj = if (string != null)
+				orNull { jsonConfig.decodeFromString<ApTypedObject>(string) }
+			else null
+
+			if (typedObj?.type == "Delete") {
+				logger.debug("[{}] Actor not found and activity is Delete, pretending to process.", validationRequestId)
+				return null
+			}
+
 			logger.debug("[{}] Actor not found.", validationRequestId)
 			throw ApValidationException(
 				ApValidationExceptionType.Unauthorized,

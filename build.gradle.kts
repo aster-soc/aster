@@ -49,6 +49,7 @@ dependencies {
 	implementation("io.ktor:ktor-server-swagger-jvm:3.3.3")
 	implementation("io.ktor:ktor-server-status-pages-jvm:3.3.3")
 	implementation("io.ktor:ktor-server-auto-head-response-jvm:3.3.3")
+	implementation("io.ktor:ktor-server-double-receive-jvm:3.3.3")
 
 	// templating
 	implementation("io.ktor:ktor-server-html-builder-jvm:3.3.3")

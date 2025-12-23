@@ -27,7 +27,7 @@ class ApCreateHandler : ApInboxHandler {
 			is ApIdOrObject.Id -> {
 				// todo: ApGenericResolver
 				ApNoteService.resolve(copy.`object`.value, user = firstFollowerId)
-					?: throw IllegalArgumentException("Note ${copy.`object`.value} not found")
+					?: return
 			}
 
 			is ApIdOrObject.Object -> {
@@ -45,6 +45,6 @@ class ApCreateHandler : ApInboxHandler {
 		resolveAs: String?
 	) {
 		ApNoteService.resolve(note.id, user = resolveAs)
-			?: throw IllegalArgumentException("Note ${note.id} not found")
+			?: return
 	}
 }

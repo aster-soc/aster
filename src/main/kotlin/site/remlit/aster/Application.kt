@@ -11,6 +11,7 @@ import io.ktor.server.plugins.callid.*
 import io.ktor.server.plugins.calllogging.*
 import io.ktor.server.plugins.contentnegotiation.*
 import io.ktor.server.plugins.defaultheaders.*
+import io.ktor.server.plugins.doublereceive.*
 import io.ktor.server.plugins.forwardedheaders.*
 import io.ktor.server.plugins.statuspages.*
 import io.ktor.server.request.*
@@ -166,9 +167,14 @@ fun Application.module() {
 					cause.stackTrace.joinToString("\n")
 				)
 			)
+
+			if (Configuration.debug) cause.printStackTrace()
+
 			return@exception
 		}
 	}
+
+	install(DoubleReceive)
 
 	configureRouting()
 
