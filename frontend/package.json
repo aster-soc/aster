@@ -4,6 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
+    "setup": "pnpm i && pnpm link-shared",
     "link-shared": "pnpm --filter=app link-shared",
     "dev": "pnpm --filter=app dev",
     "build": "pnpm --filter=app build",

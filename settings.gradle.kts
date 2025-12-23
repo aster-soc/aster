@@ -21,6 +21,8 @@ pluginManagement {
 	}
 }
 
+include("frontend")
+
 include("common")
 include("common-generators")
 

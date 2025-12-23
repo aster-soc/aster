@@ -81,7 +81,7 @@ dependencies {
 	implementation("at.favre.lib:bcrypt:0.10.2")
 	implementation("com.googlecode.owasp-java-html-sanitizer:owasp-java-html-sanitizer:20240325.1")
 	implementation("org.jetbrains.kotlin:kotlin-reflect:2.2.21")
-	implementation("site.remlit:effekt:0.1.1")
+	implementation("site.remlit:effekt:0.1.4")
 
 	compileOnly("org.jetbrains:annotations:26.0.2-1")
 
@@ -139,22 +139,14 @@ tasks.register("preCommit") {
 	dependsOn("test")
 }
 
-tasks.register<Exec>("cleanFrontend") {
-	executable("./scripts/clean-frontend.sh")
-}
-
 tasks.clean {
-	dependsOn("cleanFrontend")
-}
-
-tasks.register<Exec>("compileFrontend") {
-	dependsOn(":mfmkt:build")
-	dependsOn(":common:build")
-	executable("./scripts/build-frontend.sh")
+	dependsOn(":frontend:clean")
+	delete("src/main/resources/frontend")
+	delete("src/main/resources/admin/aster-common")
 }
 
 tasks.register<Copy>("copyFrontend") {
-	dependsOn("compileFrontend")
+	dependsOn(":frontend:build")
 	from("frontend/packages/app/dist")
 	into("src/main/resources/frontend")
 }
@@ -182,7 +174,6 @@ tasks.processResources {
 
 tasks.shadowJar {
 	archiveFileName.set("${project.name}-${project.version}-all.jar")
-	dependsOn("compileFrontend")
 	dependsOn("processResources")
 }
 

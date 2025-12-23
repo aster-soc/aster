@@ -52,3 +52,5 @@ src/main/resources/frontend
 configuration.yaml
 configuration.test.yaml
 frontend/packages/common
+frontend/.frontend-gradle-plugin
+frontend/node
