@@ -78,38 +78,32 @@ internal object UserRoutes {
 					if (user.id != authenticatedUser.id && !RoleService.isModOrAdmin(authenticatedUser.id.toString()))
 						throw ApiException(HttpStatusCode.BadRequest, "You don't have permission to edit this users")
 
-					val partial = call.receive<PartialUser>()
+                    val body = call.receive<PartialUser>()
 
-					val newUser =
-						transaction {
-							UserEntity.findByIdAndUpdate(user.id.toString()) {
-								it.displayName = sanitizeOrNull { partial.displayName }
-								it.bio = sanitizeOrNull { partial.bio }
-								it.location = sanitizeOrNull { partial.location }
-								it.birthday = sanitizeOrNull { partial.birthday }
+                    val updated = UserService.edit(
+                        user,
 
-								it.avatar = sanitizeOrNull { partial.avatar }
-								it.avatarAlt = sanitizeOrNull { partial.avatarAlt }
-								it.banner = sanitizeOrNull { partial.banner }
-								it.bannerAlt = sanitizeOrNull { partial.bannerAlt }
+                        body.displayName,
+                        body.bio,
+                        body.location,
+                        body.birthday,
 
-								it.locked = partial.locked ?: false
-								it.automated = partial.automated ?: false
-								it.discoverable = partial.discoverable ?: false
-								it.indexable = partial.indexable ?: false
-								it.sensitive = partial.sensitive ?: false
+                        body.avatar,
+                        body.avatarAlt,
+                        body.banner,
+                        body.bannerAlt,
 
-								it.isCat = partial.isCat ?: false
-								it.speakAsCat = partial.speakAsCat ?: false
+                        body.locked == true,
+                        body.automated == true,
+                        body.discoverable == true,
+                        body.indexable == true,
+                        body.sensitive == true,
 
-								it.updatedAt = TimeService.now()
-							} ?: throw ApiException(HttpStatusCode.NotFound)
-						}
+                        body.isCat == true,
+                        body.speakAsCat == true,
+                    )
 
-					val model = User.fromEntity(newUser)
-					UserEditEvent(model).call()
-
-					return@post call.respond(HttpStatusCode.OK, model)
+                    call.respond(User.fromEntity(updated))
 				}
 
 				post("/api/user/{id}/bite") {

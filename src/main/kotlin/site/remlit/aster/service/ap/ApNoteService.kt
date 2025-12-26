@@ -184,7 +184,7 @@ object ApNoteService : Service {
 
 			val new = NoteService.getById(note.id!!) ?: return null
 
-			NoteEditEvent(new, old).call()
+			NoteEditEvent(new).call()
 
 			return new
 		} catch (e: Exception) {

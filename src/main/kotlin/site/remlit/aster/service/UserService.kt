@@ -3,13 +3,21 @@ package site.remlit.aster.service
 import org.jetbrains.exposed.v1.core.Op
 import org.jetbrains.exposed.v1.core.eq
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
+import site.remlit.aster.common.model.User
 import site.remlit.aster.db.entity.UserEntity
 import site.remlit.aster.db.entity.UserPrivateEntity
 import site.remlit.aster.db.table.UserPrivateTable
 import site.remlit.aster.db.table.UserTable
+import site.remlit.aster.event.user.UserEditEvent
 import site.remlit.aster.exception.SetupException
 import site.remlit.aster.model.Configuration
 import site.remlit.aster.model.Service
+import site.remlit.aster.model.ap.ApActor
+import site.remlit.aster.model.ap.ApIdOrObject
+import site.remlit.aster.model.ap.activity.ApUpdateActivity
+import site.remlit.aster.service.ap.ApDeliverService
+import site.remlit.aster.service.ap.ApIdService
+import site.remlit.aster.util.model.fromEntity
 
 /**
  * Service for managing users.
@@ -134,6 +142,94 @@ object UserService : Service {
 			.find { where }
 			.count()
 	}
+
+    /**
+     * Edit a user.
+     *
+     * A null value will leave the value unchanged, but an empty value will set it null.
+     *
+     * @param user User to edit
+     * @param displayName Updated display name
+     * @param bio Updated bio
+     * @param location Updated location
+     * @param birthday Updated birthday
+     *
+     * @param avatar Updated avatar
+     * @param avatarAlt Updated avatar alt text
+     * @param banner Updated banner
+     * @param bannerAlt Updated banner alt text
+     *
+     * @param locked Updated locked boolean
+     * @param automated Updated automated boolean
+     * @param discoverable Updated discoverable boolean
+     * @param indexable Updated indexable boolean
+     * @param sensitive Updated sensitive boolean
+     *
+     * @param isCat Updated isCat boolean
+     * @param speakAsCat Updated speakAsCat boolean
+     *
+     * @since 2025.12.6.0-SNAPSHOT
+     * */
+    @JvmStatic
+    fun edit(
+        user: UserEntity,
+
+        displayName: String? = user.displayName,
+        bio: String? = user.bio,
+        location: String? = user.location,
+        birthday: String? = user.birthday,
+
+        avatar: String? = user.avatar,
+        avatarAlt: String? = user.avatarAlt,
+        banner: String? = user.banner,
+        bannerAlt: String? = user.bannerAlt,
+
+        locked: Boolean = user.locked,
+        automated: Boolean = user.automated,
+        discoverable: Boolean = user.discoverable,
+        indexable: Boolean = user.indexable,
+        sensitive: Boolean = user.sensitive,
+
+        isCat: Boolean = user.isCat,
+        speakAsCat: Boolean = user.speakAsCat,
+    ): UserEntity = transaction {
+        UserEntity.findByIdAndUpdate(user.id.toString()) {
+            it.displayName = displayName?.ifEmpty { null }
+            it.bio = bio?.ifEmpty { null }
+            it.location = location?.ifEmpty { null }
+            it.birthday = birthday?.ifEmpty { null }
+
+            it.avatar = avatar?.ifEmpty { null }
+            it.avatarAlt = avatarAlt?.ifEmpty { null }
+            it.banner = banner?.ifEmpty { null }
+            it.bannerAlt = bannerAlt?.ifEmpty { null }
+
+            it.locked = locked
+            it.automated = automated
+            it.discoverable = discoverable
+            it.indexable = indexable
+            it.sensitive = sensitive
+
+            it.isCat = isCat
+            it.speakAsCat = speakAsCat
+        }
+
+        val newUser = getById(user.id.toString())!!
+
+        UserEditEvent(User.fromEntity(newUser)).call()
+
+        if (user.host == null)
+            ApDeliverService.deliverToFollowers<ApUpdateActivity>(
+                ApUpdateActivity(
+                    ApIdService.renderActivityApId(IdentifierService.generate()),
+                    actor = user.apId,
+                    `object` = ApIdOrObject.createObject { ApActor.fromEntity(user) }
+                ),
+                user
+            )
+
+        return@transaction newUser
+    }
 
 	/**
 	 * Delete user
