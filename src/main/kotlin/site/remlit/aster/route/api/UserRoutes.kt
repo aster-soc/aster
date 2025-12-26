@@ -7,13 +7,10 @@ import io.ktor.server.routing.*
 import io.ktor.server.util.*
 import org.jetbrains.exposed.v1.core.and
 import org.jetbrains.exposed.v1.core.eq
-import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 import site.remlit.aster.common.model.User
 import site.remlit.aster.common.model.generated.PartialUser
 import site.remlit.aster.common.model.request.ReportRequest
-import site.remlit.aster.db.entity.UserEntity
 import site.remlit.aster.db.table.UserTable
-import site.remlit.aster.event.user.UserEditEvent
 import site.remlit.aster.model.ApiException
 import site.remlit.aster.model.Configuration
 import site.remlit.aster.registry.RouteRegistry
@@ -21,13 +18,11 @@ import site.remlit.aster.service.NotificationService
 import site.remlit.aster.service.RelationshipService
 import site.remlit.aster.service.ReportService
 import site.remlit.aster.service.RoleService
-import site.remlit.aster.service.TimeService
 import site.remlit.aster.service.UserService
 import site.remlit.aster.service.ap.ApActorService
 import site.remlit.aster.util.authenticatedUserKey
 import site.remlit.aster.util.authentication
 import site.remlit.aster.util.model.fromEntity
-import site.remlit.aster.util.sanitizeOrNull
 
 internal object UserRoutes {
 	fun register() =
@@ -45,7 +40,7 @@ internal object UserRoutes {
 					)
 
 					if (user == null || !user.activated || user.suspended ||
-						(Configuration.hideRemoteContent && user.host != null && call.attributes.getOrNull(
+						(Configuration.hideRemoteContent && !user.isLocal() && call.attributes.getOrNull(
 							authenticatedUserKey
 						) == null)
 					) throw ApiException(HttpStatusCode.NotFound)
@@ -80,7 +75,7 @@ internal object UserRoutes {
 
                     val body = call.receive<PartialUser>()
 
-                    val updated = UserService.edit(
+                    val updated = UserService.update(
                         user,
 
                         body.displayName,
@@ -180,7 +175,7 @@ internal object UserRoutes {
 					if (user == null || !user.activated || user.suspended)
 						throw ApiException(HttpStatusCode.NotFound)
 
-					if (user.host == null)
+					if (user.isLocal())
 						throw ApiException(HttpStatusCode.BadRequest, "Local users can't be refetched")
 
 					ApActorService.resolve(user.apId, true)

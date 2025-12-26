@@ -46,4 +46,12 @@ data class User(
 ) {
 	fun renderHandle(): String =
 		site.remlit.aster.common.util.renderHandle(this)
+
+    /**
+     * If this user is local or not
+     *
+     * @since 2025.12.6.0-SNAPSHOT
+     * */
+    fun isLocal(): Boolean =
+        host == null
 }

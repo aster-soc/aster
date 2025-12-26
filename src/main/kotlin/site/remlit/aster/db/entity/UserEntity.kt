@@ -45,4 +45,12 @@ class UserEntity(id: EntityID<String>) : Entity<String>(id) {
 	var updatedAt by UserTable.updatedAt
 
 	var publicKey by UserTable.publicKey
+
+    /**
+     * If this user is local or not
+     *
+     * @since 2025.12.6.0-SNAPSHOT
+     * */
+    fun isLocal(): Boolean =
+        host == null
 }

@@ -168,10 +168,10 @@ object UserService : Service {
      * @param isCat Updated isCat boolean
      * @param speakAsCat Updated speakAsCat boolean
      *
-     * @since 2025.12.6.0-SNAPSHOT
+     * @return Updated user
      * */
     @JvmStatic
-    fun edit(
+    fun update(
         user: UserEntity,
 
         displayName: String? = user.displayName,
@@ -218,7 +218,7 @@ object UserService : Service {
 
         UserEditEvent(User.fromEntity(newUser)).call()
 
-        if (user.host == null)
+        if (user.isLocal())
             ApDeliverService.deliverToFollowers<ApUpdateActivity>(
                 ApUpdateActivity(
                     ApIdService.renderActivityApId(IdentifierService.generate()),

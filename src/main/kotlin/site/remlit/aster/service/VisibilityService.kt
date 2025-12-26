@@ -43,7 +43,7 @@ object VisibilityService : Service {
 		var ignoreBlock = ignoreBlock
 
 		// if neither are local, we don't have to take blocks into account
-		if (author.host != null && user.host != null)
+		if (!author.isLocal() && !user.isLocal())
 			ignoreBlock = true
 
 		if (!ignoreBlock && RelationshipService.eitherBlocking(user.id, author.id))

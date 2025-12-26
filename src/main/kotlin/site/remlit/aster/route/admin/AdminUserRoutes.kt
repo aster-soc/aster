@@ -11,13 +11,16 @@ import kotlinx.html.th
 import kotlinx.html.tr
 import org.jetbrains.exposed.v1.core.eq
 import org.jetbrains.exposed.v1.core.neq
+import site.remlit.aster.common.model.User
 import site.remlit.aster.common.model.type.RoleType
+import site.remlit.aster.common.util.renderHandle
 import site.remlit.aster.db.table.UserTable
 import site.remlit.aster.model.Configuration
 import site.remlit.aster.registry.RouteRegistry
 import site.remlit.aster.service.RoleService
 import site.remlit.aster.service.UserService
 import site.remlit.aster.util.authentication
+import site.remlit.aster.util.model.fromEntity
 import site.remlit.aster.util.webcomponent.adminButton
 import site.remlit.aster.util.webcomponent.adminListNav
 import site.remlit.aster.util.webcomponent.adminPage
@@ -56,7 +59,7 @@ internal object AdminUserRoutes {
 								for (user in users) {
 									tr {
 										td {
-											+"@${user.username}${if (user.host != null) "@" + user.host else ""}"
+											+renderHandle(User.fromEntity(user))
 										}
 										td {
 											val status = mutableListOf<String>()

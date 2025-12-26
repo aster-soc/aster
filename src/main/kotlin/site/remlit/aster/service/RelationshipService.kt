@@ -248,7 +248,7 @@ object RelationshipService : Service {
 
 		val activityId = ApIdService.renderActivityApId(IdentifierService.generate())
 
-		if (to.host != null)
+		if (!to.isLocal())
 			ApDeliverService.deliver(
 				ApFollowActivity(
 					activityId,
@@ -266,15 +266,15 @@ object RelationshipService : Service {
 				this.type = RelationshipType.Follow
 				this.to = to
 				this.from = from
-				this.pending = to.locked || to.host != null
-				this.activityId = if (to.host != null && followId == null) activityId else followId
+				this.pending = to.locked || !to.isLocal()
+				this.activityId = if (!to.isLocal() && followId == null) activityId else followId
 			}
 		}
 
 		val relationship = getByIds(to.id.toString(), from.id.toString())
 			?: throw IllegalArgumentException("Relationship not found")
 
-		if (to.host == null) {
+		if (to.isLocal()) {
 			NotificationService.create(
 				NotificationType.Follow,
 				to,

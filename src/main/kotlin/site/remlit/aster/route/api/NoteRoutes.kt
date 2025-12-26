@@ -37,7 +37,7 @@ internal object NoteRoutes {
 						note.user.suspended ||
 						(note.visibility != Visibility.Public &&
 								note.visibility != Visibility.Unlisted) ||
-						(Configuration.hideRemoteContent && note.user.host != null && call.attributes.getOrNull(
+						(Configuration.hideRemoteContent && !note.user.isLocal() && call.attributes.getOrNull(
 							authenticatedUserKey
 						) == null)
 					) throw ApiException(HttpStatusCode.NotFound, "Note not found.")

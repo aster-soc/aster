@@ -25,4 +25,12 @@ data class SmallUser(
 
 	val createdAt: Instant,
 	val updatedAt: Instant? = null
-)
+) {
+    /**
+     * If this user is local or not
+     *
+     * @since 2025.12.6.0-SNAPSHOT
+     * */
+    fun isLocal(): Boolean =
+        host == null
+}

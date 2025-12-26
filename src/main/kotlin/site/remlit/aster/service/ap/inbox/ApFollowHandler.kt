@@ -28,7 +28,7 @@ class ApFollowHandler : ApInboxHandler {
 			else -> throw IllegalArgumentException("Follow target must be represented as an ID")
 		} ?: throw IllegalArgumentException("Follow target cannot be found")
 
-		if (obj.host != null)
+		if (!obj.isLocal())
 			throw IllegalArgumentException("Follow target must be local")
 
 		if (RelationshipService.eitherBlocking(actor.id.toString(), obj.id.toString()))

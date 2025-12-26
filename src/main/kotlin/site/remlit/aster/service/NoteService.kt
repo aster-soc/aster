@@ -26,12 +26,14 @@ import site.remlit.aster.db.table.NotificationTable
 import site.remlit.aster.db.table.UserTable
 import site.remlit.aster.event.note.NoteCreateEvent
 import site.remlit.aster.event.note.NoteDeleteEvent
+import site.remlit.aster.event.note.NoteEditEvent
 import site.remlit.aster.event.note.NoteLikeEvent
 import site.remlit.aster.event.note.NoteRepeatEvent
 import site.remlit.aster.event.note.NoteUnlikeEvent
 import site.remlit.aster.exception.InsertFailureException
 import site.remlit.aster.model.Configuration
 import site.remlit.aster.model.Service
+import site.remlit.aster.model.ap.ApActor
 import site.remlit.aster.model.ap.ApIdOrObject
 import site.remlit.aster.model.ap.ApNote
 import site.remlit.aster.model.ap.ApTombstone
@@ -40,6 +42,7 @@ import site.remlit.aster.model.ap.activity.ApCreateActivity
 import site.remlit.aster.model.ap.activity.ApDeleteActivity
 import site.remlit.aster.model.ap.activity.ApLikeActivity
 import site.remlit.aster.model.ap.activity.ApUndoActivity
+import site.remlit.aster.model.ap.activity.ApUpdateActivity
 import site.remlit.aster.service.ap.ApActorService
 import site.remlit.aster.service.ap.ApDeliverService
 import site.remlit.aster.service.ap.ApIdService
@@ -241,7 +244,7 @@ object NoteService : Service {
 						?: return@forEach
 
 					to.add(resolved.id.toString())
-					if (resolved.host == null) localTo.add(resolved.id.toString())
+					if (resolved.isLocal()) localTo.add(resolved.id.toString())
 				}
 
 				this.to = to
@@ -253,7 +256,7 @@ object NoteService : Service {
 		NoteCreateEvent(note).call()
 
 		detached {
-			if (user.host == null) {
+			if (user.isLocal()) {
 				val (to, cc) = ApVisibilityService.visibilityToCc(
 					note.visibility,
 					user.followersUrl,
@@ -291,20 +294,41 @@ object NoteService : Service {
 	/**
 	 * Update an existing note
 	 *
-	 * @param id ID of the note
-	 * @param user User authoring the post
-	 * @param cw Content warning of the note
-	 * @param content Content of the note
+	 * @param note Note to edit
+	 * @param cw Updated content warning
+	 * @param content Updated content
 	 *
 	 * @return Updated note
 	 * */
 	@JvmStatic
 	fun update(
-		id: String,
-		user: UserEntity,
-		cw: String?,
-		content: String
-	): Nothing = TODO()
+		note: Note,
+        cw: String? = note.cw,
+        content: String? = note.content,
+	): Note? {
+        val user = UserService.getById(note.user.id) ?: return null
+
+        val newNote = transaction {
+            NoteEntity.findByIdAndUpdate(note.id) {
+                it.cw = cw?.ifEmpty { null }
+                it.content = content?.ifEmpty { null }
+            }
+        } ?: return null
+
+        NoteEditEvent(note).call()
+
+        if (note.user.isLocal())
+            ApDeliverService.deliverToFollowers<ApUpdateActivity>(
+                ApUpdateActivity(
+                    ApIdService.renderActivityApId(IdentifierService.generate()),
+                    actor = user.apId,
+                    `object` = ApIdOrObject.createObject { ApNote.fromEntity(note) }
+                ),
+                user
+            )
+
+        return Note.fromEntity(newNote)
+    }
 
 	/**
 	 * Like a note as a user, or removes a like if it's already there
@@ -353,7 +377,7 @@ object NoteService : Service {
 				this.note = noteEntity
 			}
 
-			if (note.user.host == null && note.user.id != user.id)
+			if (note.user.isLocal() && note.user.id != user.id)
 				NotificationService.create(
 					NotificationType.Like,
 					noteEntity.user,
@@ -362,7 +386,7 @@ object NoteService : Service {
 				)
 		}
 
-		if (user.host == null) {
+		if (user.isLocal()) {
 			ApDeliverService.deliverToFollowers<ApLikeActivity>(
 				ApLikeActivity(
 					ApIdService.renderActivityApId(likeId),
@@ -370,7 +394,7 @@ object NoteService : Service {
 					`object` = ApIdOrObject.Id(note.apId),
 				),
 				transaction { UserEntity[user.id] },
-				if (note.user.host != null) listOf(note.user.inbox) else listOf()
+				if (!note.user.isLocal()) listOf(note.user.inbox) else listOf()
 			)
 		}
 
@@ -409,13 +433,13 @@ object NoteService : Service {
 
 		transaction { like.delete() }
 
-		if (note.user.host == null)
+		if (note.user.isLocal())
 			NotificationService.delete(
 				NotificationTable.type eq NotificationType.Like and
 						(NotificationTable.note eq note.id),
 			)
 
-		if (user.host == null) {
+		if (user.isLocal()) {
 			val likeApId = ApIdService.renderActivityApId(like.id.toString())
 
 			ApDeliverService.deliverToFollowers<ApUndoActivity>(
@@ -430,7 +454,7 @@ object NoteService : Service {
 					}
 				),
 				transaction { UserEntity[user.id] },
-				if (note.user.host != null) listOf(note.user.inbox) else listOf()
+				if (!note.user.isLocal()) listOf(note.user.inbox) else listOf()
 			)
 		}
 
@@ -481,7 +505,7 @@ object NoteService : Service {
 
 		val (to, cc) = ApVisibilityService.visibilityToCc(repeat.visibility, null, null)
 
-		if (user.host == null) {
+		if (user.isLocal()) {
 			ApDeliverService.deliverToFollowers<ApAnnounceActivity>(
 				ApAnnounceActivity(
 					repeat.id + "/activity",
@@ -494,7 +518,7 @@ object NoteService : Service {
 			)
 		}
 
-		if (note.user.host == null) {
+		if (note.user.isLocal()) {
 			NotificationService.create(
 				NotificationType.Repeat,
 				transaction { UserEntity[note.user.id] },
@@ -520,7 +544,7 @@ object NoteService : Service {
 
 		NoteDeleteEvent(Note.fromEntity(entity)).call()
 
-		if (entity.user.host == null)
+		if (entity.user.isLocal())
 			ApDeliverService.deliverToFollowers<ApDeleteActivity>(
 				ApDeleteActivity(
 					entity.apId + "/delete",

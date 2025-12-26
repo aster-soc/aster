@@ -24,7 +24,7 @@ class ApBiteHandler : ApInboxHandler {
 		val realTargetUser = UserService.getById(targetNote?.user?.id ?: targetUser?.id.toString())
 			?: return
 
-		if (realTargetUser.host != null || !realTargetUser.activated || realTargetUser.suspended)
+		if (!realTargetUser.isLocal() || !realTargetUser.activated || realTargetUser.suspended)
 			return
 
 		if (RelationshipService.eitherBlocking(

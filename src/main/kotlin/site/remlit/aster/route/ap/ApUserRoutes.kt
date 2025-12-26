@@ -15,7 +15,7 @@ internal object ApUserRoutes {
 			get("/users/{id}") {
 				val user = UserService.getById(call.parameters.getOrFail("id"))
 
-				if (user == null || user.host != null || !user.activated || user.suspended)
+				if (user == null || !user.isLocal() || !user.activated || user.suspended)
 					throw ApiException(HttpStatusCode.NotFound)
 
 				call.respond(ApActor.fromEntity(user))
