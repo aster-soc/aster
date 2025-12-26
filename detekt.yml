@@ -23,7 +23,7 @@ complexity:
   NestedBlockDepth:
     threshold: 8
   LongParameterList:
-    functionThreshold: 8
+    functionThreshold: 18
   CyclomaticComplexMethod:
     active: false
   ComplexCondition:

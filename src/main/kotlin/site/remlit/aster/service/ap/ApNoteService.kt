@@ -157,8 +157,6 @@ object ApNoteService : Service {
 	 * */
 	@JvmStatic
 	fun update(note: PartialNote): Note? {
-		val old = NoteService.getById(note.id!!) ?: return null
-
 		try {
 			transaction {
 				NoteEntity.findByIdAndUpdate(note.id!!) {
@@ -182,11 +180,11 @@ object ApNoteService : Service {
 				}
 			}
 
-			val new = NoteService.getById(note.id!!) ?: return null
+			val newNote = NoteService.getById(note.id!!) ?: return null
 
-			NoteEditEvent(new).call()
+			NoteEditEvent(newNote).call()
 
-			return new
+			return newNote
 		} catch (e: Exception) {
 			logger.error(e.message, e)
 			return null
