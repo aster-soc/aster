@@ -12,6 +12,8 @@ import site.remlit.aster.db.table.UserTable
 import site.remlit.aster.model.ApiException
 import site.remlit.aster.model.Configuration
 import site.remlit.aster.model.NodeInfo
+import site.remlit.aster.model.NodeInfoMetadata
+import site.remlit.aster.model.NodeInfoMetadataMaintainer
 import site.remlit.aster.model.NodeInfoSoftware
 import site.remlit.aster.model.NodeInfoUsage
 import site.remlit.aster.model.NodeInfoUsageUsers
@@ -53,29 +55,38 @@ internal object NodeInfoRoutes {
 
 				val userCount = UserService.count(
 					UserTable.host eq null
-							and (UserTable.username neq "instance.actor")
+						and (UserTable.username neq "instance.actor")
 				).toInt()
 
 				val noteCount = NoteService.count(
 					UserTable.host eq null
-							and (UserTable.username neq "instance.actor")
+						and (UserTable.username neq "instance.actor")
 				).toInt()
 
 				val nodeInfo =
 					NodeInfo(
 						version = version,
-						software =
-							NodeInfoSoftware(
-								name = PackageInformation.name,
-								version = PackageInformation.version,
-							),
+						software = NodeInfoSoftware(
+							name = PackageInformation.name,
+							version = PackageInformation.version,
+						),
 						protocols = listOf("activitypub"),
 						openRegistrations = Configuration.registrations == InstanceRegistrationsType.Open,
-						usage =
-							NodeInfoUsage(
-								users = NodeInfoUsageUsers(userCount),
-								localPosts = noteCount,
+						usage = NodeInfoUsage(
+							users = NodeInfoUsageUsers(userCount),
+							localPosts = noteCount,
+						),
+						metadata = NodeInfoMetadata(
+							nodeName = Configuration.name,
+							nodeDescription = Configuration.description,
+							maintainer = NodeInfoMetadataMaintainer(
+								Configuration.maintainer.name,
+								Configuration.maintainer.email
 							),
+							repositoryUrl = PackageInformation.repo,
+							feedbackUrl = PackageInformation.bugTracker,
+							themeColor = Configuration.color,
+						)
 					)
 
 				call.respond(

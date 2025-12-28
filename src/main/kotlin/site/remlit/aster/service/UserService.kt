@@ -222,7 +222,6 @@ object UserService : Service {
             ApDeliverService.deliverToFollowers<ApUpdateActivity>(
                 ApUpdateActivity(
                     ApIdService.renderActivityApId(IdentifierService.generate()),
-                    actor = user.apId,
                     `object` = ApIdOrObject.createObject { ApActor.fromEntity(user) }
                 ),
                 user

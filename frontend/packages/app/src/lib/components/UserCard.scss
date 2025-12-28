@@ -7,4 +7,13 @@
   &:hover {
     background-color: var(--bg-3-50);
   }
+
+  .displayName {
+    font-weight: bold;
+    font-size: var(--fs-md);
+  }
+
+  span:not(.displayName) {
+    font-size: var(--fs-sm);
+  }
 }

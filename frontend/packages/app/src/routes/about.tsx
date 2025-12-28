@@ -30,7 +30,7 @@ function RouteComponent() {
 
                 <p className={"centerText"}>
                     Kotlin {data?.version?.kotlin}<br/>
-                    {data?.version?.java}<br/>
+                    Java Runtime {data?.version?.java}<br/>
                     {data?.version?.system}
                 </p>
             </PageWrapper>

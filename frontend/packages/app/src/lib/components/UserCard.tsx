@@ -17,7 +17,7 @@ function UserCard(
             <Container gap={"md"} align={"horizontal"}>
                 <Avatar user={data} size="md"/>
                 <Container>
-                    <span>{data.displayName ?? data.username}</span>
+                    <span className={"displayName"}>{data.displayName ?? data.username}</span>
                     <span>{Common.renderHandle(data)}</span>
                 </Container>
             </Container>

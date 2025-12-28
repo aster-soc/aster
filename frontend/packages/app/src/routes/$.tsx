@@ -3,9 +3,8 @@ import UserPage from "../lib/components/page/UserPage.tsx";
 import NotFoundPage from "../lib/components/page/NotFoundPage.tsx";
 import * as React from "react";
 
-/*
-* Subrouter
-*
+/**
+* # Subrouter
 * Tanstack Router doesn't allow certain types of paths, this is where they go.
 * */
 

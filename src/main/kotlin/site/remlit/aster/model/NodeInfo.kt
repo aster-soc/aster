@@ -9,4 +9,5 @@ data class NodeInfo(
 	val protocols: List<String> = listOf("activitypub"),
 	val openRegistrations: Boolean,
 	val usage: NodeInfoUsage,
+    val metadata: NodeInfoMetadata
 )

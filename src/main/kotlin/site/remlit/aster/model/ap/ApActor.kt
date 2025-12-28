@@ -30,7 +30,6 @@ data class ApActor(
 	val sensitive: Boolean = false,
 	val discoverable: Boolean = false,
 	val manuallyApprovesFollowers: Boolean = false,
-	val noindex: Boolean = false,
 	val isCat: Boolean = false,
 	val speakAsCat: Boolean = false,
 
@@ -77,7 +76,6 @@ data class ApActor(
 				sensitive = user.sensitive,
 				discoverable = user.discoverable,
 				manuallyApprovesFollowers = user.locked,
-				noindex = !user.indexable,
 				isCat = user.isCat,
 				speakAsCat = user.isCat,
 

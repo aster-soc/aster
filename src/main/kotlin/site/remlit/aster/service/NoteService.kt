@@ -321,7 +321,6 @@ object NoteService : Service {
             ApDeliverService.deliverToFollowers<ApUpdateActivity>(
                 ApUpdateActivity(
                     ApIdService.renderActivityApId(IdentifierService.generate()),
-                    actor = user.apId,
                     `object` = ApIdOrObject.createObject { ApNote.fromEntity(note) }
                 ),
                 user

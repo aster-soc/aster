@@ -18,31 +18,31 @@ export default defineConfig({
     server: {
         proxy: {
             '/api': {
-                target: 'http://localhost:9978',
+                target: 'http://localhost:9782',
                 changeOrigin: false,
             },
             '/swagger': {
-                target: 'http://localhost:9978',
+                target: 'http://localhost:9782',
                 changeOrigin: false,
             },
             '/upload': {
-                target: 'http://localhost:9978',
+                target: 'http://localhost:9782',
                 changeOrigin: false,
             },
             '/uploads': {
-                target: 'http://localhost:9978',
+                target: 'http://localhost:9782',
                 changeOrigin: false,
             },
             '/admin': {
-                target: 'http://localhost:9978',
+                target: 'http://localhost:9782',
                 changeOrigin: false,
             },
             '/favicon.ico': {
-                target: 'http://localhost:9978',
+                target: 'http://localhost:9782',
                 changeOrigin: false,
             },
             '/uikit': {
-                target: 'http://localhost:9978',
+                target: 'http://localhost:9782',
                 changeOrigin: false,
             }
         }

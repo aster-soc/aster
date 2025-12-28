@@ -79,7 +79,8 @@ function RouteComponent() {
                                         <Input
                                             id={field.name}
                                             name={field.name}
-                                            placeholder={"Username"}
+											label={"Username"}
+                                            placeholder={"kodee"}
                                             type={"text"}
                                             value={field.state.value}
                                             onBlur={field.handleBlur}
@@ -109,7 +110,8 @@ function RouteComponent() {
                                         <Input
                                             id={field.name}
                                             name={field.name}
-                                            placeholder={"Password"}
+											label={"Password"}
+                                            placeholder={"********"}
                                             type={"password"}
                                             value={field.state.value}
                                             onBlur={field.handleBlur}

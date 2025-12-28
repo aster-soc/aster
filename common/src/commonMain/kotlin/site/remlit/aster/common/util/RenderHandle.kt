@@ -14,7 +14,7 @@ import kotlin.js.JsName
  * */
 @JsExport
 fun renderHandle(user: User?): String = if (user == null) "" else
-	"@${user.username}${if (!user.isLocal()) "@${user.host}" else ""}"
+	"@${user.username}${if (user.host != null) "@${user.host}" else ""}"
 
 /**
  * Renders a handle of a user (e.g. @user@example.com, or if local @user)
@@ -26,4 +26,4 @@ fun renderHandle(user: User?): String = if (user == null) "" else
 @JsExport
 @JsName("renderHandleSmall")
 fun renderHandle(user: SmallUser?): String = if (user == null) "" else
-	"@${user.username}${if (!user.isLocal()) "@${user.host}" else ""}"
+	"@${user.username}${if (user.host != null) "@${user.host}" else ""}"

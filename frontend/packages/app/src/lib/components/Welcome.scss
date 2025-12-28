@@ -1,0 +1,19 @@
+.welcome {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 15px;
+
+  h1, p {
+    margin: 0;
+  }
+
+  .staff {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+    margin: 10px 0;
+  }
+}

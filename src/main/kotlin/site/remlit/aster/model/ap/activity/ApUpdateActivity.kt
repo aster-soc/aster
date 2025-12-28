@@ -11,7 +11,6 @@ data class ApUpdateActivity(
 	val id: String,
 	val type: ApType.Activity = ApType.Activity.Update,
 
-	val actor: String? = null,
 	@Serializable(with = NestedApObjectSerializer::class)
 	val `object`: ApIdOrObject
 ) : ApObjectWithContext()

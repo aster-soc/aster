@@ -26,6 +26,13 @@ interface ConfigurationObject
 @Suppress("MagicNumber")
 object Configuration : ConfigurationObject {
 	val name: String get() = config?.propertyOrNull("name")?.getString() ?: "Aster"
+    val description: String? get() = config?.propertyOrNull("description")?.getString()
+    val color: String get() = config?.propertyOrNull("color")?.getString() ?: "#140e1b"
+
+	val maintainer: ConfigurationMaintainer = ConfigurationMaintainer(
+		config?.propertyOrNull("maintainer.name")?.getString() ?: "unknown",
+		config?.propertyOrNull("maintainer.email")?.getString() ?: "unknown",
+	)
 
 	val url: Url
 		get() =
@@ -71,6 +78,11 @@ object Configuration : ConfigurationObject {
 		}
 	}
 }
+
+data class ConfigurationMaintainer(
+	val name: String,
+	val email: String,
+) : ConfigurationObject
 
 @Suppress("MagicNumber")
 class ConfigurationFileStorage : ConfigurationObject {

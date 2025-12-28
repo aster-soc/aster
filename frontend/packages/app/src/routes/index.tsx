@@ -93,11 +93,6 @@ function RouteComponent() {
     } else {
         return (
             <>
-                <h1>Aster</h1>
-                <p>
-                    This is heavily in development software.<br/>
-                    If you have an account, you can <a href={"/login"}>log in</a>.
-                </p>
             </>
         )
     }

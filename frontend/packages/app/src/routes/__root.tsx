@@ -1,4 +1,4 @@
-import {createRootRoute, Outlet} from '@tanstack/react-router';
+import {createRootRoute, Outlet, useRouterState} from '@tanstack/react-router';
 import {QueryClientProvider} from "@tanstack/react-query";
 import queryClient from "../lib/queryClient.ts";
 import Sidebar from "../lib/components/Sidebar.tsx";
@@ -7,12 +7,18 @@ import {useState} from "react";
 import Container from "../lib/components/Container.tsx";
 import {IconAlertTriangle, IconCheck, IconInfoCircle, IconX} from "@tabler/icons-react";
 import BottomBar from "../lib/components/BottomBar.tsx";
+import localstore from "../lib/utils/localstore.ts";
+import AccountWidget from "../lib/components/widgets/Account.tsx";
+import Welcome from "../lib/components/Welcome.tsx";
 
 export const Route = createRootRoute({
     component: RootComponent,
 })
 
 function RootComponent() {
+    const self = localstore.getSelf()
+    const pathname = useRouterState().location.pathname;
+
     const [alerts, setAlerts] = useState()
 
     alert.state.subscribe((e) => setAlerts(e))
@@ -41,17 +47,27 @@ function RootComponent() {
         )
     }
 
-    return (
-        <>
-            <QueryClientProvider client={queryClient}>
-                {renderAlerts()}
-                <Sidebar left/>
-                <main>
-                    <Outlet/>
-                    <BottomBar/>
-                </main>
-                <Sidebar right/>
-            </QueryClientProvider>
-        </>
-    )
+    if (!self && pathname === "/") {
+        return (
+            <>
+                <QueryClientProvider client={queryClient}>
+                    <Welcome />
+                </QueryClientProvider>
+            </>
+        )
+    } else {
+        return (
+            <>
+                <QueryClientProvider client={queryClient}>
+                    {renderAlerts()}
+                    <Sidebar left/>
+                    <main>
+                        <Outlet/>
+                        <BottomBar/>
+                    </main>
+                    <Sidebar right/>
+                </QueryClientProvider>
+            </>
+        )
+    }
 }
