@@ -8,6 +8,7 @@ import site.remlit.aster.common.model.Notification
 import site.remlit.aster.common.model.SearchResults
 import site.remlit.aster.common.model.User
 import site.remlit.aster.common.model.Visibility
+import site.remlit.aster.common.model.request.CreateNoteRequest
 import site.remlit.aster.common.model.response.AuthResponse
 import site.remlit.aster.common.util.Https
 import site.remlit.aster.common.util.toObject
@@ -100,6 +101,11 @@ class Api {
 		@JsStatic
 		fun getNote(id: String) =
 			Https.get("/api/note/$id", true)
+				.unsafeCast<Promise<Note?>>()
+
+		@JsStatic
+		fun editNote(id: String, data: CreateNoteRequest) =
+			Https.post("/api/note/$id", true, data)
 				.unsafeCast<Promise<Note?>>()
 
 		@JsStatic

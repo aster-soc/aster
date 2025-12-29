@@ -5,6 +5,7 @@ import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.server.util.*
+import site.remlit.aster.common.model.Note
 import site.remlit.aster.common.model.User
 import site.remlit.aster.common.model.Visibility
 import site.remlit.aster.common.model.request.CreateNoteRequest
@@ -55,25 +56,40 @@ internal object NoteRoutes {
 			) {
 				delete("/api/note/{id}") {
 					val authenticatedUser = call.attributes[authenticatedUserKey]
+					val id = call.parameters.getOrFail("id")
 
-					val note = NoteService.getById(call.parameters.getOrFail("id")) ?: throw ApiException(
-						HttpStatusCode.NotFound,
-						"Note not found."
-					)
+					val note = NoteService.getById(id)
+						?: throw ApiException(HttpStatusCode.NotFound, "Note not found.")
 
 					if (
 						note.user.id != authenticatedUser.id.toString() &&
 						!RoleService.isModOrAdmin(authenticatedUser.id.toString())
-					)
-						throw ApiException(HttpStatusCode.Forbidden, "You don't have permission to delete this.")
+					) throw ApiException(HttpStatusCode.Forbidden, "You don't have permission to delete this.")
 
 					NoteService.deleteById(note.id)
 
 					call.respond(HttpStatusCode.OK)
 				}
 
-				patch("/api/note/{id}") {
-					throw ApiException(HttpStatusCode.NotImplemented)
+				post("/api/note/{id}") {
+					val authenticatedUser = call.attributes[authenticatedUserKey]
+					val id = call.parameters.getOrFail("id")
+
+					val note = NoteService.getById(id)
+						?: throw ApiException(HttpStatusCode.NotFound, "Note not found.")
+
+					if (note.user.id != authenticatedUser.id.toString())
+						throw ApiException(HttpStatusCode.Forbidden, "You don't have permission to edit this.")
+
+					val body = call.receive<CreateNoteRequest>()
+
+					val new = NoteService.update(
+						note,
+						body.cw,
+						body.content
+					) ?: throw ApiException(HttpStatusCode.NotFound, "Note not found.")
+
+					call.respond(HttpStatusCode.OK, new)
 				}
 
 				post("/api/note") {

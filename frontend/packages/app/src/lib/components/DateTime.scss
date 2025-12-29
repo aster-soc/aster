@@ -1,0 +1,8 @@
+.time {
+	&.edited {
+		&::after {
+			content: '*';
+			color: var(--tx-3);
+		}
+	}
+}

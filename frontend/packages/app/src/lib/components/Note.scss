@@ -1,168 +1,168 @@
 .note {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
 
-  position: relative;
+	position: relative;
 
-  box-sizing: border-box;
-  border-radius: var(--br-md);
+	box-sizing: border-box;
+	border-radius: var(--br-md);
 
-  padding: 14px;
+	padding: 14px;
 
-  transition: .1s background-color;
+	transition: .1s background-color;
 
-  &:hover {
-    background-color: var(--bg-3-50);
-  }
+	&:hover {
+		background-color: var(--bg-3-50);
+	}
 
-  .repeatHeader {
-    margin-left: calc(12px);
-    color: var(--tx-3);
-  }
+	.repeatHeader {
+		margin-left: calc(12px);
+		color: var(--tx-3);
+	}
 
-  p {
-    margin: 0;
-  }
+	p {
+		margin: 0;
+	}
 
-  .names {
-    color: var(--tx-2);
-    text-decoration: none;
-    cursor: pointer;
+	.names {
+		color: var(--tx-2);
+		text-decoration: none;
+		cursor: pointer;
 
-    .displayName {
-      font-weight: 500;
-    }
+		.displayName {
+			font-weight: 500;
+		}
 
-    .handle {
-      color: var(--tx-3);
-    }
-  }
+		.handle {
+			color: var(--tx-3);
+		}
+	}
 
-  .cw {
-    color: var(--warn);
-    background-color: var(--warn-50);
-    border-radius: var(--br-md);
-    padding: 6px 12px;
+	.cw {
+		color: var(--warn);
+		background-color: var(--warn-50);
+		border-radius: var(--br-md);
+		padding: 6px 12px;
 
-    box-shadow: var(--funky-effect);
-  }
+		box-shadow: var(--funky-effect);
+	}
 
-  .tag {
-    color: var(--ac-1);
-    background-color: var(--ac-1-25);
-    border-radius: var(--br-sm);
-    padding: 2px 6px;
+	.tag {
+		color: var(--ac-1);
+		background-color: var(--ac-1-25);
+		border-radius: var(--br-sm);
+		padding: 2px 6px;
 
-    transition: .1s;
+		transition: .1s;
 
-    &.gay, &.lgbt, &.lgbtq {
-      color: var(--tx-2);
-      background: linear-gradient(90deg,
-              #ff666650, #ff8f5350, #ffdf5e50,
-              #8ce45850, #5aa2ff50, #a861ff50);
-    }
+		&.gay, &.lgbt, &.lgbtq {
+			color: var(--tx-2);
+			background: linear-gradient(90deg,
+				#ff666650, #ff8f5350, #ffdf5e50,
+				#8ce45850, #5aa2ff50, #a861ff50);
+		}
 
-    &.trans {
-      color: var(--tx-2);
-      background: linear-gradient(90deg,
-              rgba(102, 237, 255, 0.31), rgba(248, 146, 255, 0.31), rgba(255, 255, 255, 0.31),
-              rgba(248, 146, 255, 0.31), rgba(102, 237, 255, 0.31));
-    }
+		&.trans {
+			color: var(--tx-2);
+			background: linear-gradient(90deg,
+				rgba(102, 237, 255, 0.31), rgba(248, 146, 255, 0.31), rgba(255, 255, 255, 0.31),
+				rgba(248, 146, 255, 0.31), rgba(102, 237, 255, 0.31));
+		}
 
-    &.mlm {
-      color: var(--tx-2);
-      background: linear-gradient(90deg,
-              rgba(39, 170, 124, 0.31), rgba(147, 255, 201, 0.31), rgba(255, 255, 255, 0.31),
-              rgba(71, 146, 186, 0.31), rgba(45, 73, 216, 0.31));
-    }
+		&.mlm {
+			color: var(--tx-2);
+			background: linear-gradient(90deg,
+				rgba(39, 170, 124, 0.31), rgba(147, 255, 201, 0.31), rgba(255, 255, 255, 0.31),
+				rgba(71, 146, 186, 0.31), rgba(45, 73, 216, 0.31));
+		}
 
-    &.wlw {
-      color: var(--tx-2);
-      background: linear-gradient(90deg,
-              rgba(237, 76, 19, 0.31), rgba(255, 150, 101, 0.31), rgba(255, 255, 255, 0.31),
-              rgba(250, 128, 200, 0.31), rgba(213, 57, 150, 0.31));
-    }
+		&.wlw {
+			color: var(--tx-2);
+			background: linear-gradient(90deg,
+				rgba(237, 76, 19, 0.31), rgba(255, 150, 101, 0.31), rgba(255, 255, 255, 0.31),
+				rgba(250, 128, 200, 0.31), rgba(213, 57, 150, 0.31));
+		}
 
-    &.enby, &.nonbinary {
-      color: var(--tx-2);
-      background: linear-gradient(90deg,
-              rgba(255, 228, 97, 0.31), rgba(255, 255, 255, 0.31), rgba(181, 82, 246, 0.31),
-              rgba(0, 0, 0, 0.31));
-    }
+		&.enby, &.nonbinary {
+			color: var(--tx-2);
+			background: linear-gradient(90deg,
+				rgba(255, 228, 97, 0.31), rgba(255, 255, 255, 0.31), rgba(181, 82, 246, 0.31),
+				rgba(0, 0, 0, 0.31));
+		}
 
-    > * {
-      color: inherit;
-      text-decoration: none;
-    }
+		> * {
+			color: inherit;
+			text-decoration: none;
+		}
 
-    &:hover {
-      color: var(--tx-2);
-      background-color: var(--ac-1-50);
-    }
-  }
+		&:hover {
+			color: var(--tx-2);
+			background-color: var(--ac-1-50);
+		}
+	}
 
-  @keyframes interaction {
-    100% {
-      rotate: 360deg;
-    }
-  }
+	@keyframes interaction {
+		100% {
+			rotate: 360deg;
+		}
+	}
 
-  footer {
-    display: flex;
-    align-items: center;
+	footer {
+		display: flex;
+		align-items: center;
 
-    button {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-wrap: wrap;
+		button {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			flex-wrap: wrap;
 
-      gap: 4px;
-      padding: 4px 6px;
-      margin-right: 50px;
-      border-radius: var(--br-mx);
+			gap: 4px;
+			padding: 4px 6px;
+			margin-right: 50px;
+			border-radius: var(--br-mx);
 
-      color: var(--tx-3);
-      background: none;
-      border: none;
+			color: var(--tx-3);
+			background: none;
+			border: none;
 
-      span {
-        font-size: var(--fs-sm);
-      }
+			span {
+				font-size: var(--fs-sm);
+			}
 
-      &.repeated, &.liked {
-        > svg {
-          animation: .65s ease-in-out 0s;
-          animation-name: interaction;
-        }
-      }
+			&.repeated, &.liked {
+				> svg {
+					animation: .65s ease-in-out 0s;
+					animation-name: interaction;
+				}
+			}
 
-      &.repeated {
-        > svg {
-          color: var(--repeat);
-        }
+			&.repeated {
+				> svg {
+					color: var(--repeat);
+				}
 
-        span {
-          color: var(--repeat);
-        }
-      }
+				span {
+					color: var(--repeat);
+				}
+			}
 
-      &.liked {
-        > svg {
-          color: var(--like);
-          fill: var(--like)
-        }
+			&.liked {
+				> svg {
+					color: var(--like);
+					fill: var(--like)
+				}
 
-        span {
-          color: var(--like);
-        }
-      }
+				span {
+					color: var(--like);
+				}
+			}
 
-      &:hover, &.selected {
-        color: var(--tx-2);
-        background-color: var(--bg-3);
-      }
-    }
-  }
+			&:hover, &.selected {
+				color: var(--tx-2);
+				background-color: var(--bg-3);
+			}
+		}
+	}
 }

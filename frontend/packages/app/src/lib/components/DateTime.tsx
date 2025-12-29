@@ -1,6 +1,7 @@
 import {useEffect, useState} from "react";
+import "./DateTime.scss"
 
-function DateTime({date, short}: { date: Date; short: boolean }) {
+function DateTime({date, edited, short}: { date: Date; edited?: Date; short: boolean }) {
     let [value, setValue] = useState(calculate(date));
 
     function calculate(time) {
@@ -50,8 +51,12 @@ function DateTime({date, short}: { date: Date; short: boolean }) {
     })
 
     return (
-        <span key={"Time-" + date.toString()} title={date.toString()}>
-            {short ? value : date.toLocaleDateString()}
+        <span
+			className={"time "+(short ? " short" : "")+(edited ? " edited" : "")}
+			key={"Time-" + date.toString()}
+			title={edited ? `Created at ${date.toLocaleString()}, edited at ${edited.toLocaleString()}` : `Created at ${date.toLocaleString()}`}
+		>
+            {short ? value : date.toLocaleString()}
         </span>
     )
 }

@@ -53,6 +53,7 @@ import site.remlit.aster.util.model.fromEntity
 import site.remlit.aster.util.sanitizeOrNull
 import site.remlit.mfmkt.MfmKt
 import site.remlit.mfmkt.model.MfmMention
+import kotlin.time.Clock
 
 /**
  * Service for managing notes.
@@ -314,11 +315,18 @@ object NoteService : Service {
 	): Note? {
         val user = UserService.getById(note.user.id) ?: return null
 
+		if (cw != null && cw.length > Configuration.note.maxLength.cw)
+			throw IllegalArgumentException("Content warning cannot be longer than ${Configuration.note.maxLength.cw}")
+
+		if (content != null && content.length > Configuration.note.maxLength.content)
+			throw IllegalArgumentException("Content cannot be longer than ${Configuration.note.maxLength.content}")
+
         val newNote = transaction {
             NoteEntity.findByIdAndUpdate(note.id) {
-                it.cw = cw?.ifEmpty { null }
-                it.content = content?.ifEmpty { null }
-            }
+				it.cw = cw?.ifEmpty { null }
+				it.content = content?.ifEmpty { null }
+				it.updatedAt = TimeService.now()
+			}
         } ?: return null
 
         NoteEditEvent(note).call()
@@ -332,7 +340,7 @@ object NoteService : Service {
                 user
             )
 
-        return Note.fromEntity(newNote)
+        return getById(newNote.id.toString())!!
     }
 
 	/**

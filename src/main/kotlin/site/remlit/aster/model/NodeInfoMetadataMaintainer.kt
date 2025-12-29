@@ -6,4 +6,4 @@ import kotlinx.serialization.Serializable
 data class NodeInfoMetadataMaintainer(
     val name: String,
     val email: String,
-)w
+)

@@ -15,20 +15,34 @@ import {store} from "../utils/state.ts";
 import NoteSimple from "./NoteSimple.tsx";
 import {useQuery} from "@tanstack/react-query";
 import {Api} from 'aster-common'
+import * as Common from 'aster-common'
 import alert, {Alert, AlertType} from "../utils/alert.ts";
 
 function Compose() {
     const replyingTo = useStore(store, (state) => state["replyingTo"]);
     const quoting = useStore(store, (state) => state["quoting"]);
 
-    let [cw, setCw] = React.useState(undefined)
-    let [showCwField, setShowCwField] = React.useState(localstore.getParsed("always_show_cw_compose"))
+	const editing = useStore(store, (state) => state["editing"]);
 
-    let [content, setContent] = React.useState(undefined)
-    let [visibility, setVisibility] = React.useState("public")
+	const [cw, setCw] = React.useState<string | undefined>(undefined)
+	const [showCwField, setShowCwField] = React.useState(localstore.getParsed("always_show_cw_compose"))
 
-    let [visibilityDropdownOpen, setVisibilityDropdownOpen] =
-        React.useState(false)
+    const [content, setContent] = React.useState<string | undefined>(undefined)
+	const [visibility, setVisibility] = React.useState("public")
+
+	React.useEffect(() => {
+		if (editing) Api.getNote(editing).then((note) => {
+			if (!note) return
+
+			setCw(note.cw)
+			if (cw) showCwField(true)
+
+			setContent(note.content)
+			setVisibility(note.visibility)
+		})
+	}, [editing])
+
+    let [visibilityDropdownOpen, setVisibilityDropdownOpen] = React.useState(false)
     let visibilityDropdownRef: RefObject<HTMLButtonElement | null> = React.createRef()
     let visibilityDropdownItems: DropdownNode[] = [
         new DropdownItem(
@@ -95,6 +109,27 @@ function Compose() {
             }
         })
     }
+
+	function update() {
+		if (!content && !quoting) return
+
+		Api.editNote(editing, {
+			cw: cw,
+			content: content,
+			visibility: visibility,
+			replyingTo: replyingTo,
+		}).then((e) => {
+			if (e) {
+				setCw(undefined)
+				setContent(undefined)
+				store.setState((state) => {
+					return {...state, ["replyingTo"]: undefined, ["quoting"]: undefined, ["editing"]: undefined}
+				})
+
+				alert.add(new Alert("", AlertType.Success, "Updated note"))
+			}
+		})
+	}
 
     function renderHeader() {
         return (
@@ -170,7 +205,11 @@ function Compose() {
                     </Container>
                 </Container>
                 <Container align={"right"}>
-                    <Button onClick={() => post()}>Post</Button>
+					{editing ? (
+						<Button primary onClick={() => update()}>Update</Button>
+					) : (
+						<Button onClick={() => post()}>Post</Button>
+					)}
                 </Container>
             </Container>
         )
@@ -192,7 +231,7 @@ function Compose() {
                     <Input
                         wide
                         placeholder={"Content warning"}
-                        value={content}
+                        value={cw}
                         onChange={(e) => setCw(e.target.value)}
                     />
                 ) : null}

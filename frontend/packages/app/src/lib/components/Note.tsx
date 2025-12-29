@@ -249,6 +249,9 @@ function Note(
                 'Edit note',
                 undefined,
                 () => {
+					store.setState((state) => {
+						return {...state, ["editing"]: note?.id}
+					})
                 }
             ),
             new DropdownItem(
@@ -292,7 +295,7 @@ function Note(
                 </Container>
                 <Container align={"right"}>
                     <Container gap={"sm"} onClick={() => navigate({to: `/note/${note.id}`})}>
-                        <DateTime date={note?.createdAt} short={true}/>
+						<DateTime date={note?.createdAt} edited={note?.updatedAt} short={true}/>
                         <Visibility visibility={note?.visibility}/>
                     </Container>
                 </Container>

@@ -21,6 +21,7 @@ import site.remlit.aster.service.IdentifierService
 import site.remlit.aster.service.InstanceService
 import site.remlit.aster.service.NoteService
 import site.remlit.aster.service.ResolverService
+import site.remlit.aster.service.TimeService
 import site.remlit.aster.service.UserService
 import site.remlit.aster.util.jsonConfig
 import site.remlit.aster.util.model.fromEntity
@@ -177,6 +178,7 @@ object ApNoteService : Service {
 					// todo: repeat
 
 					it.createdAt = note.createdAt!!.toLocalDateTime()
+					it.updatedAt = note.updatedAt?.toLocalDateTime()
 				}
 			}
 
