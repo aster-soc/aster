@@ -94,6 +94,15 @@ timeline:
     public:
         authRequired: false
 
+## Note Settings ##
+#   maxLength: maximum character length for a note's content,
+#              can be no longer than 100000
+#   maxAttachments: maximum file attachments for a note
+##
+note:
+    maxLength: 8192
+    maxAttachments: 10
+
 ## File storage ##
 # How to store files uploaded by users.
 #   type:
@@ -143,6 +152,7 @@ reservedUsernames:
 # or to leave it up for plugins to handle.
 # Disabling without a plugin to add an alternate frontend
 # will make your instance unusable to most users.
+##
 builtinFrontend: true
 
 ## Debug ##

@@ -163,6 +163,18 @@ fun Application.module() {
 				return@exception
 			}
 
+			if (cause is IllegalArgumentException) {
+				call.respond(
+					HttpStatusCode.BadRequest,
+					ApiError(
+						cause.message,
+						call.callId,
+						cause.stackTrace.joinToString("\n")
+					)
+				)
+				return@exception
+			}
+
 			call.respond(
 				HttpStatusCode.InternalServerError, ApiError(
 					cause.message,

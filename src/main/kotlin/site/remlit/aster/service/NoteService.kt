@@ -214,6 +214,9 @@ object NoteService : Service {
 	): Note {
 		val localTo = mutableListOf<String>()
 
+		if (content.length > Configuration.note.maxLength)
+			throw IllegalArgumentException("Content cannot be longer than ${Configuration.note.maxLength}")
+
 		transaction {
 			NoteEntity.new(id) {
 				apId = ApIdService.renderNoteApId(id)

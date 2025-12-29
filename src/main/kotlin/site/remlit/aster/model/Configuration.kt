@@ -59,6 +59,7 @@ object Configuration : ConfigurationObject {
 	val database: ConfigurationDatabase = ConfigurationDatabase()
 	val queue: ConfigurationQueue = ConfigurationQueue()
 	val timeline: ConfigurationTimeline = ConfigurationTimeline()
+	val note: ConfigurationNote = ConfigurationNote()
 	val fileStorage: ConfigurationFileStorage = ConfigurationFileStorage()
 
 	val hideRemoteContent: Boolean get() = config?.propertyOrNull("hideRemoteContent")?.getString()?.toBoolean() ?: true
@@ -163,6 +164,12 @@ class ConfigurationTimeline : ConfigurationObject {
 			authRequired = (config?.propertyOrNull("timeline.public.authRequired")?.getString()?.toBooleanStrictOrNull()
 				?: false)
 		)
+}
+
+@Suppress("MagicNumber")
+class ConfigurationNote : ConfigurationObject {
+	val maxLength: Int get() = config?.propertyOrNull("note.maxLength")?.getString()?.toInt() ?: 8192
+	val maxAttachments: Int get() = config?.propertyOrNull("note.maxAttachments")?.getString()?.toInt() ?: 10
 }
 
 data class ConfigurationSpecificTimeline(
