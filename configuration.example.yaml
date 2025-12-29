@@ -95,12 +95,13 @@ timeline:
         authRequired: false
 
 ## Note Settings ##
-#   maxLength: maximum character length for a note's content,
-#              can be no longer than 100000
-#   maxAttachments: maximum file attachments for a note
+# Max lengths cannot be higher than 100000
+# Max attachments are the maximum amount of files per note
 ##
 note:
-    maxLength: 8192
+    maxLength:
+        cw: 1024
+        content: 8192
     maxAttachments: 10
 
 ## File storage ##

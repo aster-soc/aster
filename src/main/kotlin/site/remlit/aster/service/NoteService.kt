@@ -214,8 +214,11 @@ object NoteService : Service {
 	): Note {
 		val localTo = mutableListOf<String>()
 
-		if (content.length > Configuration.note.maxLength)
-			throw IllegalArgumentException("Content cannot be longer than ${Configuration.note.maxLength}")
+		if (cw != null && cw.length > Configuration.note.maxLength.cw)
+			throw IllegalArgumentException("Content warning cannot be longer than ${Configuration.note.maxLength.cw}")
+
+		if (content.length > Configuration.note.maxLength.content)
+			throw IllegalArgumentException("Content cannot be longer than ${Configuration.note.maxLength.content}")
 
 		transaction {
 			NoteEntity.new(id) {
@@ -487,6 +490,12 @@ object NoteService : Service {
 			throw IllegalArgumentException("Note not found")
 
 		val id = IdentifierService.generate()
+
+		if (cw != null && cw.length > Configuration.note.maxLength.cw)
+			throw IllegalArgumentException("Content warning cannot be longer than ${Configuration.note.maxLength.cw}")
+
+		if (content != null && content.length > Configuration.note.maxLength.content)
+			throw IllegalArgumentException("Content cannot be longer than ${Configuration.note.maxLength.content}")
 
 		transaction {
 			NoteEntity.new(id) {

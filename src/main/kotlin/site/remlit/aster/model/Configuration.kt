@@ -166,12 +166,6 @@ class ConfigurationTimeline : ConfigurationObject {
 		)
 }
 
-@Suppress("MagicNumber")
-class ConfigurationNote : ConfigurationObject {
-	val maxLength: Int get() = config?.propertyOrNull("note.maxLength")?.getString()?.toInt() ?: 8192
-	val maxAttachments: Int get() = config?.propertyOrNull("note.maxAttachments")?.getString()?.toInt() ?: 10
-}
-
 data class ConfigurationSpecificTimeline(
 	val authRequired: Boolean,
 ) : ConfigurationObject
@@ -180,3 +174,14 @@ data class ConfigurationBubbleTimeline(
 	val authRequired: Boolean,
 	val hosts: List<String>,
 ) : ConfigurationObject
+
+@Suppress("MagicNumber")
+class ConfigurationNote : ConfigurationObject {
+	val maxLength = ConfigurationMaxLength()
+	val maxAttachments: Int get() = config?.propertyOrNull("note.maxAttachments")?.getString()?.toInt() ?: 10
+}
+
+class ConfigurationMaxLength: ConfigurationObject {
+	val cw: Int get() = config?.propertyOrNull("configuration.maxCwLength")?.getString()?.toInt() ?: 1024
+	val content: Int get() = config?.propertyOrNull("configuration.maxLength.content")?.getString()?.toInt() ?: 8192
+}
