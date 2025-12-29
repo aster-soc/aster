@@ -12,6 +12,8 @@ import org.jetbrains.annotations.ApiStatus
 import org.jetbrains.exposed.v1.core.Op
 import org.jetbrains.exposed.v1.core.and
 import org.jetbrains.exposed.v1.core.eq
+import org.jetbrains.exposed.v1.core.greater
+import org.jetbrains.exposed.v1.core.greaterEq
 import org.jetbrains.exposed.v1.core.lessEq
 import org.jetbrains.exposed.v1.core.notInList
 import org.jetbrains.exposed.v1.core.or
@@ -54,6 +56,12 @@ object QueueService : Service {
 	val deliverScope = CoroutineScope(Dispatchers.Default + CoroutineName("DeliverDispatcher"))
 
 	/**
+	 * Deliver queue coroutine scope
+	 * */
+	@JvmStatic
+	val cleanerScope = CoroutineScope(Dispatchers.Default + CoroutineName("QueueCleanerDispatcher"))
+
+	/**
 	 * Current count of active inbox queue workers
 	 * */
 	@JvmStatic
@@ -78,18 +86,44 @@ object QueueService : Service {
 	fun initialize() {
 		inboxScope.launch {
 			while (true) {
-				delay(1.seconds)
 				summonInboxConsumersIfNeeded()
+				delay(1.seconds)
 			}
 		}
 		deliverScope.launch {
 			while (true) {
-				delay(1.seconds)
 				summonDeliverConsumersIfNeeded()
+				delay(1.seconds)
+			}
+		}
+		cleanerScope.launch {
+			while (true) {
+				clean()
+				delay(30.minutes)
 			}
 		}
 
 		logger.info("Initialized inbox and deliver queues")
+	}
+
+	/**
+	 * Cleans old completed jobs and jobs that cannot be retried.
+	 * */
+	fun clean() {
+		var inboxCount = 0
+		var deliverCount = 0
+
+		transaction {
+			InboxQueueEntity.find((InboxQueueTable.status eq QueueStatus.COMPLETED or
+				(InboxQueueTable.retries greaterEq Configuration.queue.inbox.maxRetries)) and
+				(InboxQueueTable.createdAt greater TimeService.daysAgo(3))).forEach { it.delete(); inboxCount++ }
+
+			DeliverQueueEntity.find((DeliverQueueTable.status eq QueueStatus.COMPLETED or
+				(DeliverQueueTable.retries greaterEq Configuration.queue.deliver.maxRetries)) and
+				(DeliverQueueTable.createdAt greater TimeService.daysAgo(3))).forEach { it.delete(); deliverCount++ }
+		}
+
+		logger.debug("Queue cleaner ran, $inboxCount inbox jobs and $deliverCount deliver jobs deleted")
 	}
 
 	// getters
