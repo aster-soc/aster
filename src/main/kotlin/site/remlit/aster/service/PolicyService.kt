@@ -1,5 +1,6 @@
 package site.remlit.aster.service
 
+import kotlinx.html.B
 import org.jetbrains.exposed.v1.core.Op
 import org.jetbrains.exposed.v1.core.eq
 import org.jetbrains.exposed.v1.core.like
@@ -159,9 +160,36 @@ object PolicyService : Service {
 		logger.debug("Should block found policies ${policies.map { it.host }}")
 		if (policies.any { it.type == PolicyType.Block }) return true
 
-		val likePolicies = getMany(PolicyTable.host like "%.$host%")
-		logger.debug("Should block found likePolicies ${likePolicies.map { it.host }}")
-		if (likePolicies.any { it.type == PolicyType.Block }) return true
+		val policiesLike = getMany(PolicyTable.host like "%.$host%")
+		logger.debug("Should block found policiesLike ${policiesLike.map { it.host }}")
+		if (policiesLike.any { it.type == PolicyType.Block }) return true
+
+		return false
+	}
+
+	/**
+	 * Determines if a request should be blocked based on policies
+	 *
+	 * @param host Requesting host
+	 * @param activity Activity being sent
+	 * */
+	@JvmStatic
+	fun shouldBlock(host: String, activity: String?): Boolean {
+		val silencedActivities = listOf("Announce", "Bite", "EmojiReact", "Like", "Follow", "Flag")
+
+		val policies = getMany(PolicyTable.host eq host)
+		logger.debug("Should block found policies ${policies.map { it.host }}")
+		if (
+			policies.any { it.type == PolicyType.Block } ||
+			policies.any { it.type == PolicyType.Silence } && silencedActivities.contains(activity)
+		) return true
+
+		val policiesLike = getMany(PolicyTable.host like "%.$host")
+		logger.debug("Should block found policiesLike ${policiesLike.map { it.host }}")
+		if (
+			policiesLike.any { it.type == PolicyType.Block } ||
+			policiesLike.any { it.type == PolicyType.Silence } && silencedActivities.contains(activity)
+		) return true
 
 		return false
 	}

@@ -1,5 +1,6 @@
 package site.remlit.aster.service.ap
 
+import io.ktor.http.Url
 import io.ktor.server.request.*
 import io.ktor.server.routing.*
 import io.ktor.util.*
@@ -9,7 +10,6 @@ import kotlinx.datetime.toInstant
 import kotlinx.datetime.toKotlinLocalDateTime
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import site.remlit.aster.common.model.type.PolicyType
 import site.remlit.aster.common.util.orNull
 import site.remlit.aster.db.entity.UserEntity
 import site.remlit.aster.model.Configuration
@@ -17,7 +17,6 @@ import site.remlit.aster.model.Service
 import site.remlit.aster.model.ap.ApTypedObject
 import site.remlit.aster.model.ap.ApValidationException
 import site.remlit.aster.model.ap.ApValidationExceptionType
-import site.remlit.aster.service.IdentifierService
 import site.remlit.aster.service.KeypairService
 import site.remlit.aster.service.PolicyService
 import site.remlit.aster.util.jsonConfig
@@ -54,59 +53,49 @@ object ApValidationService : Service {
 		body: ByteArray? = null,
 		string: String? = null
 	): UserEntity? {
-		val validationRequestId = IdentifierService.generate()
-
-		val blockPolicies = PolicyService.getAllByType(PolicyType.Block)
-		PolicyService.reducePoliciesToHost(blockPolicies)
-
 		if (
 			request.headers["Host"].isNullOrEmpty() ||
 			request.headers["Host"] != Configuration.url.host
 		) {
-			logger.debug("[{}] Missing or invalid host.", validationRequestId)
 			throw ApValidationException(
 				ApValidationExceptionType.Unauthorized,
-				"Missing or invalid host."
+				"Missing or invalid host"
 			)
 		}
 
 		if (
 			request.headers["Date"].isNullOrEmpty()
 		) {
-			logger.debug("[{}] Date not present.", validationRequestId)
 			throw ApValidationException(
 				ApValidationExceptionType.Unauthorized,
-				"Date not present."
+				"Date not present"
 			)
 		}
 
 		if (
 			request.headers["Digest"].isNullOrEmpty()
 		) {
-			logger.debug("[{}] Digest not present.", validationRequestId)
 			throw ApValidationException(
 				ApValidationExceptionType.Unauthorized,
-				"Digest not present."
+				"Digest not present"
 			)
 		}
 
 		if (
 			request.headers["Signature"].isNullOrEmpty()
 		) {
-			logger.debug("[{}] Signature not present.", validationRequestId)
 			throw ApValidationException(
 				ApValidationExceptionType.Unauthorized,
-				"Signature not present."
+				"Signature not present"
 			)
 		}
 
 		if (
 			!request.headers["Digest"]!!.startsWith("SHA-256=")
 		) {
-			logger.debug("[{}] Digest uses unsupported algorithm.", validationRequestId)
 			throw ApValidationException(
 				ApValidationExceptionType.Unauthorized,
-				"Digest uses unsupported algorithm."
+				"Digest uses unsupported algorithm"
 			)
 		}
 
@@ -114,10 +103,9 @@ object ApValidationService : Service {
 			body != null &&
 			isDigestValid(request.headers["Digest"]!!, body)
 		) {
-			logger.debug("[{}] Digest invalid.", validationRequestId)
 			throw ApValidationException(
 				ApValidationExceptionType.Unauthorized,
-				"Digest invalid."
+				"Digest invalid"
 			)
 		}
 
@@ -151,25 +139,31 @@ object ApValidationService : Service {
 		)
 
 		val actorApId = sigKeyId.substringBefore("#")
+		val actorHost = Url(actorApId).host
+
+		val typedObj = if (string != null)
+			orNull { jsonConfig.decodeFromString<ApTypedObject>(string) }
+		else null
+
+		if (PolicyService.shouldBlock(actorHost, typedObj?.type)) {
+			throw ApValidationException(
+				ApValidationExceptionType.Unauthorized,
+				"Request blocked by local policy"
+			)
+		}
 
 		val actor = ApActorService.resolve(actorApId)
 		if (actor == null) {
-			val typedObj = if (string != null)
-				orNull { jsonConfig.decodeFromString<ApTypedObject>(string) }
-			else null
-
 			if (typedObj?.type == "Delete") {
-				logger.debug("[{}] Actor not found and activity is Delete, pretending to process.", validationRequestId)
 				throw ApValidationException(
 					ApValidationExceptionType.Ignore,
-					"Actor not found and activity is Delete, ignoring."
+					"Actor not found and activity is Delete, ignoring"
 				)
 			}
 
-			logger.debug("[{}] Actor not found.", validationRequestId)
 			throw ApValidationException(
 				ApValidationExceptionType.Unauthorized,
-				"Actor not found."
+				"Actor not found"
 			)
 		}
 
@@ -182,7 +176,6 @@ object ApValidationService : Service {
 			)
 		} catch (e: Exception) {
 			if (Configuration.debug) e.printStackTrace()
-			logger.debug("[{}] Signature invalid. {}", validationRequestId, e.message)
 			throw ApValidationException(
 				ApValidationExceptionType.Forbidden,
 				"Signature invalid: ${e.message}"
@@ -192,10 +185,9 @@ object ApValidationService : Service {
 		if (
 			!isSignatureValid
 		) {
-			logger.debug("[{}] Signature invalid", validationRequestId)
 			throw ApValidationException(
 				ApValidationExceptionType.Forbidden,
-				"Signature invalid."
+				"Signature invalid"
 			)
 		}
 
@@ -227,13 +219,13 @@ object ApValidationService : Service {
 		if (dateInstant > nowPlusMargin)
 			throw ApValidationException(
 				ApValidationExceptionType.Forbidden,
-				"Date is more than $maxTimeMargin seconds past now."
+				"Date is more than $maxTimeMargin seconds past now"
 			)
 
 		if (dateInstant < nowMinusMargin)
 			throw ApValidationException(
 				ApValidationExceptionType.Forbidden,
-				"Date is more than $maxTimeMargin seconds from now."
+				"Date is more than $maxTimeMargin seconds from now"
 			)
 
 		val javaSignature = java.security.Signature.getInstance("SHA256withRSA")

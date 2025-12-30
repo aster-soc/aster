@@ -41,14 +41,13 @@ object InboxHandlerRegistry {
 	fun handle(job: InboxQueueEntity) {
 		val typedObject = jsonConfig.decodeFromString<ApTypedObject>(String(job.content.bytes))
 
-		if (Configuration.debug)
-			logger.debug(
-				"[{}] Consuming object of type {} from {} on attempt {}",
-				job.id,
-				typedObject.type,
-				transaction { job.sender?.apId ?: "unknown" },
-				job.retries + 1
-			)
+		logger.debug(
+			"[{}] Consuming object of type {} from {} on attempt {}",
+			job.id,
+			typedObject.type,
+			transaction { job.sender?.apId ?: "unknown" },
+			job.retries + 1
+		)
 
 		runBlocking {
 			try {
@@ -72,7 +71,7 @@ object InboxHandlerRegistry {
 	@JvmStatic
 	fun register(type: String, handler: ApInboxHandler) {
 		inboxHandlers.add(Pair(type, handler))
-		if (Configuration.debug) logger.debug("Added $type activity handler ${handler::class.simpleName}")
+		logger.debug("Added $type activity handler ${handler::class.simpleName}")
 	}
 
 	/**

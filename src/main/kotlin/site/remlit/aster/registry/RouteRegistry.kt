@@ -63,7 +63,7 @@ object RouteRegistry {
 	fun registerRoute(
 		route: Routing.() -> Unit
 	) {
-		if (Configuration.debug) logger.debug("Registering route ${route::class.simpleName}")
+		logger.debug("Registering route ${route::class.simpleName}")
 		routes.add(route)
 	}
 

@@ -17,7 +17,8 @@ enum class PolicyType {
 	Block,
 
 	/**
-	 * Quietly ignore remote host.
+	 * Quietly ignore remote host. Targeted activities (follows, likes) will be ignored
+	 * but notes can still be received.
 	 * */
 	@SerialName("silence")
 	Silence,
@@ -32,11 +33,5 @@ enum class PolicyType {
 	 * Append sensitive tag on new user.
 	 * */
 	@SerialName("forceSensitive")
-	ForceSensitive,
-
-	/**
-	 * Force all incoming Follow activities to require approval.
-	 * */
-	@SerialName("forceFollowRequest")
-	ForceFollowRequest
+	ForceSensitive
 }

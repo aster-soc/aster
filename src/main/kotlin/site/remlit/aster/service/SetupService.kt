@@ -49,7 +49,7 @@ object SetupService : Service {
 		val existingAdminRole = RoleService.get(RoleTable.type eq RoleType.Admin)
 
 		if (existingAdminRole != null) {
-			if (Configuration.debug) logger.debug("Admin role already exists")
+			logger.debug("Admin role already exists")
 		} else {
 			logger.warn("Admin role missing, generating...")
 
@@ -68,7 +68,7 @@ object SetupService : Service {
 		val existingModRole = RoleService.get(RoleTable.type eq RoleType.Mod)
 
 		if (existingModRole != null) {
-			if (Configuration.debug) logger.debug("Mod role already exists")
+			logger.debug("Mod role already exists")
 		} else {
 			logger.warn("Mod role missing, generating...")
 
@@ -97,7 +97,7 @@ object SetupService : Service {
 		)
 
 		if (existingActor != null) {
-			if (Configuration.debug) logger.debug("Instance actor already exists")
+			logger.debug("Instance actor already exists")
 		} else {
 			logger.warn("Instance actor missing, generating...")
 

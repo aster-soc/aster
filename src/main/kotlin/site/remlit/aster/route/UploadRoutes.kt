@@ -60,7 +60,7 @@ internal object UploadRoutes {
 
 						if (!path.exists()) Files.createDirectories(path.parent)
 
-						if (Configuration.debug) logger.debug(
+						logger.debug(
 							"Uploading file ({}, {} v {}) to {}",
 							contentType,
 							contentLength,

@@ -82,7 +82,7 @@ object CommandLineService : Service {
 						)
 
 						if (supposedPath.exists()) {
-							if (Configuration.debug) logger.debug(
+							logger.debug(
 								"File {} ({}) found at {}",
 								file.src,
 								file.id,

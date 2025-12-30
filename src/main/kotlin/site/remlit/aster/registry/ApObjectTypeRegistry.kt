@@ -26,7 +26,7 @@ object ApObjectTypeRegistry {
 	@JvmStatic
 	fun register(klass: KClass<out ApObject>, serializer: KSerializer<out ApObject>) {
 		apObjectTypes.add(Pair(klass, serializer))
-		if (Configuration.debug) logger.debug("Added ${klass.simpleName} as an AP object type")
+		logger.debug("Added ${klass.simpleName} as an AP object type")
 	}
 
 	/**

@@ -18,6 +18,7 @@ import site.remlit.aster.exception.ResolverException
 import site.remlit.aster.model.Configuration
 import site.remlit.aster.model.PackageInformation
 import site.remlit.aster.model.Service
+import site.remlit.aster.service.ResolverService.logger
 import site.remlit.aster.service.ap.ApSignatureService
 import site.remlit.aster.util.jsonConfig
 import java.time.LocalDateTime
@@ -75,6 +76,18 @@ object ResolverService : Service {
 		}
 	}
 
+	private inline fun tryRequest(block: () -> JsonObject?): JsonObject? =
+		try {
+			return block()
+		} catch (e: Exception) {
+			if (e is ResolverException) {
+				logger.info("Request failed: ${e.status} ${e.message}")
+			} else {
+				logger.info("Request failed: ${e.message}")
+			}
+			return null
+		}
+
 	/**
 	 * Resolve a URL
 	 *
@@ -92,13 +105,12 @@ object ResolverService : Service {
 		if (url.host == Configuration.host)
 			throw IllegalArgumentException("Attempted to resolve local url")
 
-		val blockPolicies = PolicyService.getAllByType(PolicyType.Block)
-		val blockedHosts = PolicyService.reducePoliciesToHost(blockPolicies)
-
-		if (blockedHosts.contains(url.host))
+		if (PolicyService.shouldBlock(url.host)) {
+			logger.debug("Blocked resolve request for {}", url)
 			return null
+		}
 
-		try {
+		return tryRequest {
 			val client = createClient()
 			val response = client.get(url) {
 				headers.append("Accept", accept)
@@ -112,9 +124,6 @@ object ResolverService : Service {
 
 			val body: JsonObject? = response.body()
 			return body
-		} catch (e: Exception) {
-			logger.info("Request failed: ${e.message}")
-			return null
 		}
 	}
 
@@ -139,21 +148,20 @@ object ResolverService : Service {
 		if (url.host == Configuration.host)
 			throw IllegalArgumentException("Attempted to resolve local url")
 
+		if (PolicyService.shouldBlock(url.host)) {
+			logger.debug("Blocked resolve request for {}", url)
+			return null
+		}
+
 		val date = LocalDateTime.now(ZoneId.of("GMT"))
 			.toHttpDateString()
-
-		val blockPolicies = PolicyService.getAllByType(PolicyType.Block)
-		val blockedHosts = PolicyService.reducePoliciesToHost(blockPolicies)
-
-		if (blockedHosts.contains(url.host))
-			return null
 
 		val actor = (if (user != null) UserService.getByUsername(user) else null)
 			?: UserService.getInstanceActor()
 
 		val actorPrivate = UserService.getPrivateById(actor.id.toString())!!
 
-		try {
+		return tryRequest {
 			val client = createClient()
 			val response = client.get(url) {
 				headers.append("Host", url.host)
@@ -181,9 +189,6 @@ object ResolverService : Service {
 
 			val body: JsonObject? = response.body()
 			return body
-		} catch (e: Exception) {
-			logger.info("Request failed: ${e.message}")
-			return null
 		}
 	}
 }
