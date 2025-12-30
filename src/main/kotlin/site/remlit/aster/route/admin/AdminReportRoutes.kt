@@ -10,6 +10,7 @@ import kotlinx.html.table
 import kotlinx.html.td
 import kotlinx.html.th
 import kotlinx.html.tr
+import org.jetbrains.exposed.v1.core.like
 import org.jetbrains.exposed.v1.core.neq
 import site.remlit.aster.common.model.type.RoleType
 import site.remlit.aster.db.table.ReportTable
@@ -31,9 +32,10 @@ object AdminReportRoutes {
 				get("/admin/reports") {
 					val take = Configuration.timeline.defaultObjects
 					val offset = call.parameters["offset"]?.toLong() ?: 0
+					val query = call.request.queryParameters["q"]
 
 					val reports = ReportService.getMany(
-						ReportTable.id neq null,
+						if (query == null) ReportTable.id neq null else ReportTable.comment like "%$query%",
 						take,
 						offset
 					)
@@ -97,7 +99,7 @@ object AdminReportRoutes {
 							p {
 								+"${reports.size} reports shown, $totalReports total."
 							}
-							adminListNav(offset, take)
+							adminListNav(offset, take, query)
 						}
 					}
 				}

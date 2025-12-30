@@ -57,6 +57,7 @@ object EmojiService : Service {
 			.find { where }
 			.offset(offset)
 			.take(take)
+			.sortedByDescending { it.createdAt }
 			.toList()
 	}
 

@@ -21,12 +21,8 @@ version = gradle.extra.get("rootVersion") as String
 
 repositories {
 	mavenCentral()
-	maven {
-		url = uri("https://repo.remlit.site/releases")
-	}
-	maven {
-		url = uri("https://repo.remlit.site/snapshots")
-	}
+	maven("https://repo.remlit.site/releases")
+	maven("https://repo.remlit.site/snapshots")
 }
 
 dependencies {

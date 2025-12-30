@@ -1,9 +1,14 @@
 package site.remlit.aster.route.admin
 
-import io.ktor.http.*
-import io.ktor.server.html.*
-import io.ktor.server.routing.*
+import io.ktor.http.HttpStatusCode
+import io.ktor.server.html.respondHtml
+import io.ktor.server.routing.get
+import io.ktor.server.routing.path
 import kotlinx.html.classes
+import kotlinx.html.dir
+import kotlinx.html.div
+import kotlinx.html.h2
+import kotlinx.html.h3
 import kotlinx.html.p
 import kotlinx.html.table
 import kotlinx.html.td
@@ -11,67 +16,77 @@ import kotlinx.html.th
 import kotlinx.html.tr
 import org.jetbrains.exposed.v1.core.like
 import org.jetbrains.exposed.v1.core.neq
+import site.remlit.aster.common.model.type.PolicyType
 import site.remlit.aster.common.model.type.RoleType
 import site.remlit.aster.db.table.InstanceTable
+import site.remlit.aster.db.table.PolicyTable
 import site.remlit.aster.model.Configuration
 import site.remlit.aster.registry.RouteRegistry
 import site.remlit.aster.service.InstanceService
+import site.remlit.aster.service.PolicyService
 import site.remlit.aster.util.authentication
 import site.remlit.aster.util.webcomponent.adminButton
 import site.remlit.aster.util.webcomponent.adminListNav
 import site.remlit.aster.util.webcomponent.adminPage
+import site.remlit.aster.util.webcomponent.ctn
 
-internal object AdminInstanceRoutes {
-	fun register() =
-		RouteRegistry.registerRoute {
+object AdminPolicyRoutes {
+	fun register() = RouteRegistry.registerRoute {
 			authentication(
 				required = true,
-				role = RoleType.Admin
+				role = RoleType.Mod
 			) {
-				get("/admin/instances") {
+				get("/admin/policies") {
 					val take = Configuration.timeline.defaultObjects
 					val offset = call.parameters["offset"]?.toLong() ?: 0
 					val query = call.request.queryParameters["q"]
 
-					val instances = InstanceService.getMany(
-						if (query != null) InstanceTable.host like "%$query%" else InstanceTable.id neq "",
+					val policies = PolicyService.getMany(
+						if (query != null)
+							PolicyTable.host like "%$query%"
+						else PolicyTable.id neq "",
 						take,
 						offset
 					)
-					val totalInstances = InstanceService.count(
-						InstanceTable.id neq ""
+
+					val totalPolicies = PolicyService.count(
+						PolicyTable.id neq ""
 					)
 
 					call.respondHtml(HttpStatusCode.OK) {
 						adminPage(call.route.path) {
+							ctn {
+								adminButton("/admin/policy/add") { +"Add policy" }
+							}
+
 							table {
 								tr {
 									classes = setOf("header")
 									th { +"Host" }
-									th { +"Software" }
-									th { +"Description" }
+									th { +"Type" }
+									th { +"Content" }
 									th { +"Actions" }
 								}
-								for (instance in instances) {
+								for (policy in policies) {
 									tr {
-										td { +instance.host }
-										td { +"${instance.software} ${instance.version}" }
-										td { +(instance.description.orEmpty()) }
+										td { +policy.host }
+										td { +policy.type.name }
+										td { +(policy.content ?: "No content") }
 										td {
-											adminButton({ "" }) {
-												+"Block"
-											}
+											adminButton({ "" }) { +"Delete" }
 										}
 									}
 								}
 							}
+
 							p {
-								+"${instances.size} instances shown, $totalInstances total."
+								+"${policies.size} policies shown, $totalPolicies total."
 							}
 							adminListNav(offset, take, query)
 						}
-					}
+
 				}
 			}
 		}
+	}
 }

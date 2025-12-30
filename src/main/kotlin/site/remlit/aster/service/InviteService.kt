@@ -79,7 +79,6 @@ object InviteService : Service {
 			.where { where }
 			.offset(offset)
 			.let { InviteEntity.wrapRows(it) }
-			.sortedByDescending { it.createdAt }
 			.take(take)
 			.toList()
 	}

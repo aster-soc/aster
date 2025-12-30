@@ -19,6 +19,7 @@ fun HTML.adminPage(path: String, content: FlowContent.() -> Unit) {
 	head {
 		title { +"Admin Panel" }
 		styleLink("/admin/assets/index.css")
+		styleLink("/admin/assets/tabler-icons.min.css")
 		script { src = "/admin/assets/index.js" }
 	}
 	body {
@@ -41,6 +42,7 @@ fun HTML.adminPage(path: String, content: FlowContent.() -> Unit) {
 						adminButton("/admin/queues", path == "/admin/queues", true) { +"Queues" }
 						adminButton("/admin/reports", path == "/admin/reports", true) { +"Reports" }
 						adminButton("/admin/plugins", path == "/admin/plugins", true) { +"Plugins" }
+						adminButton("/admin/policies", path == "/admin/policies", true) { +"Policies" }
 
 						if (Configuration.debug)
 							adminButton("/admin/debug", path == "/admin/debug", true) { +"Debug" }

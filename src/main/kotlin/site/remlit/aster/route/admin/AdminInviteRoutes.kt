@@ -9,6 +9,7 @@ import kotlinx.html.table
 import kotlinx.html.td
 import kotlinx.html.th
 import kotlinx.html.tr
+import org.jetbrains.exposed.v1.core.like
 import org.jetbrains.exposed.v1.core.neq
 import site.remlit.aster.common.model.type.RoleType
 import site.remlit.aster.db.table.InviteTable
@@ -30,9 +31,10 @@ internal object AdminInviteRoutes {
 				get("/admin/invites") {
 					val take = Configuration.timeline.defaultObjects
 					val offset = call.parameters["offset"]?.toLong() ?: 0
+					val query = call.request.queryParameters["q"]
 
 					val invites = InviteService.getMany(
-						InviteTable.id neq "",
+						if (query == null) InviteTable.id neq "" else InviteTable.code like "%$query%",
 						take,
 						offset
 					)
@@ -65,7 +67,7 @@ internal object AdminInviteRoutes {
 							p {
 								+"${invites.size} invites shown, $totalInvites total."
 							}
-							adminListNav(offset, take)
+							adminListNav(offset, take, query)
 						}
 					}
 				}

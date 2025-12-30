@@ -2,7 +2,10 @@ package site.remlit.aster.service
 
 import org.jetbrains.exposed.v1.core.Op
 import org.jetbrains.exposed.v1.core.eq
+import org.jetbrains.exposed.v1.core.like
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import site.remlit.aster.common.model.Policy
 import site.remlit.aster.common.model.type.PolicyType
 import site.remlit.aster.db.entity.PolicyEntity
@@ -18,6 +21,8 @@ import site.remlit.aster.util.model.fromEntity
  * @since 2025.5.1.0-SNAPSHOT
  * */
 object PolicyService : Service {
+	private val logger: Logger = LoggerFactory.getLogger(PolicyService::class.java)
+
 	/**
 	 * Get a policy.
 	 *
@@ -60,7 +65,7 @@ object PolicyService : Service {
 		PolicyEntity
 			.find { where }
 			.offset(offset)
-			.sortedByDescending { it.createdAt }
+			.sortedBy { it.host }
 			.take(take)
 			.toList()
 	}
@@ -78,6 +83,20 @@ object PolicyService : Service {
 			.find { PolicyTable.type eq type }
 			.sortedByDescending { it.createdAt }
 			.toList()
+	}
+
+	/**
+	 * Count policy entities
+	 *
+	 * @param where Query to find policies
+	 *
+	 * @return Count of policies where query applies
+	 * */
+	@JvmStatic
+	fun count(where: Op<Boolean>): Long = transaction {
+		PolicyEntity
+			.find { where }
+			.count()
 	}
 
 	/**
@@ -127,5 +146,23 @@ object PolicyService : Service {
         PolicyCreateEvent(Policy.fromEntity(policy)).call()
 
 		return policy
+	}
+
+	/**
+	 * Determines if a request should be blocked based on policies
+	 *
+	 * @param host Requesting host
+	 * */
+	@JvmStatic
+	fun shouldBlock(host: String): Boolean {
+		val policies = getMany(PolicyTable.host eq host)
+		logger.debug("Should block found policies ${policies.map { it.host }}")
+		if (policies.any { it.type == PolicyType.Block }) return true
+
+		val likePolicies = getMany(PolicyTable.host like "%.$host%")
+		logger.debug("Should block found likePolicies ${likePolicies.map { it.host }}")
+		if (likePolicies.any { it.type == PolicyType.Block }) return true
+
+		return false
 	}
 }

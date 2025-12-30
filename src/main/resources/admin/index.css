@@ -40,3 +40,11 @@ table {
         background-color: var(--bg-3-50);
     }
 }
+
+.wide {
+	width: 100%;
+}
+
+.ti {
+	font-size: 18px;
+}

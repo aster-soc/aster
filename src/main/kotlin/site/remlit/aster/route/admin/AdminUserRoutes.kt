@@ -9,8 +9,11 @@ import kotlinx.html.table
 import kotlinx.html.td
 import kotlinx.html.th
 import kotlinx.html.tr
+import org.jetbrains.exposed.v1.core.and
 import org.jetbrains.exposed.v1.core.eq
+import org.jetbrains.exposed.v1.core.like
 import org.jetbrains.exposed.v1.core.neq
+import org.jetbrains.exposed.v1.core.or
 import site.remlit.aster.common.model.User
 import site.remlit.aster.common.model.type.RoleType
 import site.remlit.aster.common.util.renderHandle
@@ -35,10 +38,16 @@ internal object AdminUserRoutes {
 				get("/admin/users") {
 					val take = Configuration.timeline.defaultObjects
 					val offset = call.parameters["offset"]?.toLong() ?: 0
+					val query = call.request.queryParameters["q"]
 					val isLocal = true
 
+					var where = (if (isLocal) UserTable.host eq null else UserTable.id neq null)
+
+					if (query != null) where = where and (UserTable.username like "%$query%" or
+						(UserTable.displayName like "%$query%"))
+
 					val users = UserService.getMany(
-						(if (isLocal) UserTable.host eq null else UserTable.id neq null),
+						where,
 						take,
 						offset
 					)
@@ -89,7 +98,7 @@ internal object AdminUserRoutes {
 							p {
 								+"${users.size}${if (isLocal) " local" else ""} users shown, $totalUsers total."
 							}
-							adminListNav(offset, take)
+							adminListNav(offset, take, query)
 						}
 					}
 				}

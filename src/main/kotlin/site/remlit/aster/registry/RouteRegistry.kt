@@ -12,6 +12,7 @@ import site.remlit.aster.route.admin.AdminIndexRoutes
 import site.remlit.aster.route.admin.AdminInstanceRoutes
 import site.remlit.aster.route.admin.AdminInviteRoutes
 import site.remlit.aster.route.admin.AdminPluginRoutes
+import site.remlit.aster.route.admin.AdminPolicyRoutes
 import site.remlit.aster.route.admin.AdminQueueRoutes
 import site.remlit.aster.route.admin.AdminReportRoutes
 import site.remlit.aster.route.admin.AdminUserRoutes
@@ -87,6 +88,7 @@ object RouteRegistry {
 		AdminInstanceRoutes.register()
 		AdminInviteRoutes.register()
 		AdminPluginRoutes.register()
+		AdminPolicyRoutes.register()
 		AdminQueueRoutes.register()
 		AdminReportRoutes.register()
 		AdminUserRoutes.register()
