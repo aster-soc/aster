@@ -29,5 +29,7 @@ data class Note(
 
 	val likes: List<SmallUser> = emptyList(),
 	val reactions: List<SmallUser> = emptyList(),
-	val repeats: List<SmallNote> = emptyList()
+	val repeats: List<SmallNote> = emptyList(),
+
+	val attachments: List<NoteAttachment> = emptyList()
 )

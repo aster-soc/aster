@@ -5,6 +5,7 @@ import kotlinx.serialization.Serializable
 import site.remlit.aster.common.model.Note
 import site.remlit.aster.common.model.Visibility
 import site.remlit.aster.service.ap.ApVisibilityService
+import site.remlit.aster.util.model.fromEntity
 import kotlin.time.Instant
 
 @Serializable
@@ -25,8 +26,8 @@ data class ApNote(
 
 	val sensitive: Boolean = summary.isNullOrBlank(),
 
-	//val attachment: List<ApDocument>? = null,
-	//val tag: List<ApTag>? = null
+	val attachment: List<ApDocument> = emptyList(),
+	val tag: List<ApTag> = emptyList(),
 
 	val published: Instant,
 	val visibility: Visibility? = null,
@@ -49,6 +50,9 @@ data class ApNote(
 				inReplyTo = note.replyingTo?.apId,
 				content = note.content,
 				misskeyContent = note.content,
+				attachment = note.attachments.map {
+					ApDocument(url = it.src, mediaType = it.type, name = it.alt)
+				},
 				published = note.createdAt,
 				visibility = note.visibility,
 				to = to,

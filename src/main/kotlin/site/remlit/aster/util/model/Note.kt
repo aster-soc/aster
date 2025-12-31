@@ -3,6 +3,7 @@ package site.remlit.aster.util.model
 import org.jetbrains.exposed.v1.core.eq
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 import site.remlit.aster.common.model.Note
+import site.remlit.aster.common.model.NoteAttachment
 import site.remlit.aster.common.model.SmallNote
 import site.remlit.aster.common.model.SmallUser
 import site.remlit.aster.common.model.User
@@ -36,7 +37,8 @@ fun Note.Companion.fromEntity(entity: NoteEntity, depth: Int = 0): Note {
 		createdAt = entity.createdAt.toLocalInstant(),
 		updatedAt = entity.updatedAt?.toLocalInstant(),
 		likes = findLikes(entity.id.toString()),
-		repeats = findRepeats(entity.id.toString())
+		repeats = findRepeats(entity.id.toString()),
+		attachments = findAttachments(entity.attachments),
 	)
 }
 
@@ -63,6 +65,9 @@ fun Note.Companion.findRepeats(id: String): List<SmallNote> =
 	NoteService.getManySmall(
 		NoteService.repeatAlias[NoteTable.id] eq id
 	)
+
+fun Note.Companion.findAttachments(ids: List<String>): List<NoteAttachment> =
+	NoteAttachment.fromDriveFiles(NoteService.getAttachments(ids))
 
 fun Note.Companion.fromEntities(entities: List<NoteEntity>): List<Note> =
 	entities.map { fromEntity(it) }

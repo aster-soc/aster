@@ -33,5 +33,6 @@ class ApType {
 		Image,
 		Key,
 		Tombstone,
+		Document
 	}
 }

@@ -5,7 +5,6 @@ import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.server.util.*
-import site.remlit.aster.common.model.Note
 import site.remlit.aster.common.model.User
 import site.remlit.aster.common.model.Visibility
 import site.remlit.aster.common.model.request.CreateNoteRequest
@@ -106,7 +105,8 @@ internal object NoteRoutes {
 						body.cw,
 						body.content!!,
 						Visibility.fromString(body.visibility),
-						body.replyingTo
+						body.replyingTo,
+						body.attachments
 					)
 
 					call.respond(note)

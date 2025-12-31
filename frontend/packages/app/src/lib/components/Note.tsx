@@ -31,6 +31,7 @@ import Mfm from "./Mfm.tsx";
 import {useStore} from "@tanstack/react-store";
 import {store} from "../utils/state.ts";
 import alert, {Alert, AlertType} from '../utils/alert.ts'
+import NoteAttachments from "./NoteAttachments.tsx";
 
 function Note(
     {data, detailed = false}:
@@ -311,6 +312,8 @@ function Note(
             ) : null}
 
             {renderContent()}
+
+			<NoteAttachments attachments={note?.attachments} />
 
             {renderTags()}
 

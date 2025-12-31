@@ -20,7 +20,6 @@ import site.remlit.aster.common.model.Meta
 import site.remlit.aster.common.model.type.RoleType
 import site.remlit.aster.db.table.NoteTable
 import site.remlit.aster.db.table.UserTable
-import site.remlit.aster.metrics.Metrics
 import site.remlit.aster.model.lastConfigReloadAt
 import site.remlit.aster.registry.RouteRegistry
 import site.remlit.aster.service.DriveService
@@ -128,13 +127,6 @@ internal object AdminIndexRoutes {
 								tr {
 									th { +"Local files" }
 									td { +localFiles.toString() }
-								}
-							}
-							h2 { +"Metrics" }
-							for (log in Metrics.LOG) {
-								p {
-									+"${log::class.qualifiedName}: ${log.message}"
-									code { +log.stackTrace }
 								}
 							}
 						}

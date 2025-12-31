@@ -6,12 +6,14 @@ import org.jetbrains.exposed.v1.core.Op
 import org.jetbrains.exposed.v1.core.alias
 import org.jetbrains.exposed.v1.core.and
 import org.jetbrains.exposed.v1.core.eq
+import org.jetbrains.exposed.v1.core.inList
 import org.jetbrains.exposed.v1.dao.load
 import org.jetbrains.exposed.v1.jdbc.select
 import org.jetbrains.exposed.v1.jdbc.selectAll
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import site.remlit.aster.common.model.DriveFile
 import site.remlit.aster.common.model.Note
 import site.remlit.aster.common.model.SmallNote
 import site.remlit.aster.common.model.User
@@ -20,6 +22,7 @@ import site.remlit.aster.common.model.type.NotificationType
 import site.remlit.aster.db.entity.NoteEntity
 import site.remlit.aster.db.entity.NoteLikeEntity
 import site.remlit.aster.db.entity.UserEntity
+import site.remlit.aster.db.table.DriveFileTable
 import site.remlit.aster.db.table.NoteLikeTable
 import site.remlit.aster.db.table.NoteTable
 import site.remlit.aster.db.table.NotificationTable
@@ -33,7 +36,6 @@ import site.remlit.aster.event.note.NoteUnlikeEvent
 import site.remlit.aster.exception.InsertFailureException
 import site.remlit.aster.model.Configuration
 import site.remlit.aster.model.Service
-import site.remlit.aster.model.ap.ApActor
 import site.remlit.aster.model.ap.ApIdOrObject
 import site.remlit.aster.model.ap.ApNote
 import site.remlit.aster.model.ap.ApTombstone
@@ -53,7 +55,6 @@ import site.remlit.aster.util.model.fromEntity
 import site.remlit.aster.util.sanitizeOrNull
 import site.remlit.mfmkt.MfmKt
 import site.remlit.mfmkt.model.MfmMention
-import kotlin.time.Clock
 
 /**
  * Service for managing notes.
@@ -179,6 +180,18 @@ object NoteService : Service {
 	}
 
 	/**
+	 * Get the attachments for a note
+	 *
+	 * @param ids IDs of attachments
+	 *
+	 * @return Specified attachments
+	 * */
+	@JvmStatic
+	fun getAttachments(ids: List<String>): List<DriveFile> = transaction {
+		DriveService.getMany(DriveFileTable.id inList ids)
+	}
+
+	/**
 	 * Count notes
 	 *
 	 * @param where Query to find notes
@@ -212,6 +225,7 @@ object NoteService : Service {
 		content: String,
 		visibility: Visibility,
 		replyingTo: String? = null,
+		attachments: List<String> = emptyList(),
 	): Note {
 		val localTo = mutableListOf<String>()
 
@@ -221,6 +235,11 @@ object NoteService : Service {
 		if (content.length > Configuration.note.maxLength.content)
 			throw IllegalArgumentException("Content cannot be longer than ${Configuration.note.maxLength.content}")
 
+		val driveFiles = DriveService.getMany(DriveFileTable.id inList attachments.take(Configuration.note.maxAttachments))
+			.filter { it.user.id == user.id.toString() }
+
+		logger.debug("Drive files ${driveFiles.map { it.id }}")
+
 		transaction {
 			NoteEntity.new(id) {
 				apId = ApIdService.renderNoteApId(id)
@@ -228,6 +247,7 @@ object NoteService : Service {
 				this.cw = if (cw != null) SanitizerService.sanitize(cw, true) else null
 				this.content = SanitizerService.sanitize(content, true)
 				this.visibility = visibility
+				this.attachments = driveFiles.map { it.id }
 
 				if (replyingTo != null) {
 					val replyingTo = getById(replyingTo)
