@@ -117,6 +117,7 @@ object DriveService : Service {
 	 * @param user User creating file
 	 * @param type Content type of file
 	 * @param path Path to file
+	 * @param alt Alt text for file
 	 *
 	 * @return Created drive file
 	 * */
@@ -124,7 +125,8 @@ object DriveService : Service {
 	fun create(
 		user: UserEntity,
 		type: ContentType,
-		path: Path
+		path: Path,
+		alt: String? = null,
 	): DriveFile =
 		transaction {
 			val id = IdentifierService.generate()
@@ -134,6 +136,40 @@ object DriveService : Service {
 				this.src =
 					"${Configuration.url.protocol.name}://${Configuration.url.host}/uploads/${user.id}/${path.name}"
 				this.user = user
+				this.alt = alt
+			}
+
+			val driveFile = getById(id) ?: throw InsertFailureException("Failed to create drive file")
+			DriveFileCreateEvent(driveFile).call()
+
+			return@transaction driveFile
+		}
+
+	/**
+	 * Create a drive file.
+	 *
+	 * @param user User creating file
+	 * @param type Content type of file
+	 * @param url Url for file
+	 * @param alt Alt text for file
+	 *
+	 * @return Created drive file
+	 * */
+	@JvmStatic
+	fun create(
+		user: UserEntity,
+		type: ContentType,
+		url: Url,
+		alt: String? = null,
+	): DriveFile =
+		transaction {
+			val id = IdentifierService.generate()
+
+			DriveFileEntity.new(id) {
+				this.type = type.toString()
+				this.src = url.toString()
+				this.user = user
+				this.alt = alt
 			}
 
 			val driveFile = getById(id) ?: throw InsertFailureException("Failed to create drive file")

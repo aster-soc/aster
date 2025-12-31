@@ -5,6 +5,7 @@ import site.remlit.aster.common.model.NoteAttachment
 
 fun NoteAttachment.Companion.fromDriveFile(entity: DriveFile): NoteAttachment {
 	return NoteAttachment(
+		id = entity.id,
 		src = entity.src,
 		alt = entity.alt,
 		type = entity.type,

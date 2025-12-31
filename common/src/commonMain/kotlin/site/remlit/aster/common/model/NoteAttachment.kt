@@ -6,6 +6,7 @@ import kotlin.js.JsExport
 @JsExport
 @Serializable
 data class NoteAttachment(
+	val id: String,
 	val src: String,
 	val alt: String? = null,
 	val type: String,

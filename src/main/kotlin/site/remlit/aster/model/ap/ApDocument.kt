@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 data class ApDocument(
 	val type: ApType.Object = ApType.Object.Document,
 	val url: String,
-	val mediaType: String,
+	val mediaType: String? = null,
 
 	val name: String? = null,
 	val summary: String? = name,

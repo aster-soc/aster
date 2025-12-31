@@ -6,10 +6,12 @@ import kotlinx.serialization.json.decodeFromJsonElement
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 import org.slf4j.LoggerFactory
 import site.remlit.aster.common.model.Note
+import site.remlit.aster.common.model.NoteAttachment
 import site.remlit.aster.common.model.User
 import site.remlit.aster.common.model.Visibility
 import site.remlit.aster.common.model.generated.PartialNote
 import site.remlit.aster.common.util.extractString
+import site.remlit.aster.common.util.ifFails
 import site.remlit.aster.common.util.orNull
 import site.remlit.aster.common.util.toLocalDateTime
 import site.remlit.aster.db.entity.NoteEntity
@@ -17,6 +19,8 @@ import site.remlit.aster.event.note.NoteCreateEvent
 import site.remlit.aster.event.note.NoteEditEvent
 import site.remlit.aster.model.Configuration
 import site.remlit.aster.model.Service
+import site.remlit.aster.model.ap.ApDocument
+import site.remlit.aster.service.DriveService
 import site.remlit.aster.service.IdentifierService
 import site.remlit.aster.service.InstanceService
 import site.remlit.aster.service.NoteService
@@ -105,6 +109,33 @@ object ApNoteService : Service {
 		val content = extractString { json["content"] }
 		val misskeyContent = extractString { json["_misskey_content"] }
 
+		val extractedAttachment = json["attachment"]
+		val documents = if (extractedAttachment != null)
+			jsonConfig.decodeFromJsonElement<List<ApDocument>>(extractedAttachment)
+		else null
+
+		val attachments = mutableListOf<NoteAttachment>()
+
+		documents?.forEach { document ->
+			val file = DriveService.create(
+				author,
+				ifFails({
+					ContentType.parse(document.mediaType ?: "application/octet-stream")
+				}) {
+					ContentType.Application.OctetStream
+				},
+				Url(document.url),
+				document.summary ?: document.name
+			)
+
+			attachments.add(NoteAttachment(
+				file.id,
+				file.src,
+				file.alt,
+				file.type,
+			))
+		}
+
 		val extractedPublished = extractString { json["published"] }
 		val published = if (extractedPublished != null)
 			orNull { Instant.parse(extractedPublished) } ?: Clock.System.now()
@@ -145,7 +176,7 @@ object ApNoteService : Service {
 
 			createdAt = published,
 			updatedAt = if (existing != null) Clock.System.now() else null,
-			attachments = emptyList()
+			attachments = attachments
 		)
 	}
 
@@ -170,6 +201,7 @@ object ApNoteService : Service {
 
 					it.replyingTo =
 						if (note.replyingTo != null) transaction { NoteEntity[note.replyingTo!!.id] } else null
+					it.attachments = note.attachments?.map { a -> a.id } ?: emptyList()
 
 					// todo: to
 					it.to = note.to.orEmpty()
@@ -214,6 +246,7 @@ object ApNoteService : Service {
 
 					this.replyingTo =
 						if (note.replyingTo != null) transaction { NoteEntity[note.replyingTo!!.id] } else null
+					this.attachments = note.attachments?.map { a -> a.id } ?: emptyList()
 
 					// todo: to
 					this.to = note.to.orEmpty()
