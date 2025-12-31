@@ -2,16 +2,16 @@ import * as Common from 'aster-common'
 import './Notification.scss'
 import Container from "./Container.tsx";
 import {
-    IconAlertCircle,
-    IconAlertTriangle,
-    IconAt,
-    IconDental,
-    IconHeartBroken,
-    IconPlus,
-    IconStar,
-    IconUser,
-    IconUserCheck,
-    IconUserPlus
+	IconAlertCircle,
+	IconAlertTriangle,
+	IconAt,
+	IconDental,
+	IconHeartBroken,
+	IconPlus, IconRepeat,
+	IconStar,
+	IconUser,
+	IconUserCheck,
+	IconUserPlus
 } from "@tabler/icons-react";
 import NoteSimple from "./NoteSimple.tsx";
 
@@ -32,6 +32,8 @@ function Notification(
         switch (data.type as string) {
             case "like":
                 return <IconStar size={18} color={"var(--like)"}/>
+			case "repeat":
+				return <IconRepeat size={18} color={"var(--repeat)"}/>
             case "react":
                 return <IconPlus size={18} color={"var(--ac-1)"}/>
             case "follow":
@@ -62,6 +64,10 @@ function Notification(
                 return <>
                     <p>{renderName()} liked your post</p>
                 </>
+			case "repeat":
+				return <>
+					<p>{renderName()} repeated your post</p>
+				</>
             case "react":
                 return <>
                     <p>{renderName()} reacted to your post</p>
@@ -104,27 +110,9 @@ function Notification(
     }
 
     function renderBody() {
-        // @ts-ignore this isn't actually an enum
-        switch (data.type as string) {
-            case "like":
-                return data.note ? <>
-                    <NoteSimple data={data.note}/>
-                </> : null
-            case "react":
-                return data.note ? <>
-                    <NoteSimple data={data.note}/>
-                </> : null
-            case "mention":
-                return data.note ? <>
-                    <NoteSimple data={data.note}/>
-                </> : null
-            case "bite":
-                return data.note ? <>
-                    <NoteSimple data={data.note}/>
-                </> : null
-            default:
-                return null
-        }
+		return data.note ? <>
+			<NoteSimple data={data.note}/>
+		</> : null
     }
 
     return (
