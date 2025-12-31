@@ -76,6 +76,7 @@ object ResolverService : Service {
 		}
 	}
 
+	@Suppress("InstanceOfCheckForException")
 	private inline fun tryRequest(block: () -> JsonObject?): JsonObject? =
 		try {
 			return block()
