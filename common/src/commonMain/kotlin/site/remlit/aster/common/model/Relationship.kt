@@ -15,6 +15,7 @@ data class Relationship(
 	val from: User,
 
 	val pending: Boolean,
+	val activityId: String? = null,
 
 	val createdAt: Instant,
 	val updatedAt: Instant? = null

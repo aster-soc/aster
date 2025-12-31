@@ -31,6 +31,10 @@ function NoteAttachments({ attachments }: { attachments: Common.NoteAttachment[]
 		}
 	}
 
+	if (attachments.length === 0) {
+		return null
+	}
+
 	return (
 		<div className={"attachments"}>
 			{attachments.map((attachment) => renderAttachment(attachment))}

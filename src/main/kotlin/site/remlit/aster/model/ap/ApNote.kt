@@ -27,7 +27,6 @@ data class ApNote(
 	val sensitive: Boolean = summary.isNullOrBlank(),
 
 	val attachment: List<ApDocument> = emptyList(),
-	val tag: List<ApTag> = emptyList(),
 
 	val published: Instant,
 	val visibility: Visibility? = null,

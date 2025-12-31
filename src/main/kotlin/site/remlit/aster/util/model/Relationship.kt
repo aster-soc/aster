@@ -15,6 +15,7 @@ fun Relationship.Companion.fromEntity(entity: RelationshipEntity) = Relationship
 	from = User.fromEntity(entity.from),
 
 	pending = entity.pending,
+	activityId = entity.activityId,
 
 	createdAt = entity.createdAt.toLocalInstant(),
 	updatedAt = entity.updatedAt?.toLocalInstant(),

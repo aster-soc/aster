@@ -1,0 +1,16 @@
+.followRequest {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	border-radius: var(--br-md);
+
+	width: 100%;
+	box-sizing: border-box;
+	padding: 14px;
+
+	transition: .1s background-color;
+
+	&:hover {
+		background-color: var(--bg-3-50);
+	}
+}

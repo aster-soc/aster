@@ -16,6 +16,7 @@ import { Route as NotificationsRouteImport } from './routes/notifications'
 import { Route as LogoutRouteImport } from './routes/logout'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
+import { Route as FollowRequestsRouteImport } from './routes/follow-requests'
 import { Route as DriveRouteImport } from './routes/drive'
 import { Route as BookmarksRouteImport } from './routes/bookmarks'
 import { Route as AboutRouteImport } from './routes/about'
@@ -58,6 +59,11 @@ const LoginRoute = LoginRouteImport.update({
 const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
   id: '/forgot-password',
   path: '/forgot-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FollowRequestsRoute = FollowRequestsRouteImport.update({
+  id: '/follow-requests',
+  path: '/follow-requests',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DriveRoute = DriveRouteImport.update({
@@ -107,6 +113,7 @@ export interface FileRoutesByFullPath {
   '/about': typeof AboutRoute
   '/bookmarks': typeof BookmarksRoute
   '/drive': typeof DriveRoute
+  '/follow-requests': typeof FollowRequestsRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
   '/logout': typeof LogoutRoute
@@ -124,6 +131,7 @@ export interface FileRoutesByTo {
   '/about': typeof AboutRoute
   '/bookmarks': typeof BookmarksRoute
   '/drive': typeof DriveRoute
+  '/follow-requests': typeof FollowRequestsRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
   '/logout': typeof LogoutRoute
@@ -142,6 +150,7 @@ export interface FileRoutesById {
   '/about': typeof AboutRoute
   '/bookmarks': typeof BookmarksRoute
   '/drive': typeof DriveRoute
+  '/follow-requests': typeof FollowRequestsRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
   '/logout': typeof LogoutRoute
@@ -161,6 +170,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/bookmarks'
     | '/drive'
+    | '/follow-requests'
     | '/forgot-password'
     | '/login'
     | '/logout'
@@ -178,6 +188,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/bookmarks'
     | '/drive'
+    | '/follow-requests'
     | '/forgot-password'
     | '/login'
     | '/logout'
@@ -195,6 +206,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/bookmarks'
     | '/drive'
+    | '/follow-requests'
     | '/forgot-password'
     | '/login'
     | '/logout'
@@ -213,6 +225,7 @@ export interface RootRouteChildren {
   AboutRoute: typeof AboutRoute
   BookmarksRoute: typeof BookmarksRoute
   DriveRoute: typeof DriveRoute
+  FollowRequestsRoute: typeof FollowRequestsRoute
   ForgotPasswordRoute: typeof ForgotPasswordRoute
   LoginRoute: typeof LoginRoute
   LogoutRoute: typeof LogoutRoute
@@ -274,6 +287,13 @@ declare module '@tanstack/react-router' {
       path: '/forgot-password'
       fullPath: '/forgot-password'
       preLoaderRoute: typeof ForgotPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/follow-requests': {
+      id: '/follow-requests'
+      path: '/follow-requests'
+      fullPath: '/follow-requests'
+      preLoaderRoute: typeof FollowRequestsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/drive': {
@@ -341,6 +361,7 @@ const rootRouteChildren: RootRouteChildren = {
   AboutRoute: AboutRoute,
   BookmarksRoute: BookmarksRoute,
   DriveRoute: DriveRoute,
+  FollowRequestsRoute: FollowRequestsRoute,
   ForgotPasswordRoute: ForgotPasswordRoute,
   LoginRoute: LoginRoute,
   LogoutRoute: LogoutRoute,

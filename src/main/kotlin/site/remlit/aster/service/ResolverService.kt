@@ -82,7 +82,7 @@ object ResolverService : Service {
 			return block()
 		} catch (e: Exception) {
 			if (e is ResolverException) {
-				logger.info("Request failed: ${e.status} ${e.message}")
+				logger.info("Request failed: ${e.status.value} ${e.message}")
 			} else {
 				logger.info("Request failed: ${e.message}")
 			}

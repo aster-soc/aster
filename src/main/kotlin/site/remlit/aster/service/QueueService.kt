@@ -109,6 +109,7 @@ object QueueService : Service {
 	/**
 	 * Cleans old completed jobs and jobs that cannot be retried.
 	 * */
+	@Suppress("MagicNumber")
 	fun clean() {
 		var inboxCount = 0
 		var deliverCount = 0

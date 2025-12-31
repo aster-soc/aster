@@ -159,5 +159,17 @@ class Api {
 		@JsStatic
 		fun upload(data: FormData) =
 			Https.postRaw("/upload", true, data)
+
+		@JsStatic
+		fun getFollowRequests(since: String? = null) =
+			Https.get("/api/follow-requests${if (since != null) "?since=$since" else ""}", true)
+
+		@JsStatic
+		fun acceptFollowRequest(id: String) =
+			Https.post("/api/follow-request/${id}/accept", true)
+
+		@JsStatic
+		fun rejectFollowRequest(id: String) =
+			Https.post("/api/follow-request/${id}/reject", true)
 	}
 }

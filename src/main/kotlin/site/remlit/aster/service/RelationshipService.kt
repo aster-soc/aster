@@ -22,6 +22,7 @@ import site.remlit.aster.model.Service
 import site.remlit.aster.model.ap.ApIdOrObject
 import site.remlit.aster.model.ap.activity.ApAcceptActivity
 import site.remlit.aster.model.ap.activity.ApFollowActivity
+import site.remlit.aster.model.ap.activity.ApRejectActivity
 import site.remlit.aster.service.ap.ApDeliverService
 import site.remlit.aster.service.ap.ApIdService
 import site.remlit.aster.util.model.fromEntities
@@ -267,7 +268,7 @@ object RelationshipService : Service {
 				this.to = to
 				this.from = from
 				this.pending = to.locked || !to.isLocal()
-				this.activityId = if (!to.isLocal() && followId == null) activityId else followId
+				this.activityId = followId ?: activityId
 			}
 		}
 
@@ -326,7 +327,21 @@ object RelationshipService : Service {
 				it.pending = false
 			}
 		}
-		return getById(id)
+
+		val new = getById(id)!!
+
+		if (new.to.isLocal() && !new.from.isLocal() && new.activityId != null)
+			ApDeliverService.deliver<ApAcceptActivity>(
+				ApAcceptActivity(
+					ApIdService.renderActivityApId(IdentifierService.generate()),
+					actor = new.to.apId,
+					`object` = ApIdOrObject.Id(new.activityId!!)
+				),
+				transaction { UserEntity[new.to.id] },
+				new.from.inbox
+			)
+
+		return new
 	}
 
 	/**
@@ -341,5 +356,30 @@ object RelationshipService : Service {
 		get(RelationshipTable.activityId eq apId)?.id
 			?: throw IllegalArgumentException("Relationship not found")
 	)
+
+	/**
+	 * Reject a follow
+	 *
+	 * @param id ID of relationship
+	 * */
+	@JvmStatic
+	fun reject(id: String) {
+		val old = getById(id) ?: throw IllegalArgumentException("Relationship not found")
+
+		if (old.to.isLocal() && !old.from.isLocal() && old.activityId != null)
+			ApDeliverService.deliver<ApRejectActivity>(
+				ApRejectActivity(
+					ApIdService.renderActivityApId(IdentifierService.generate()),
+					actor = old.to.apId,
+					`object` = ApIdOrObject.Id(old.activityId!!)
+				),
+				transaction { UserEntity[old.to.id] },
+				old.from.inbox
+			)
+
+		transaction {
+			RelationshipEntity.findById(id)?.delete()
+		}
+	}
 	//</editor-fold>
 }
