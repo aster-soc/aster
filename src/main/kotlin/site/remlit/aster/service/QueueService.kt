@@ -44,6 +44,7 @@ import kotlin.time.ExperimentalTime
  *
  * @since 2025.10.1.0-SNAPSHOT
  * */
+@Suppress("TooManyFunctions")
 object QueueService : Service {
 	private val logger = LoggerFactory.getLogger(QueueService::class.java)
 
@@ -151,7 +152,8 @@ object QueueService : Service {
 				(BackfillQueueTable.createdAt greater TimeService.daysAgo(3))).forEach { it.delete(); backfillCount++ }
 		}
 
-		logger.debug("Queue cleaner ran, $inboxCount inbox jobs, $deliverCount deliver jobs, and $backfillCount backfill jobs deleted")
+		logger.debug("Queue cleaner ran, $inboxCount inbox jobs, $deliverCount deliver jobs," +
+			" and $backfillCount backfill jobs deleted")
 	}
 
 	// getters
