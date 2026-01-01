@@ -33,6 +33,9 @@ class ApType {
 		Image,
 		Key,
 		Tombstone,
-		Document
+		Document,
+		Collection,
+		OrderedCollection,
+		UnorderedCollection,
 	}
 }

@@ -1,8 +1,13 @@
 package site.remlit.aster.service.ap
 
 import io.ktor.http.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.decodeFromJsonElement
+import kotlinx.serialization.json.jsonObject
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 import org.slf4j.LoggerFactory
 import site.remlit.aster.common.model.Note
@@ -20,12 +25,14 @@ import site.remlit.aster.event.note.NoteEditEvent
 import site.remlit.aster.model.Configuration
 import site.remlit.aster.model.Service
 import site.remlit.aster.model.ap.ApDocument
+import site.remlit.aster.model.ap.ApIdOrObject
 import site.remlit.aster.service.DriveService
 import site.remlit.aster.service.IdentifierService
 import site.remlit.aster.service.InstanceService
 import site.remlit.aster.service.NoteService
 import site.remlit.aster.service.ResolverService
 import site.remlit.aster.service.UserService
+import site.remlit.aster.util.detached
 import site.remlit.aster.util.jsonConfig
 import site.remlit.aster.util.model.fromEntity
 import kotlin.time.Clock
@@ -57,14 +64,13 @@ object ApNoteService : Service {
 		user: String? = null
 	): Note? {
 		if (depth > Configuration.maxResolveDepth) return null
-
-		InstanceService.resolve(Url(apId).host)
 		val existingNote = NoteService.getByApId(apId)
 
 		if ((existingNote != null) && !refetch) {
 			return existingNote
 		}
 
+		CoroutineScope(Dispatchers.Default).launch { InstanceService.resolve(Url(apId).host) }
 		val resolveResponse = ResolverService.resolveSigned(apId, user = user)
 
 		if (resolveResponse != null && existingNote == null)
@@ -155,8 +161,25 @@ object ApNoteService : Service {
 		val finalSummary = misskeySummary ?: summary
 		val finalContent = misskeyContent ?: content
 
+		val id = existing?.id ?: IdentifierService.generate()
+
+		val replies = json["replies"]
+		if (replies != null)
+			coroutineScope {
+				launch {
+					when (val decodedReplies = jsonConfig.decodeFromJsonElement<ApIdOrObject>(replies)) {
+						is ApIdOrObject.Id ->
+							ApBackfillService.getReplies(decodedReplies.value)
+						is ApIdOrObject.Object -> {
+							val id = extractString { decodedReplies.value.jsonObject["id"] } ?: return@launch
+							ApBackfillService.getReplies(id)
+						}
+					}
+				}
+			}
+
 		return PartialNote(
-			id = existing?.id ?: IdentifierService.generate(),
+			id = id,
 			apId = existing?.apId ?: apId,
 			user = User.fromEntity(author),
 			conversation = null,

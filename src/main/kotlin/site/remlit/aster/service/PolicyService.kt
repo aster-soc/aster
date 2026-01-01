@@ -3,6 +3,7 @@ package site.remlit.aster.service
 import org.jetbrains.exposed.v1.core.Op
 import org.jetbrains.exposed.v1.core.eq
 import org.jetbrains.exposed.v1.core.like
+import org.jetbrains.exposed.v1.core.or
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -155,15 +156,10 @@ object PolicyService : Service {
 	 * */
 	@JvmStatic
 	fun shouldBlock(host: String): Boolean {
-		val policies = getMany(PolicyTable.host eq host)
+		val policies = getMany(PolicyTable.host eq host or (PolicyTable.host like "%.$host"))
 		logger.debug("Should block found policies ${policies.map { it.host }}")
-		if (policies.any { it.type == PolicyType.Block }) return true
 
-		val policiesLike = getMany(PolicyTable.host like "%.$host%")
-		logger.debug("Should block found policiesLike ${policiesLike.map { it.host }}")
-		if (policiesLike.any { it.type == PolicyType.Block }) return true
-
-		return false
+		return policies.any { it.type == PolicyType.Block }
 	}
 
 	/**
@@ -176,20 +172,10 @@ object PolicyService : Service {
 	fun shouldBlock(host: String, activity: String?): Boolean {
 		val silencedActivities = listOf("Announce", "Bite", "EmojiReact", "Like", "Follow", "Flag")
 
-		val policies = getMany(PolicyTable.host eq host)
-		logger.debug("Should block found policies ${policies.map { it.host }}")
-		if (
-			policies.any { it.type == PolicyType.Block } ||
+		val policies = getMany(PolicyTable.host eq host or (PolicyTable.host like "%.$host"))
+		logger.debug("Should block (with activity) found policies ${policies.map { it.host }}")
+
+		return policies.any { it.type == PolicyType.Block } ||
 			policies.any { it.type == PolicyType.Silence } && silencedActivities.contains(activity)
-		) return true
-
-		val policiesLike = getMany(PolicyTable.host like "%.$host")
-		logger.debug("Should block found policiesLike ${policiesLike.map { it.host }}")
-		if (
-			policiesLike.any { it.type == PolicyType.Block } ||
-			policiesLike.any { it.type == PolicyType.Silence } && silencedActivities.contains(activity)
-		) return true
-
-		return false
 	}
 }

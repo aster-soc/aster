@@ -8,6 +8,7 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import site.remlit.aster.db.Database
 import site.remlit.aster.db.table.AuthTable
+import site.remlit.aster.db.table.BackfillQueueTable
 import site.remlit.aster.db.table.DeliverQueueTable
 import site.remlit.aster.db.table.DriveFileTable
 import site.remlit.aster.db.table.EmojiTable
@@ -98,6 +99,7 @@ object MigrationService : Service {
 			// todo: automatically look for these
 			val tables = listOf(
 				AuthTable,
+				BackfillQueueTable,
 				DeliverQueueTable,
 				DriveFileTable,
 				EmojiTable,

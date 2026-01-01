@@ -70,6 +70,9 @@ queue:
     deliver:
         concurrency: 20
         maxRetries: 15
+    backfill:
+        concurrency: 4
+        maxRetries: 10
 
 ## Timeline ##
 # Default objects:

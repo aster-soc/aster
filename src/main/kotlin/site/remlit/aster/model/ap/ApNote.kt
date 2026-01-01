@@ -28,6 +28,8 @@ data class ApNote(
 
 	val attachment: List<ApDocument> = emptyList(),
 
+	val replies: ApIdOrObject? = null,
+
 	val published: Instant,
 	val visibility: Visibility? = null,
 

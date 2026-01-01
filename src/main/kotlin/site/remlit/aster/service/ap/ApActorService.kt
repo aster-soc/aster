@@ -1,6 +1,10 @@
 package site.remlit.aster.service.ap
 
 import io.ktor.http.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.decodeFromJsonElement
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
@@ -49,7 +53,7 @@ object ApActorService : Service {
 
 		if ((existing != null) && !refetch) return existing
 
-		InstanceService.resolve(Url(apId).host)
+		CoroutineScope(Dispatchers.Default).launch { InstanceService.resolve(Url(apId).host) }
 		val resolveResponse = ResolverService.resolveSigned(apId)
 
 		if (resolveResponse != null && existing == null)
@@ -75,7 +79,7 @@ object ApActorService : Service {
 		val username = split.getOrNull(1) ?: return null
 		val host = split.getOrNull(2) ?: return UserService.getByUsername(username)
 
-		InstanceService.resolve(host)
+		CoroutineScope(Dispatchers.Default).launch { InstanceService.resolve(host) }
 		val webfingerResponse = jsonConfig.decodeFromString<WellKnown>(
 			jsonConfig.encodeToString(
 				ResolverService.resolveSigned("https://$host/.well-known/webfinger?resource=acct:@$username@$host")

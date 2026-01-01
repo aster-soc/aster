@@ -19,8 +19,10 @@ import org.jetbrains.exposed.v1.core.eq
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 import site.remlit.aster.common.model.User
 import site.remlit.aster.common.model.type.RoleType
+import site.remlit.aster.db.entity.BackfillQueueEntity
 import site.remlit.aster.db.entity.DeliverQueueEntity
 import site.remlit.aster.db.entity.InboxQueueEntity
+import site.remlit.aster.db.table.BackfillQueueTable
 import site.remlit.aster.db.table.DeliverQueueTable
 import site.remlit.aster.db.table.InboxQueueTable
 import site.remlit.aster.model.QueueStatus
@@ -45,6 +47,10 @@ internal object AdminQueueRoutes {
 					val deliverPending: MutableList<DeliverQueueEntity> = mutableListOf()
 					val deliverCompleted: MutableList<DeliverQueueEntity> = mutableListOf()
 					val deliverFailed: MutableList<DeliverQueueEntity> = mutableListOf()
+
+					val backfillPending: MutableList<BackfillQueueEntity> = mutableListOf()
+					val backfillCompleted: MutableList<BackfillQueueEntity> = mutableListOf()
+					val backfillFailed: MutableList<BackfillQueueEntity> = mutableListOf()
 
 					transaction {
 						InboxQueueEntity
@@ -77,6 +83,22 @@ internal object AdminQueueRoutes {
 							.find { DeliverQueueTable.status eq QueueStatus.FAILED }
 							.forEach { e ->
 								deliverFailed.add(e)
+							}
+
+						BackfillQueueEntity
+							.find { BackfillQueueTable.status eq QueueStatus.PENDING }
+							.forEach { e ->
+								backfillPending.add(e)
+							}
+						BackfillQueueEntity
+							.find { BackfillQueueTable.status eq QueueStatus.COMPLETED }
+							.forEach { e ->
+								backfillCompleted.add(e)
+							}
+						BackfillQueueEntity
+							.find { BackfillQueueTable.status eq QueueStatus.FAILED }
+							.forEach { e ->
+								backfillFailed.add(e)
 							}
 					}
 
@@ -187,6 +209,58 @@ internal object AdminQueueRoutes {
 										}
 									}
 								}
+								h2 { +"Backfill" }
+								div {
+									this.classes = setOf("ctn")
+									div {
+										this.classes = setOf("ctn", "column")
+										span {
+											+"${backfillPending.size} jobs pending"
+										}
+										ul {
+											for (job in backfillPending) {
+												li {
+													a {
+														href = "/admin/queues/backfill/job/${job.id}"
+														+"${job.id} ${job.target}"
+													}
+												}
+											}
+										}
+									}
+									div {
+										this.classes = setOf("ctn", "column")
+										span {
+											+"${backfillCompleted.size} jobs completed"
+										}
+										ul {
+											for (job in backfillCompleted) {
+												li {
+													a {
+														href = "/admin/queues/backfill/job/${job.id}"
+														+"${job.id} ${job.target}"
+													}
+												}
+											}
+										}
+									}
+									div {
+										this.classes = setOf("ctn", "column")
+										span {
+											+"${backfillFailed.size} jobs failed"
+										}
+										ul {
+											for (job in backfillFailed) {
+												li {
+													a {
+														href = "/admin/queues/backfill/job/${job.id}"
+														+"${job.id} ${job.target}"
+													}
+												}
+											}
+										}
+									}
+								}
 							}
 						}
 					}
@@ -198,10 +272,8 @@ internal object AdminQueueRoutes {
 
 					when (queue) {
 						"inbox" -> {
-							val job = QueueService
-								.getInboxJob(InboxQueueTable.id eq id)
-
-							if (job == null) throw IllegalArgumentException("Job not found")
+							val job = QueueService.getInboxJob(InboxQueueTable.id eq id)
+								?: throw IllegalArgumentException("Job not found")
 
 							call.respondHtml {
 								adminPage(call.route.path) {
@@ -236,10 +308,8 @@ internal object AdminQueueRoutes {
 						}
 
 						"deliver" -> {
-							val job = QueueService
-								.getDeliverJob(DeliverQueueTable.id eq id)
-
-							if (job == null) throw IllegalArgumentException("Job not found")
+							val job = QueueService.getDeliverJob(DeliverQueueTable.id eq id)
+								?: throw IllegalArgumentException("Job not found")
 
 							call.respondHtml {
 								adminPage(call.route.path) {
@@ -259,6 +329,40 @@ internal object AdminQueueRoutes {
 
 										b { +"Content" }
 										p { code { +String(job.content.bytes) } }
+
+										b { +"Created at" }
+										p { +"${job.createdAt}" }
+
+										b { +"Retry at" }
+										p { +"${job.retryAt}" }
+
+										b { +"Retries" }
+										p { +"${job.retries}" }
+
+										b { +"Stack trace" }
+										p { code { +"${job.stacktrace}" } }
+									}
+								}
+							}
+						}
+
+						"backfill" -> {
+							val job = QueueService.getBackfillJob(BackfillQueueTable.id eq id)
+								?: throw IllegalArgumentException("Job not found")
+
+							call.respondHtml {
+								adminPage(call.route.path) {
+									transaction {
+										h1 { +id }
+
+										b { +"Target" }
+										p { +job.target }
+
+										b { +"Type" }
+										p { code { +job.backfillType.toString() } }
+
+										b { +"Status" }
+										p { +"${job.status}" }
 
 										b { +"Created at" }
 										p { +"${job.createdAt}" }

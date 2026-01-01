@@ -20,15 +20,19 @@ import org.jetbrains.exposed.v1.core.or
 import org.jetbrains.exposed.v1.core.statements.api.ExposedBlob
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 import org.slf4j.LoggerFactory
+import site.remlit.aster.db.entity.BackfillQueueEntity
 import site.remlit.aster.db.entity.DeliverQueueEntity
 import site.remlit.aster.db.entity.InboxQueueEntity
 import site.remlit.aster.db.entity.UserEntity
+import site.remlit.aster.db.table.BackfillQueueTable
 import site.remlit.aster.db.table.DeliverQueueTable
 import site.remlit.aster.db.table.InboxQueueTable
+import site.remlit.aster.model.BackfillType
 import site.remlit.aster.model.Configuration
 import site.remlit.aster.model.QueueStatus
 import site.remlit.aster.model.Service
 import site.remlit.aster.registry.InboxHandlerRegistry
+import site.remlit.aster.service.ap.ApBackfillService
 import site.remlit.aster.service.ap.ApDeliverService
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.minutes
@@ -56,6 +60,12 @@ object QueueService : Service {
 	val deliverScope = CoroutineScope(Dispatchers.Default + CoroutineName("DeliverDispatcher"))
 
 	/**
+	 * Backfill queue coroutine scope
+	 * */
+	@JvmStatic
+	val backfillScope = CoroutineScope(Dispatchers.Default + CoroutineName("BackfillDispatcher"))
+
+	/**
 	 * Deliver queue coroutine scope
 	 * */
 	@JvmStatic
@@ -72,6 +82,12 @@ object QueueService : Service {
 	 * */
 	@JvmStatic
 	var activeDeliverWorkers = 0
+
+	/**
+	 * Current count of active backfill queue workers
+	 * */
+	@JvmStatic
+	var activeBackfillWorkers = 0
 
 	/**
 	 * Currently being processed activities
@@ -96,6 +112,12 @@ object QueueService : Service {
 				delay(1.seconds)
 			}
 		}
+		backfillScope.launch {
+			while (true) {
+				summonBackfillConsumersIfNeeded()
+				delay(1.seconds)
+			}
+		}
 		cleanerScope.launch {
 			while (true) {
 				clean()
@@ -113,6 +135,7 @@ object QueueService : Service {
 	fun clean() {
 		var inboxCount = 0
 		var deliverCount = 0
+		var backfillCount = 0
 
 		transaction {
 			InboxQueueEntity.find((InboxQueueTable.status eq QueueStatus.COMPLETED or
@@ -122,9 +145,13 @@ object QueueService : Service {
 			DeliverQueueEntity.find((DeliverQueueTable.status eq QueueStatus.COMPLETED or
 				(DeliverQueueTable.retries greaterEq Configuration.queue.deliver.maxRetries)) and
 				(DeliverQueueTable.createdAt greater TimeService.daysAgo(3))).forEach { it.delete(); deliverCount++ }
+
+			BackfillQueueEntity.find((BackfillQueueTable.status eq QueueStatus.COMPLETED or
+				(BackfillQueueTable.retries greaterEq Configuration.queue.backfill.maxRetries)) and
+				(BackfillQueueTable.createdAt greater TimeService.daysAgo(3))).forEach { it.delete(); backfillCount++ }
 		}
 
-		logger.debug("Queue cleaner ran, $inboxCount inbox jobs and $deliverCount deliver jobs deleted")
+		logger.debug("Queue cleaner ran, $inboxCount inbox jobs, $deliverCount deliver jobs, and $backfillCount backfill jobs deleted")
 	}
 
 	// getters
@@ -153,6 +180,20 @@ object QueueService : Service {
 	fun getDeliverJob(where: Op<Boolean>): DeliverQueueEntity? =
 		transaction {
 			DeliverQueueEntity
+				.find { where }
+				.singleOrNull()
+		}
+
+	/**
+	 * Gets a backfill job.
+	 *
+	 * @param where Query to find backfill job
+	 *
+	 * @return Backfill job
+	 * */
+	fun getBackfillJob(where: Op<Boolean>): BackfillQueueEntity? =
+		transaction {
+			BackfillQueueEntity
 				.find { where }
 				.singleOrNull()
 		}
@@ -210,6 +251,32 @@ object QueueService : Service {
 		}
 	}
 
+	@OptIn(ExperimentalTime::class)
+	private fun summonBackfillConsumersIfNeeded() {
+		transaction {
+			BackfillQueueEntity
+				.find {
+					(BackfillQueueTable.status eq QueueStatus.PENDING) and (BackfillQueueTable.id notInList lockedIds) or
+						(BackfillQueueTable.status eq QueueStatus.FAILED and (BackfillQueueTable.retryAt lessEq TimeService.now())
+							and (BackfillQueueTable.retries lessEq Configuration.queue.backfill.maxRetries))
+				}
+				.take(Configuration.queue.backfill.concurrency)
+				.toList()
+				.forEach {
+					if (activeBackfillWorkers >= Configuration.queue.backfill.concurrency)
+						return@forEach
+
+					inboxScope.launch {
+						activeBackfillWorkers++
+						lockedIds.add(it.id.toString())
+						consumeBackfillJob(it)
+						lockedIds.remove(it.id.toString())
+						activeBackfillWorkers--
+					}
+				}
+		}
+	}
+
 	// queue consumers
 
 	private fun consumeInboxJob(job: InboxQueueEntity) =
@@ -217,6 +284,9 @@ object QueueService : Service {
 
 	private fun consumeDeliverJob(job: DeliverQueueEntity) =
 		runBlocking { ApDeliverService.handle(job) }
+
+	private fun consumeBackfillJob(job: BackfillQueueEntity) =
+		runBlocking { ApBackfillService.handle(job) }
 
 	// send jobs
 
@@ -267,6 +337,28 @@ object QueueService : Service {
 		}
 	}
 
+	/**
+	 * Creates a backfill job to be processed when the next queue worker
+	 * is available.
+	 *
+	 * @param type Type of backfill job
+	 * @param target AP ID target of backfill job
+	 * */
+	@ApiStatus.Internal
+	fun insertBackfillJob(
+		type: BackfillType,
+		target: String,
+	) {
+		transaction {
+			BackfillQueueEntity.new(IdentifierService.generate()) {
+				this.status = QueueStatus.PENDING
+				this.backfillType = type
+				this.target = target
+				this.retries = 0
+			}
+		}
+	}
+
 	// complete job
 
 	/**
@@ -288,6 +380,18 @@ object QueueService : Service {
 	 * */
 	@ApiStatus.Internal
 	fun completeDeliverJob(job: DeliverQueueEntity) =
+		transaction {
+			job.status = QueueStatus.COMPLETED
+			job.flush()
+		}
+
+	/**
+	 * Marks a backfill job as complete.
+	 *
+	 * @param job Backfill queue job
+	 * */
+	@ApiStatus.Internal
+	fun completeBackfillJob(job: BackfillQueueEntity) =
 		transaction {
 			job.status = QueueStatus.COMPLETED
 			job.flush()
@@ -334,6 +438,27 @@ object QueueService : Service {
 				it.retryAt = Clock.System.now().plus((job.retries * 15).minutes)
 					.toLocalDateTime(TimeZone.currentSystemDefault())
 				it.retries += 1
+			}
+		}
+
+	/**
+	 * Marks a backfill job as errored, and schedules it to be retried.
+	 *
+	 * @param job Backfill queue job
+	 * @param exception Exception thrown
+	 * */
+	@ApiStatus.Internal
+	@OptIn(ExperimentalTime::class)
+	fun errorBackfillJob(job: BackfillQueueEntity, exception: Throwable) =
+		transaction {
+			logger.error("Backfill job ${job.id} failed: ${exception.message?.replace("\n", "")}")
+			job.refresh()
+			BackfillQueueEntity.findByIdAndUpdate(job.id.toString()) {
+				job.status = QueueStatus.FAILED
+				it.stacktrace = exception.stackTraceToString()
+				job.retryAt = Clock.System.now().plus((job.retries * 15).minutes)
+					.toLocalDateTime(TimeZone.currentSystemDefault())
+				job.retries += 1
 			}
 		}
 }

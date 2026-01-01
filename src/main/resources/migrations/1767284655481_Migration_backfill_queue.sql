@@ -1,0 +1,2 @@
+CREATE TABLE IF NOT EXISTS backfill_queue (id VARCHAR(150) PRIMARY KEY, status INT NOT NULL, "backfillType" INT NOT NULL, "target" VARCHAR(100000) NOT NULL, stacktrace TEXT NULL, "retryAt" TIMESTAMP NULL, retries INT DEFAULT 0 NOT NULL, "createdAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL);
+ALTER TABLE backfill_queue ADD CONSTRAINT backfill_queue_id_unique UNIQUE (id);
