@@ -139,15 +139,15 @@ object QueueService : Service {
 		var backfillCount = 0
 
 		transaction {
-			InboxQueueEntity.find((InboxQueueTable.status eq QueueStatus.COMPLETED or
+			InboxQueueEntity.find(((InboxQueueTable.status eq QueueStatus.COMPLETED) or
 				(InboxQueueTable.retries greaterEq Configuration.queue.inbox.maxRetries)) and
 				(InboxQueueTable.createdAt greater TimeService.daysAgo(3))).forEach { it.delete(); inboxCount++ }
 
-			DeliverQueueEntity.find((DeliverQueueTable.status eq QueueStatus.COMPLETED or
+			DeliverQueueEntity.find(((DeliverQueueTable.status eq QueueStatus.COMPLETED) or
 				(DeliverQueueTable.retries greaterEq Configuration.queue.deliver.maxRetries)) and
 				(DeliverQueueTable.createdAt greater TimeService.daysAgo(3))).forEach { it.delete(); deliverCount++ }
 
-			BackfillQueueEntity.find((BackfillQueueTable.status eq QueueStatus.COMPLETED or
+			BackfillQueueEntity.find(((BackfillQueueTable.status eq QueueStatus.COMPLETED) or
 				(BackfillQueueTable.retries greaterEq Configuration.queue.backfill.maxRetries)) and
 				(BackfillQueueTable.createdAt greater TimeService.daysAgo(3))).forEach { it.delete(); backfillCount++ }
 		}

@@ -32,6 +32,7 @@ import {useStore} from "@tanstack/react-store";
 import {store} from "../utils/state.ts";
 import alert, {Alert, AlertType} from '../utils/alert.ts'
 import NoteAttachments from "./NoteAttachments.tsx";
+import NoteSimple from "./NoteSimple.tsx";
 
 function Note(
     {data, detailed = false}:
@@ -316,6 +317,10 @@ function Note(
 			<NoteAttachments attachments={note?.attachments} />
 
             {renderTags()}
+
+			{note.repeat ? (
+				<NoteSimple data={note.repeat} />
+			): null}
 
             <footer>
                 <button

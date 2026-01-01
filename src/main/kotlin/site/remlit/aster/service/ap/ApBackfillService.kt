@@ -46,8 +46,10 @@ object ApBackfillService {
 		}
 
 		if (obj.first != null && obj.orderedItems.isEmpty()) {
-			val firstJson = ResolverService.resolveSigned(obj.first)
-				?: return
+			val firstJson = when (obj.first) {
+				is ApIdOrObject.Id -> ResolverService.resolveSigned(obj.first.value)
+				is ApIdOrObject.Object -> obj.first.value
+			} ?: return
 
 			val firstObj = jsonConfig.decodeFromJsonElement<ApOrderedCollectionPage>(firstJson)
 

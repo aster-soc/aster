@@ -1,14 +1,21 @@
 package site.remlit.aster.service.ap.inbox
 
 import kotlinx.serialization.json.decodeFromJsonElement
+import kotlinx.serialization.json.jsonObject
+import org.jetbrains.exposed.v1.core.and
+import org.jetbrains.exposed.v1.core.eq
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 import org.slf4j.LoggerFactory
 import site.remlit.aster.common.model.User
+import site.remlit.aster.common.util.extractString
 import site.remlit.aster.db.entity.InboxQueueEntity
 import site.remlit.aster.db.entity.UserEntity
+import site.remlit.aster.db.table.NoteTable
 import site.remlit.aster.model.ap.ApIdOrObject
 import site.remlit.aster.model.ap.ApInboxHandler
+import site.remlit.aster.model.ap.ApNote
 import site.remlit.aster.model.ap.ApTypedObject
+import site.remlit.aster.model.ap.activity.ApAnnounceActivity
 import site.remlit.aster.model.ap.activity.ApLikeActivity
 import site.remlit.aster.model.ap.activity.ApUndoActivity
 import site.remlit.aster.service.NoteService
@@ -32,6 +39,11 @@ class ApUndoHandler : ApInboxHandler {
 			is ApIdOrObject.Object -> {
 				val obj = jsonConfig.decodeFromJsonElement<ApTypedObject>(copy.`object`.value)
 				when (obj.type) {
+					"Announce" -> handleAnnounce(
+						jsonConfig.decodeFromJsonElement<ApAnnounceActivity>(copy.`object`.value),
+						sender
+					)
+
 					"Like" -> handleLike(
 						jsonConfig.decodeFromJsonElement<ApLikeActivity>(copy.`object`.value),
 						sender
@@ -48,6 +60,23 @@ class ApUndoHandler : ApInboxHandler {
 				}
 			}
 		}
+	}
+
+	private suspend fun handleAnnounce(
+		announce: ApAnnounceActivity,
+		sender: UserEntity
+	) {
+		val repeatedNote = when (announce.`object`) {
+			is ApIdOrObject.Id -> ApNoteService.resolve(announce.`object`.value)
+			is ApIdOrObject.Object -> ApNoteService.resolve(
+				jsonConfig.decodeFromJsonElement<ApNote>(announce.`object`.value).id
+			)
+		} ?: return
+
+		val repeat = NoteService.get(NoteTable.user eq sender.id and (NoteService.repeatAlias[NoteTable.id] eq repeatedNote.id))
+			?: return
+
+		NoteService.deleteById(repeat.id)
 	}
 
 	private suspend fun handleLike(

@@ -6,6 +6,6 @@ import kotlinx.serialization.Serializable
 data class ApOrderedCollection(
 	val type: ApType.Object = ApType.Object.OrderedCollection,
 	val orderedItems: List<String> = emptyList(),
-	val first: String? = null,
+	val first: ApIdOrObject? = null,
 	val totalItems: Int = orderedItems.size
 ) : ApObjectWithContext()
