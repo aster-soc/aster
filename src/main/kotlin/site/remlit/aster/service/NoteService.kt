@@ -87,10 +87,14 @@ object NoteService : Service {
 	 * */
 	@JvmStatic
 	fun get(where: Op<Boolean>): Note? = transaction {
-		val note = NoteEntity
-			.find { where }
+		val note = (NoteTable innerJoin UserTable)
+			.join(replyingToAlias, JoinType.LEFT, NoteTable.replyingTo, replyingToAlias[NoteTable.id])
+			.join(repeatAlias, JoinType.LEFT, NoteTable.repeat, repeatAlias[NoteTable.id])
+			.selectAll()
+			.where { where }
+			.let { NoteEntity.wrapRows(it) }
+			.sortedByDescending { it.createdAt }
 			.singleOrNull()
-			?.load(NoteEntity::user, NoteEntity::replyingTo, NoteEntity::repeat)
 
 		if (note != null)
 			Note.fromEntity(note)
