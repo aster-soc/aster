@@ -43,10 +43,12 @@ internal object UserRoutes {
 			}
 
 			get("/api/user/{id}") {
+				val authenticatedUser = call.attributes.getOrNull(authenticatedUserKey)
 				val user = UserService.getById(call.parameters.getOrFail("id"))
 
-				if (user == null || !user.activated || user.suspended)
-					throw ApiException(HttpStatusCode.NotFound)
+				if (user == null || !user.activated || user.suspended ||
+					(Configuration.hideRemoteContent && !user.isLocal() && authenticatedUser == null)
+				) throw ApiException(HttpStatusCode.NotFound)
 
 				call.respond(
 					User.fromEntity(user)

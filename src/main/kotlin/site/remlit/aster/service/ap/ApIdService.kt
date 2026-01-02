@@ -84,4 +84,28 @@ object ApIdService : Service {
 	fun renderActivityApId(id: String): String {
 		return this.renderBaseApId() + "activities/" + id
 	}
+
+	/**
+	 * @param id ID of the relationship
+	 */
+	@JvmStatic
+	fun renderFollowApId(id: String): String {
+		return this.renderBaseApId() + "activities/" + id
+	}
+
+	/**
+	 * @param id ID of the relationship
+	 */
+	@JvmStatic
+	fun renderFollowAcceptApId(id: String): String {
+		return this.renderBaseApId() + "activities/" + id + "/accept"
+	}
+
+	/**
+	 * @param id ID of the relationship
+	 */
+	@JvmStatic
+	fun renderFollowRejectApId(id: String): String {
+		return this.renderBaseApId() + "activities/" + id + "/reject"
+	}
 }

@@ -7,7 +7,7 @@ import site.remlit.aster.registry.RouteRegistry
 
 @ApiStatus.Internal
 internal fun Application.configureRouting() {
-	RouteRegistry.registerBuiltinRoutes()
+	RouteRegistry.registerInternal()
 
 	routing {
 		// swaggerUI(path = "swagger", swaggerFile = "openapi.yaml")

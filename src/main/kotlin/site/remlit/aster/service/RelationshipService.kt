@@ -15,8 +15,8 @@ import site.remlit.aster.db.entity.RelationshipEntity
 import site.remlit.aster.db.entity.UserEntity
 import site.remlit.aster.db.table.RelationshipTable
 import site.remlit.aster.db.table.UserTable
-import site.remlit.aster.event.user.UserFollowEvent
-import site.remlit.aster.event.user.UserFollowRequestEvent
+import site.remlit.aster.event.relationship.RelationshipCreateEvent
+import site.remlit.aster.event.relationship.RelationshipDeleteEvent
 import site.remlit.aster.model.Configuration
 import site.remlit.aster.model.Service
 import site.remlit.aster.model.ap.ApIdOrObject
@@ -83,15 +83,15 @@ object RelationshipService : Service {
 	/**
 	 * Get a relationship between two users
 	 *
+	 * @param type Relationship type
 	 * @param to Relationship target
 	 * @param from Relationship owner
 	 *
 	 * @return Relationship, if any
 	 * */
 	@JvmStatic
-	fun getByIds(to: String, from: String) = get(
-		userToAlias[UserTable.id] eq to
-				and (userFromAlias[UserTable.id] eq from)
+	fun getByIds(type: RelationshipType, to: String, from: String) = get(
+		userToAlias[UserTable.id] eq to and (userFromAlias[UserTable.id] eq from) and (RelationshipTable.type eq type)
 	)
 
 	/**
@@ -239,7 +239,7 @@ object RelationshipService : Service {
 		if (eitherBlocking(to, from) || to == from)
 			throw IllegalArgumentException("You cannot follow this user")
 
-		val existing = getByIds(to, from)
+		val existing = getByIds(RelationshipType.Follow, to, from)
 
 		if (existing != null)
 			throw IllegalArgumentException("You have an existing relationship with this user")
@@ -247,7 +247,18 @@ object RelationshipService : Service {
 		val to = UserService.getById(to) ?: throw IllegalArgumentException("Target not found")
 		val from = UserService.getById(from) ?: throw IllegalArgumentException("Sender not found")
 
-		val activityId = ApIdService.renderActivityApId(IdentifierService.generate())
+		val id = IdentifierService.generate()
+		val activityId = ApIdService.renderFollowApId(id)
+
+		transaction {
+			RelationshipEntity.new(id) {
+				this.type = RelationshipType.Follow
+				this.to = to
+				this.from = from
+				this.pending = to.locked || !to.isLocal()
+				this.activityId = followId ?: activityId
+			}
+		}
 
 		if (!to.isLocal())
 			ApDeliverService.deliver(
@@ -260,19 +271,7 @@ object RelationshipService : Service {
 				to.inbox
 			)
 
-		val id = IdentifierService.generate()
-
-		transaction {
-			RelationshipEntity.new(id) {
-				this.type = RelationshipType.Follow
-				this.to = to
-				this.from = from
-				this.pending = to.locked || !to.isLocal()
-				this.activityId = followId ?: activityId
-			}
-		}
-
-		val relationship = getByIds(to.id.toString(), from.id.toString())
+		val relationship = getByIds(RelationshipType.Follow, to.id.toString(), from.id.toString())
 			?: throw IllegalArgumentException("Relationship not found")
 
 		if (to.isLocal()) {
@@ -283,21 +282,18 @@ object RelationshipService : Service {
 				relationship
 			)
 
-			if (to.locked) UserFollowRequestEvent(relationship, User.fromEntity(to)) else {
-				UserFollowEvent(relationship, User.fromEntity(to))
+			RelationshipCreateEvent(relationship).call()
 
-				if (followId != null) {
+			if (!to.locked && followId != null)
 					ApDeliverService.deliver<ApAcceptActivity>(
 						ApAcceptActivity(
-							ApIdService.renderActivityApId(IdentifierService.generate()),
+							ApIdService.renderFollowAcceptApId(relationship.id),
 							actor = to.apId,
 							`object` = ApIdOrObject.Id(activityId)
 						),
 						to,
 						from.inbox
 					)
-				}
-			}
 		}
 
 		return getPair(to.id.toString(), from.id.toString())
@@ -310,7 +306,16 @@ object RelationshipService : Service {
 	 * @param from Relationship owner
 	 * */
 	@JvmStatic
-	fun unfollow(to: String, from: String): Nothing = TODO()
+	fun unfollow(to: String, from: String) {
+		val relationship = getByIds(RelationshipType.Follow, to, from)
+			?: throw IllegalArgumentException("Relationship not found")
+
+		transaction {
+			RelationshipEntity.findById(relationship.id)?.delete()
+		}
+
+		RelationshipDeleteEvent(relationship).call()
+	}
 
 	/**
 	 * Accept a follow
@@ -330,15 +335,25 @@ object RelationshipService : Service {
 
 		val new = getById(id)!!
 
-		if (new.to.isLocal() && !new.from.isLocal() && new.activityId != null)
+		val to = transaction { UserEntity[new.to.id] }
+		val from = transaction { UserEntity[new.from.id] }
+
+		if (to.isLocal())
+			NotificationService.create(
+				NotificationType.AcceptedFollow,
+				to,
+				from
+			)
+
+		if (to.isLocal() && !from.isLocal() && new.activityId != null)
 			ApDeliverService.deliver<ApAcceptActivity>(
 				ApAcceptActivity(
-					ApIdService.renderActivityApId(IdentifierService.generate()),
-					actor = new.to.apId,
+					ApIdService.renderFollowAcceptApId(new.id),
+					actor = to.apId,
 					`object` = ApIdOrObject.Id(new.activityId!!)
 				),
-				transaction { UserEntity[new.to.id] },
-				new.from.inbox
+				to,
+				from.inbox
 			)
 
 		return new
@@ -369,13 +384,15 @@ object RelationshipService : Service {
 		if (old.to.isLocal() && !old.from.isLocal() && old.activityId != null)
 			ApDeliverService.deliver<ApRejectActivity>(
 				ApRejectActivity(
-					ApIdService.renderActivityApId(IdentifierService.generate()),
+					ApIdService.renderFollowRejectApId(old.id),
 					actor = old.to.apId,
 					`object` = ApIdOrObject.Id(old.activityId!!)
 				),
 				transaction { UserEntity[old.to.id] },
 				old.from.inbox
 			)
+
+		RelationshipDeleteEvent(old).call()
 
 		transaction {
 			RelationshipEntity.findById(id)?.delete()

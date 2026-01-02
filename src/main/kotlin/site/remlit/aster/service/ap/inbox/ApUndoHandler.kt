@@ -6,6 +6,7 @@ import org.jetbrains.exposed.v1.core.eq
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 import org.slf4j.LoggerFactory
 import site.remlit.aster.common.model.User
+import site.remlit.aster.common.model.type.RelationshipType
 import site.remlit.aster.db.entity.InboxQueueEntity
 import site.remlit.aster.db.entity.UserEntity
 import site.remlit.aster.db.table.NoteTable
@@ -15,9 +16,12 @@ import site.remlit.aster.model.ap.ApInboxHandler
 import site.remlit.aster.model.ap.ApNote
 import site.remlit.aster.model.ap.ApTypedObject
 import site.remlit.aster.model.ap.activity.ApAnnounceActivity
+import site.remlit.aster.model.ap.activity.ApFollowActivity
 import site.remlit.aster.model.ap.activity.ApLikeActivity
 import site.remlit.aster.model.ap.activity.ApUndoActivity
 import site.remlit.aster.service.NoteService
+import site.remlit.aster.service.RelationshipService
+import site.remlit.aster.service.ap.ApActorService
 import site.remlit.aster.service.ap.ApNoteService
 import site.remlit.aster.util.jsonConfig
 import site.remlit.aster.util.model.fromEntity
@@ -96,5 +100,18 @@ class ApUndoHandler : ApInboxHandler {
 		)
 	}
 
-	//suspend fun handleFollow(follow: ApFollowActivity, sender: UserEntity) {}
+	suspend fun handleFollow(follow: ApFollowActivity, sender: UserEntity) {
+		val target = when (follow.`object`) {
+			is ApIdOrObject.Id -> ApActorService.resolve(follow.`object`.value)
+			is ApIdOrObject.Object -> throw GracefulInboxException("Undo Follow object must not be an object")
+		} ?: throw GracefulInboxException("Follow object not found")
+
+		val relationship = RelationshipService.getByIds(
+			RelationshipType.Follow,
+			target.id.toString(),
+			sender.id.toString()
+		) ?: throw GracefulInboxException("Relationship not found")
+
+		RelationshipService.unfollow(relationship.to.id, relationship.from.id)
+	}
 }

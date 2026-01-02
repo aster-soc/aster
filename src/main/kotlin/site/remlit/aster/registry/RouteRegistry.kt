@@ -4,7 +4,6 @@ import io.ktor.server.routing.*
 import org.jetbrains.annotations.ApiStatus
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import site.remlit.aster.model.Configuration
 import site.remlit.aster.route.FrontendRoutes
 import site.remlit.aster.route.UploadRoutes
 import site.remlit.aster.route.admin.AdminDebugRoutes
@@ -16,6 +15,7 @@ import site.remlit.aster.route.admin.AdminPolicyRoutes
 import site.remlit.aster.route.admin.AdminQueueRoutes
 import site.remlit.aster.route.admin.AdminReportRoutes
 import site.remlit.aster.route.admin.AdminUserRoutes
+import site.remlit.aster.route.ap.ApActivityRoutes
 import site.remlit.aster.route.ap.ApNoteRoutes
 import site.remlit.aster.route.ap.ApUserRoutes
 import site.remlit.aster.route.ap.HostMetaRoutes
@@ -82,7 +82,7 @@ object RouteRegistry {
 	 * Registers Aster's built-in routes.
 	 * */
 	@ApiStatus.Internal
-	fun registerBuiltinRoutes() {
+	fun registerInternal() {
 		AdminDebugRoutes.register()
 		AdminIndexRoutes.register()
 		AdminInstanceRoutes.register()
@@ -93,6 +93,7 @@ object RouteRegistry {
 		AdminReportRoutes.register()
 		AdminUserRoutes.register()
 
+		ApActivityRoutes.register()
 		ApNoteRoutes.register()
 		ApUserRoutes.register()
 		HostMetaRoutes.register()

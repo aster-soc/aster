@@ -37,8 +37,11 @@ class ApFollowHandler : ApInboxHandler {
 		if (RelationshipService.eitherBlocking(sender.id.toString(), obj.id.toString()))
 			throw GracefulInboxException("Conflicting existing relationship")
 
-		val existingRelationship =
-			RelationshipService.getByIds(obj.id.toString(), sender.id.toString())
+		val existingRelationship = RelationshipService.getByIds(
+			RelationshipType.Follow,
+			obj.id.toString(),
+			sender.id.toString()
+		)
 
 		if (existingRelationship != null && existingRelationship.type == RelationshipType.Follow) {
 			if (existingRelationship.pending) {
@@ -46,7 +49,7 @@ class ApFollowHandler : ApInboxHandler {
 			} else {
 				ApDeliverService.deliver<ApAcceptActivity>(
 					ApAcceptActivity(
-						ApIdService.renderActivityApId(IdentifierService.generate()),
+						ApIdService.renderFollowAcceptApId(existingRelationship.id),
 						actor = obj.apId,
 						`object` = ApIdOrObject.Id(activity.id)
 					),
