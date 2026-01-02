@@ -17,6 +17,8 @@ import site.remlit.aster.common.util.extractString
 import site.remlit.aster.common.util.orNull
 import site.remlit.aster.common.util.toLocalDateTime
 import site.remlit.aster.db.entity.UserEntity
+import site.remlit.aster.event.user.UserCreateEvent
+import site.remlit.aster.event.user.UserEditEvent
 import site.remlit.aster.model.Service
 import site.remlit.aster.model.WellKnown
 import site.remlit.aster.model.ap.ApImage
@@ -256,7 +258,12 @@ object ApActorService : Service {
 				}
 			}
 
-			return UserService.getById(user.id!!)
+			val newUser = UserService.getById(user.id!!)
+
+			if (newUser != null)
+				UserEditEvent(User.fromEntity(newUser)).call()
+
+			return newUser
 		} catch (e: Exception) {
 			logger.error(e.message, e)
 			return null
@@ -314,7 +321,12 @@ object ApActorService : Service {
 				}
 			}
 
-			return UserService.getById(user.id!!)
+			val newUser = UserService.getById(user.id!!)
+
+			if (newUser != null)
+				UserCreateEvent(User.fromEntity(newUser)).call()
+
+			return newUser
 		} catch (e: Exception) {
 			logger.error(e.message, e)
 			return null

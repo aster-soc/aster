@@ -38,7 +38,7 @@ data class ApActor(
 	@SerialName("vcard:Address")
 	val vcardAddress: String? = null,
 
-	val published: Instant,
+	val published: Instant? = null,
 
 	val inbox: String,
 	val outbox: String? = null,
@@ -54,7 +54,7 @@ data class ApActor(
 		fun fromEntity(user: UserEntity): ApActor =
 			ApActor(
 				id = user.apId,
-				type = ApType.Object.Person,
+				type = if (!user.automated) ApType.Object.Person else ApType.Object.Service,
 				preferredUsername = user.username,
 				name = user.displayName,
 
