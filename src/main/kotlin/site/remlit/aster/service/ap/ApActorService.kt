@@ -74,6 +74,7 @@ object ApActorService : Service {
 	 *
 	 * @return UserEntity or null
 	 * */
+	// TODO: move to UserService?
 	@JvmStatic
 	suspend fun resolveHandle(handle: String): UserEntity? {
 		val split = handle.split("@")

@@ -60,6 +60,7 @@ internal fun main(args: Array<String>) {
 			Database.dataSource.close()
 		}
 		ApplicationFinishShutdownEvent().call()
+		return@Thread
 	})
 
 	server.start(wait = true)
@@ -73,16 +74,17 @@ fun Application.module() {
 		this.log.info("Shutting down...")
 		ApplicationBeginShutdownEvent().call()
 		PluginRegistry.disableAll()
+		return@Thread
 	})
-
-	ApObjectTypeRegistry.registerInternal()
-
-	setJsonConfig()
 
 	// access connection before using it
 	Database.connection
 
 	MigrationService.isUpToDate()
+
+	ApObjectTypeRegistry.registerInternal()
+
+	setJsonConfig()
 
 	SetupService.setup()
 

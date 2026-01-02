@@ -59,6 +59,7 @@ object InboxHandlerRegistry {
 				QueueService.completeInboxJob(job)
 			} catch (e: GracefulInboxException) {
 				logger.debug("Inbox job ${job.id} gracefully failed: ${e.message?.replace("\n", "")}")
+				QueueService.completeInboxJob(job)
 			} catch (e: Throwable) {
 				QueueService.errorInboxJob(job, e)
 			}
