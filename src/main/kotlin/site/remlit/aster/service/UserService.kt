@@ -1,6 +1,7 @@
 package site.remlit.aster.service
 
 import org.jetbrains.exposed.v1.core.Op
+import org.jetbrains.exposed.v1.core.and
 import org.jetbrains.exposed.v1.core.eq
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 import site.remlit.aster.common.model.User
@@ -82,7 +83,7 @@ object UserService : Service {
 	 * @return Found user, if any
 	 * */
 	@JvmStatic
-	fun getByUsername(username: String): UserEntity? = get(UserTable.username eq username)
+	fun getByUsername(username: String): UserEntity? = get(UserTable.username eq username and (UserTable.host eq null))
 
 	/**
 	 * Get instance actor.
