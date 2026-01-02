@@ -15,6 +15,6 @@ data class ApCreateActivity(
 	@Serializable(with = NestedApObjectSerializer::class)
 	val `object`: ApIdOrObject,
 
-	val to: List<String>,
-	val cc: List<String>
+	val to: List<String> = emptyList(),
+	val cc: List<String> = emptyList()
 ) : ApObjectWithContext()

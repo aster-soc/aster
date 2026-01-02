@@ -341,24 +341,32 @@ object NoteService : Service {
 		if (content != null && content.length > Configuration.note.maxLength.content)
 			throw IllegalArgumentException("Content cannot be longer than ${Configuration.note.maxLength.content}")
 
-        val newNote = transaction {
-            NoteEntity.findByIdAndUpdate(note.id) {
+		transaction {
+			NoteEntity.findByIdAndUpdate(note.id) {
 				it.cw = cw?.ifEmpty { null }
 				it.content = content?.ifEmpty { null }
 				it.updatedAt = TimeService.now()
 			}
-        } ?: return null
+		}
 
-        NoteEditEvent(note).call()
+        val newNote = getById(note.id)!!
 
-        if (note.user.isLocal())
-            ApDeliverService.deliverToFollowers<ApUpdateActivity>(
-                ApUpdateActivity(
-                    ApIdService.renderActivityApId(IdentifierService.generate()),
-                    `object` = ApIdOrObject.createObject { ApNote.fromEntity(note) }
-                ),
-                user
-            )
+        NoteEditEvent(newNote).call()
+
+        if (newNote.user.isLocal()) {
+			val apNote = ApNote.fromEntity(newNote)
+
+			ApDeliverService.deliverToFollowers<ApUpdateActivity>(
+				ApUpdateActivity(
+					ApIdService.renderActivityApId(IdentifierService.generate()),
+					actor = user.apId,
+					`object` = ApIdOrObject.createObject { apNote },
+					to = apNote.to,
+					cc = apNote.cc
+				),
+				user
+			)
+		}
 
         return getById(newNote.id.toString())!!
     }

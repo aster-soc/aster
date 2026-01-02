@@ -38,11 +38,13 @@ object CommandLineService : Service {
 		logger.info("invite:generate			Generate invite")
 	}
 
+	@Suppress("MagicNumber")
 	fun printDebug(args: Array<String>) {
 		logger.debug("Starting ${PackageInformation.groupId}.${PackageInformation.name} v${PackageInformation.version}")
 		logger.debug("* Arguments: ${if (args.isEmpty()) "None provided" else args.joinToString(" ")}")
 		logger.debug("* VM Arguments: ${ManagementFactory.getRuntimeMXBean().inputArguments.joinToString(" ")}")
-		logger.debug("* Runtime Version: ${System.getProperty("java.vm.vendor")} ${System.getProperty("java.version")} on ${System.getProperty("os.name")} ${System.getProperty("os.version")}")
+		logger.debug("* Runtime Version: ${System.getProperty("java.vm.vendor")} ${System.getProperty("java.version")}" +
+			" on ${System.getProperty("os.name")} ${System.getProperty("os.version")}")
 		logger.debug("* Max Memory: ${Runtime.getRuntime().maxMemory() / (1024 * 1024)} MB")
 		logger.debug("* Local URL: http://${Configuration.host}:${Configuration.port}")
 		logger.debug("* World URL: ${Configuration.url}")

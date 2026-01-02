@@ -17,6 +17,7 @@ import site.remlit.aster.model.ap.ApIdOrObject
 import site.remlit.aster.model.ap.activity.ApUpdateActivity
 import site.remlit.aster.service.ap.ApDeliverService
 import site.remlit.aster.service.ap.ApIdService
+import site.remlit.aster.service.ap.ApVisibilityService.AS_PUBLIC
 import site.remlit.aster.util.model.fromEntity
 
 /**
@@ -218,13 +219,16 @@ object UserService : Service {
 
         UserEditEvent(User.fromEntity(newUser)).call()
 
-        if (user.isLocal())
+        if (newUser.isLocal())
             ApDeliverService.deliverToFollowers<ApUpdateActivity>(
                 ApUpdateActivity(
                     ApIdService.renderActivityApId(IdentifierService.generate()),
-                    `object` = ApIdOrObject.createObject { ApActor.fromEntity(user) }
+					actor = newUser.apId,
+                    `object` = ApIdOrObject.createObject { ApActor.fromEntity(newUser) },
+					to = listOf(AS_PUBLIC),
+					cc = emptyList()
                 ),
-                user
+				newUser
             )
 
         return@transaction newUser

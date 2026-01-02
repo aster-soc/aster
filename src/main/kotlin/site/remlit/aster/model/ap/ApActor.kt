@@ -56,6 +56,7 @@ data class ApActor(
 				id = user.apId,
 				type = ApType.Object.Person,
 				preferredUsername = user.username,
+				name = user.displayName,
 
 				icon = if (user.avatar != null) ApImage(
 					url = user.avatar!!,

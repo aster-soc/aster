@@ -73,8 +73,9 @@ class ApUndoHandler : ApInboxHandler {
 			)
 		} ?: return
 
-		val repeat = NoteService.get(NoteTable.user eq sender.id and (NoteService.repeatAlias[NoteTable.id] eq repeatedNote.id))
-			?: return
+		val repeat = NoteService.get(NoteTable.user eq sender.id and
+			(NoteService.repeatAlias[NoteTable.id] eq repeatedNote.id))
+				?: return
 
 		NoteService.deleteById(repeat.id)
 	}
