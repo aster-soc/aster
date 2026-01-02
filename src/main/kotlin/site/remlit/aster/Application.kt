@@ -40,6 +40,8 @@ import site.remlit.aster.util.setJsonConfig
 import site.remlit.effekt.effect
 
 internal fun main(args: Array<String>) {
+	if (Configuration.debug) CommandLineService.printDebug(args)
+
 	if (args.isNotEmpty() && !args[0].startsWith("-")) {
 		runBlocking {
 			CommandLineService.execute(args)
@@ -75,17 +77,16 @@ fun Application.module() {
 
 	ApObjectTypeRegistry.registerInternal()
 
-	PluginRegistry.initialize()
-
 	setJsonConfig()
 
 	// access connection before using it
 	Database.connection
 
 	MigrationService.isUpToDate()
-	configureQueue()
 
 	SetupService.setup()
+
+	PluginRegistry.initialize()
 
 	install(CallLogging) {
 		filter { call ->
@@ -196,6 +197,8 @@ fun Application.module() {
 	effect<InternalRouterReloadEvent> {
 		log.warn("Unable to restart router. Please restart Aster for routes to update.")
 	}
+
+	configureQueue()
 
 	ApplicationFinishStartEvent().call()
 }

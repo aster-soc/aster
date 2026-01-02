@@ -10,6 +10,7 @@ import site.remlit.aster.db.table.DriveFileTable
 import site.remlit.aster.model.Configuration
 import site.remlit.aster.model.PackageInformation
 import site.remlit.aster.model.Service
+import java.lang.management.ManagementFactory
 import java.util.*
 import kotlin.io.path.Path
 import kotlin.io.path.absolutePathString
@@ -37,6 +38,16 @@ object CommandLineService : Service {
 		logger.info("invite:generate			Generate invite")
 	}
 
+	fun printDebug(args: Array<String>) {
+		logger.debug("Starting ${PackageInformation.groupId}.${PackageInformation.name} v${PackageInformation.version}")
+		logger.debug("* Arguments: ${if (args.isEmpty()) "None provided" else args.joinToString(" ")}")
+		logger.debug("* VM Arguments: ${ManagementFactory.getRuntimeMXBean().inputArguments.joinToString(" ")}")
+		logger.debug("* Runtime Version: ${System.getProperty("java.vm.vendor")} ${System.getProperty("java.version")} on ${System.getProperty("os.name")} ${System.getProperty("os.version")}")
+		logger.debug("* Max Memory: ${Runtime.getRuntime().maxMemory() / (1024 * 1024)} MB")
+		logger.debug("* Local URL: http://${Configuration.host}:${Configuration.port}")
+		logger.debug("* World URL: ${Configuration.url}")
+	}
+
 	suspend fun prompt() {
 		val scanner = Scanner(System.`in`)
 		val line = scanner.nextLine()
@@ -52,8 +63,6 @@ object CommandLineService : Service {
 	}
 
 	suspend fun execute(args: Array<String>) {
-		logger.debug("Arguments: ${args.joinToString(" ")}")
-
 		Database.connection
 
 		if (args.isNotEmpty()) {
