@@ -76,16 +76,14 @@ object ResolverService : Service {
 		}
 	}
 
-	@Suppress("InstanceOfCheckForException")
 	private inline fun tryRequest(block: () -> JsonObject?): JsonObject? =
 		try {
 			return block()
+		} catch (e: ResolverException) {
+			logger.info("Request failed: ${e.status.value} ${e.message}")
+			return null
 		} catch (e: Exception) {
-			if (e is ResolverException) {
-				logger.info("Request failed: ${e.status.value} ${e.message}")
-			} else {
-				logger.info("Request failed: ${e.message}")
-			}
+			logger.info("Request failed: ${e.message}")
 			return null
 		}
 
