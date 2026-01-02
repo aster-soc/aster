@@ -29,14 +29,13 @@ internal object UserRoutes {
 		RouteRegistry.registerRoute {
 			authentication {
 				get("/api/lookup/{handle}") {
+					val authenticatedUser = call.attributes.getOrNull(authenticatedUserKey)
 					val handle = call.parameters.getOrFail("handle").removePrefix("@")
 
 					val user = ApActorService.resolveHandle(handle)
 
 					if (user == null || !user.activated || user.suspended ||
-						(Configuration.hideRemoteContent && !user.isLocal() && call.attributes.getOrNull(
-							authenticatedUserKey
-						) == null)
+						(Configuration.hideRemoteContent && !user.isLocal() && authenticatedUser == null)
 					) throw ApiException(HttpStatusCode.NotFound)
 
 					call.respond(User.fromEntity(user))

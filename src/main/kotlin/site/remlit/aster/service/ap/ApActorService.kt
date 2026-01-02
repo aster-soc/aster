@@ -70,17 +70,21 @@ object ApActorService : Service {
 	/**
 	 * Resolve an actor by their handle
 	 *
-	 * @param handle Handle starting with @, potentially also containing a host
+	 * @param handle Handle (@user, user, @user@example.com, or user@example.com)
 	 *
 	 * @return UserEntity or null
 	 * */
 	// TODO: move to UserService?
 	@JvmStatic
 	suspend fun resolveHandle(handle: String): UserEntity? {
+		val handle = handle.removePrefix("@")
+
 		val split = handle.split("@")
 
-		val username = split.getOrNull(1) ?: return null
-		val host = split.getOrNull(2) ?: return UserService.getByUsername(username)
+		logger.debug("Resolving handle $handle split: ${split.joinToString { ", " }}")
+
+		val username = split.getOrNull(0) ?: return null
+		val host = split.getOrNull(1) ?: return UserService.getByUsername(username)
 
 		CoroutineScope(Dispatchers.Default).launch { InstanceService.resolve(host) }
 		val webfingerResponse = jsonConfig.decodeFromString<WellKnown>(
