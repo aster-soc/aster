@@ -1,8 +1,10 @@
 package site.remlit.aster.service.ap.inbox
 
 import kotlinx.serialization.json.decodeFromJsonElement
+import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 import org.slf4j.LoggerFactory
 import site.remlit.aster.db.entity.InboxQueueEntity
+import site.remlit.aster.exception.GracefulInboxException
 import site.remlit.aster.model.ap.ApIdOrObject
 import site.remlit.aster.model.ap.ApInboxHandler
 import site.remlit.aster.model.ap.ApNote
@@ -17,18 +19,19 @@ class ApCreateHandler : ApInboxHandler {
 	private val logger = LoggerFactory.getLogger(ApCreateHandler::class.java)
 
 	override suspend fun handle(job: InboxQueueEntity) {
-		val create = jsonConfig.decodeFromString<ApCreateActivity>(String(job.content.bytes))
-		val copy = create.copy()
+		val activity = jsonConfig.decodeFromString<ApCreateActivity>(String(job.content.bytes))
+		val sender = transaction { job.sender }
 
-		val creator = UserService.getByApId(create.actor ?: return) ?: return
-		val firstFollowerId = RelationshipService.getFollowers(creator).firstOrNull()?.id
+		if (sender == null) throw GracefulInboxException("Sender not specified")
+		if (sender.apId != activity.actor) throw GracefulInboxException("Sender doesn't match activity's actor")
 
+		val firstFollowerId = RelationshipService.getFollowers(sender)
+			.firstOrNull()?.id
+
+		val copy = activity.copy()
 		when (copy.`object`) {
-			is ApIdOrObject.Id -> {
-				// todo: ApGenericResolver
-				ApNoteService.resolve(copy.`object`.value, user = firstFollowerId)
-					?: return
-			}
+			is ApIdOrObject.Id -> ApNoteService.resolve(copy.`object`.value, user = firstFollowerId)
+				?: throw GracefulInboxException("Note not found")
 
 			is ApIdOrObject.Object -> {
 				val obj = jsonConfig.decodeFromJsonElement<ApTypedObject>(copy.`object`.value)
@@ -45,6 +48,6 @@ class ApCreateHandler : ApInboxHandler {
 		resolveAs: String?
 	) {
 		ApNoteService.resolve(note.id, user = resolveAs)
-			?: return
+			?: throw GracefulInboxException("Note not found")
 	}
 }

@@ -1,7 +1,9 @@
 package site.remlit.aster.service.ap.inbox
 
+import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 import site.remlit.aster.common.model.User
 import site.remlit.aster.db.entity.InboxQueueEntity
+import site.remlit.aster.exception.GracefulInboxException
 import site.remlit.aster.model.ap.ApIdOrObject
 import site.remlit.aster.model.ap.ApInboxHandler
 import site.remlit.aster.model.ap.activity.ApLikeActivity
@@ -15,19 +17,19 @@ import site.remlit.aster.util.model.fromEntity
 class ApLikeHandler : ApInboxHandler {
 	override suspend fun handle(job: InboxQueueEntity) {
 		val activity = jsonConfig.decodeFromString<ApLikeActivity>(String(job.content.bytes))
+		val sender = transaction { job.sender }
 
-		if (activity.actor == null) return
-		val actor = ApActorService.resolve(activity.actor)
-			?: throw IllegalArgumentException("Sender could not be resolved")
+		if (sender == null) throw GracefulInboxException("Sender not specified")
+		if (sender.apId != activity.actor) throw GracefulInboxException("Sender doesn't match activity's actor")
 
 		val obj = when (activity.`object`) {
 			is ApIdOrObject.Id -> ApNoteService.resolve(activity.`object`.value)
-			else -> throw IllegalArgumentException("Target must be represented as an ID")
-		} ?: return
+			else -> throw GracefulInboxException("Like object must not be an object")
+		} ?: throw GracefulInboxException("Like object not found")
 
-		if (RelationshipService.eitherBlocking(actor.id.toString(), obj.user.id))
-			throw IllegalArgumentException("Relationship prohibits this action")
+		if (RelationshipService.eitherBlocking(sender.id.toString(), obj.user.id))
+			throw GracefulInboxException("Relationship prohibits this action")
 
-		NoteService.like(User.fromEntity(actor), obj.id, false)
+		NoteService.like(User.fromEntity(sender), obj.id, false)
 	}
 }

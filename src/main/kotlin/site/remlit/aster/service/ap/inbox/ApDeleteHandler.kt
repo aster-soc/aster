@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory
 import site.remlit.aster.db.entity.InboxQueueEntity
 import site.remlit.aster.db.entity.UserEntity
 import site.remlit.aster.db.table.UserTable
+import site.remlit.aster.exception.GracefulInboxException
 import site.remlit.aster.model.ap.ApIdOrObject
 import site.remlit.aster.model.ap.ApInboxHandler
 import site.remlit.aster.model.ap.ApTombstone
@@ -20,9 +21,13 @@ class ApDeleteHandler : ApInboxHandler {
 	private val logger = LoggerFactory.getLogger(ApDeleteHandler::class.java)
 
 	override suspend fun handle(job: InboxQueueEntity) {
-		val delete = jsonConfig.decodeFromString<ApDeleteActivity>(String(job.content.bytes))
-		val copy = delete.copy()
+		val activity = jsonConfig.decodeFromString<ApDeleteActivity>(String(job.content.bytes))
+		val sender = transaction { job.sender }
 
+		if (sender == null) throw GracefulInboxException("Sender not specified")
+		if (sender.apId != activity.actor) throw GracefulInboxException("Sender doesn't match activity's actor")
+
+		val copy = activity.copy()
 		when (copy.`object`) {
 			is ApIdOrObject.Id -> handleAll(copy.`object`.value, transaction { job.sender })
 
@@ -47,15 +52,10 @@ class ApDeleteHandler : ApInboxHandler {
 		sender: UserEntity? = null
 	) {
 		val note = NoteService.getByApId(apId)
-		if (note != null && note.user.id == sender?.id.toString()) {
+		if (note != null && note.user.id == sender?.id.toString())
 			NoteService.deleteById(note.id)
-			logger.debug("Processed delete of note ${note.apId}")
-		}
 
 		val user = UserService.getByApId(apId)
-		if (user != null) {
-			UserService.delete(UserTable.id eq user.id)
-			logger.debug("Processed delete of user ${user.apId}")
-		}
+		if (user != null) UserService.delete(UserTable.id eq user.id)
 	}
 }

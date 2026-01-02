@@ -4,6 +4,7 @@ import kotlinx.serialization.json.decodeFromJsonElement
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 import org.slf4j.LoggerFactory
 import site.remlit.aster.db.entity.InboxQueueEntity
+import site.remlit.aster.exception.GracefulInboxException
 import site.remlit.aster.model.ap.ApActor
 import site.remlit.aster.model.ap.ApIdOrObject
 import site.remlit.aster.model.ap.ApInboxHandler
@@ -21,13 +22,13 @@ class ApUpdateHandler : ApInboxHandler {
 	override suspend fun handle(job: InboxQueueEntity) {
 		val activity = jsonConfig.decodeFromString<ApUpdateActivity>(String(job.content.bytes))
 		val sender = transaction { job.sender }
+
+		if (sender == null) throw GracefulInboxException("Sender not specified")
+		if (sender.apId != activity.actor) throw GracefulInboxException("Sender doesn't match activity's actor")
+
 		val copy = activity.copy()
-
-		if (sender == null)
-			throw IllegalArgumentException("Update Activity must have a sender")
-
 		when (copy.`object`) {
-			is ApIdOrObject.Id -> throw NotImplementedError("Update activities with objects as IDs have not been implemented")
+			is ApIdOrObject.Id -> throw GracefulInboxException("Update object must not be an ID")
 			is ApIdOrObject.Object -> {
 				val typedObject = jsonConfig.decodeFromJsonElement<ApTypedObject>(copy.`object`.value)
 

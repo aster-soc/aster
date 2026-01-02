@@ -15,9 +15,9 @@ class ApAcceptHandler : ApInboxHandler {
 	private val logger = LoggerFactory.getLogger(ApAcceptHandler::class.java)
 
 	override suspend fun handle(job: InboxQueueEntity) {
-		val create = jsonConfig.decodeFromString<ApAcceptActivity>(String(job.content.bytes))
-		val copy = create.copy()
+		val activity = jsonConfig.decodeFromString<ApAcceptActivity>(String(job.content.bytes))
 
+		val copy = activity.copy()
 		when (copy.`object`) {
 			is ApIdOrObject.Id -> {
 				handleFollow(copy.`object`.value)

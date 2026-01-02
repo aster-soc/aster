@@ -5,6 +5,7 @@ import org.jetbrains.annotations.ApiStatus
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 import org.slf4j.LoggerFactory
 import site.remlit.aster.db.entity.InboxQueueEntity
+import site.remlit.aster.exception.GracefulInboxException
 import site.remlit.aster.model.Configuration
 import site.remlit.aster.model.ap.ApInboxHandler
 import site.remlit.aster.model.ap.ApTypedObject
@@ -57,7 +58,7 @@ object InboxHandlerRegistry {
 				}
 				QueueService.completeInboxJob(job)
 			} catch (e: Throwable) {
-				QueueService.errorInboxJob(job, e)
+				if (e !is GracefulInboxException) QueueService.errorInboxJob(job, e)
 			}
 		}
 	}

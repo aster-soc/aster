@@ -1,8 +1,10 @@
 package site.remlit.aster.service.ap.inbox
 
+import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 import org.slf4j.LoggerFactory
 import site.remlit.aster.common.model.type.RelationshipType
 import site.remlit.aster.db.entity.InboxQueueEntity
+import site.remlit.aster.exception.GracefulInboxException
 import site.remlit.aster.model.ap.ApIdOrObject
 import site.remlit.aster.model.ap.ApInboxHandler
 import site.remlit.aster.model.ap.activity.ApAcceptActivity
@@ -19,23 +21,24 @@ class ApFollowHandler : ApInboxHandler {
 
 	override suspend fun handle(job: InboxQueueEntity) {
 		val activity = jsonConfig.decodeFromString<ApFollowActivity>(String(job.content.bytes))
+		val sender = transaction { job.sender }
 
-		val actor = ApActorService.resolve(activity.actor)
-			?: throw IllegalArgumentException("Follow sender cannot be found")
+		if (sender == null) throw GracefulInboxException("Sender not specified")
+		if (sender.apId != activity.actor) throw GracefulInboxException("Sender doesn't match activity's actor")
 
 		val obj = when (activity.`object`) {
 			is ApIdOrObject.Id -> ApActorService.resolve(activity.`object`.value)
-			else -> throw IllegalArgumentException("Follow target must be represented as an ID")
-		} ?: throw IllegalArgumentException("Follow target cannot be found")
+			else -> throw GracefulInboxException("Follow object must not be an object")
+		} ?: throw GracefulInboxException("Follow object not found")
 
 		if (!obj.isLocal())
-			throw IllegalArgumentException("Follow target must be local")
+			throw GracefulInboxException("Follow object must be local")
 
-		if (RelationshipService.eitherBlocking(actor.id.toString(), obj.id.toString()))
-			throw IllegalArgumentException("Conflicting existing relationship")
+		if (RelationshipService.eitherBlocking(sender.id.toString(), obj.id.toString()))
+			throw GracefulInboxException("Conflicting existing relationship")
 
 		val existingRelationship =
-			RelationshipService.getByIds(obj.id.toString(), actor.id.toString())
+			RelationshipService.getByIds(obj.id.toString(), sender.id.toString())
 
 		if (existingRelationship != null && existingRelationship.type == RelationshipType.Follow) {
 			if (existingRelationship.pending) {
@@ -48,12 +51,12 @@ class ApFollowHandler : ApInboxHandler {
 						`object` = ApIdOrObject.Id(activity.id)
 					),
 					obj,
-					actor.inbox
+					sender.inbox
 				)
 				return
 			}
 		}
 
-		RelationshipService.follow(obj.id.toString(), actor.id.toString(), activity.id)
+		RelationshipService.follow(obj.id.toString(), sender.id.toString(), activity.id)
 	}
 }

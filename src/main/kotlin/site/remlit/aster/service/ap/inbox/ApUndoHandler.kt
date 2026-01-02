@@ -1,16 +1,15 @@
 package site.remlit.aster.service.ap.inbox
 
 import kotlinx.serialization.json.decodeFromJsonElement
-import kotlinx.serialization.json.jsonObject
 import org.jetbrains.exposed.v1.core.and
 import org.jetbrains.exposed.v1.core.eq
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 import org.slf4j.LoggerFactory
 import site.remlit.aster.common.model.User
-import site.remlit.aster.common.util.extractString
 import site.remlit.aster.db.entity.InboxQueueEntity
 import site.remlit.aster.db.entity.UserEntity
 import site.remlit.aster.db.table.NoteTable
+import site.remlit.aster.exception.GracefulInboxException
 import site.remlit.aster.model.ap.ApIdOrObject
 import site.remlit.aster.model.ap.ApInboxHandler
 import site.remlit.aster.model.ap.ApNote
@@ -27,15 +26,16 @@ class ApUndoHandler : ApInboxHandler {
 	private val logger = LoggerFactory.getLogger(ApUndoHandler::class.java)
 
 	override suspend fun handle(job: InboxQueueEntity) {
-		val undo = jsonConfig.decodeFromString<ApUndoActivity>(String(job.content.bytes))
+		val activity = jsonConfig.decodeFromString<ApUndoActivity>(String(job.content.bytes))
 		val sender = transaction { job.sender }
-		val copy = undo.copy()
 
-		if (sender == null)
-			throw IllegalArgumentException("Undo Activity must have a sender")
+		if (sender == null) throw GracefulInboxException("Sender not specified")
+		// TODO: Does this need an actor?
+		// if (sender.apId != activity.actor) throw GracefulInboxException("Sender doesn't match activity's actor")
 
+		val copy = activity.copy()
 		when (copy.`object`) {
-			is ApIdOrObject.Id -> throw IllegalArgumentException("Undo object must not be an ID")
+			is ApIdOrObject.Id -> throw GracefulInboxException("Undo object must not be an ID")
 			is ApIdOrObject.Object -> {
 				val obj = jsonConfig.decodeFromJsonElement<ApTypedObject>(copy.`object`.value)
 				when (obj.type) {
@@ -71,11 +71,11 @@ class ApUndoHandler : ApInboxHandler {
 			is ApIdOrObject.Object -> ApNoteService.resolve(
 				jsonConfig.decodeFromJsonElement<ApNote>(announce.`object`.value).id
 			)
-		} ?: return
+		} ?: throw GracefulInboxException("Repeated note not found")
 
 		val repeat = NoteService.get(NoteTable.user eq sender.id and
 			(NoteService.repeatAlias[NoteTable.id] eq repeatedNote.id))
-				?: return
+				?: throw GracefulInboxException("Repeat note not found")
 
 		NoteService.deleteById(repeat.id)
 	}
@@ -85,10 +85,10 @@ class ApUndoHandler : ApInboxHandler {
 		sender: UserEntity
 	) {
 		if (like.`object` is ApIdOrObject.Object)
-			throw IllegalArgumentException("Undo Like object must not be an ID")
+			throw GracefulInboxException("Undo Like object must not be an object")
 
 		val note = ApNoteService.resolve((like.`object` as ApIdOrObject.Id).value)
-			?: return
+			?: throw GracefulInboxException("Could not resolve liked note")
 
 		NoteService.unlike(
 			User.fromEntity(sender),
