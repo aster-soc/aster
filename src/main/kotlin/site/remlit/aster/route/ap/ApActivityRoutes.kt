@@ -41,6 +41,7 @@ object ApActivityRoutes {
 
 			if (
 				relationship == null ||
+				relationship.pending ||
 				relationship.activityId == null ||
 				!relationship.to.isLocal() ||
 				relationship.from.isLocal()
@@ -63,6 +64,7 @@ object ApActivityRoutes {
 
 			if (
 				relationship == null ||
+				relationship.pending ||
 				relationship.activityId == null ||
 				!relationship.to.isLocal() ||
 				relationship.from.isLocal()

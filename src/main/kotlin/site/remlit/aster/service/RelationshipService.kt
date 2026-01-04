@@ -285,15 +285,7 @@ object RelationshipService : Service {
 			RelationshipCreateEvent(relationship).call()
 
 			if (!to.locked && followId != null)
-					ApDeliverService.deliver<ApAcceptActivity>(
-						ApAcceptActivity(
-							ApIdService.renderFollowAcceptApId(relationship.id),
-							actor = to.apId,
-							`object` = ApIdOrObject.Id(activityId)
-						),
-						to,
-						from.inbox
-					)
+				accept(relationship.id)
 		}
 
 		return getPair(to.id.toString(), from.id.toString())

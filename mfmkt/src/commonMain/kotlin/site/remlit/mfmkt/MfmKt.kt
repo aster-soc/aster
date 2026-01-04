@@ -30,15 +30,17 @@ class MfmKt {
 				val split = string.split(mention.toString())
 
 				if (last == null) {
-					last = split[0] + mention.toString()
-					nodes.add(MfmText(split[0]))
+					val zero = split.getOrNull(0) ?: continue
+					last = zero + mention.toString()
+					nodes.add(MfmText(zero))
 					nodes.add(mention)
 				} else {
-					val new = split[0].split(last)[1]
+					val zero = split.getOrNull(0) ?: continue
+					val new = zero.split(last).getOrNull(1) ?: continue
 					nodes.add(MfmText(new))
 					last = new
 					nodes.add(mention)
-					next = split[1]
+					next = split.getOrNull(1) ?: continue
 				}
 			}
 
