@@ -46,6 +46,7 @@ dependencies {
 	implementation("io.ktor:ktor-server-status-pages-jvm:3.3.3")
 	implementation("io.ktor:ktor-server-auto-head-response-jvm:3.3.3")
 	implementation("io.ktor:ktor-server-double-receive-jvm:3.3.3")
+	implementation("io.ktor:ktor-server-websockets-jvm:3.3.3")
 
 	// templating
 	implementation("io.ktor:ktor-server-html-builder-jvm:3.3.3")
@@ -77,7 +78,7 @@ dependencies {
 	implementation("at.favre.lib:bcrypt:0.10.2")
 	implementation("com.googlecode.owasp-java-html-sanitizer:owasp-java-html-sanitizer:20240325.1")
 	implementation("org.jetbrains.kotlin:kotlin-reflect:2.2.21")
-	implementation("site.remlit:effekt:0.1.4")
+	implementation("site.remlit:effekt:0.2.1")
 
 	compileOnly("org.jetbrains:annotations:26.0.2-1")
 

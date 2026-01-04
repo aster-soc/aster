@@ -36,7 +36,7 @@ object ApBackfillService {
 
 		val obj = jsonConfig.decodeFromJsonElement<ApOrderedCollection>(json)
 
-		logger.debug("Object $obj")
+		logger.debug("Backfill object $obj")
 
 		obj.orderedItems.forEach {
 			QueueService.insertBackfillJob(
@@ -52,6 +52,8 @@ object ApBackfillService {
 			} ?: return
 
 			val firstObj = jsonConfig.decodeFromJsonElement<ApOrderedCollectionPage>(firstJson)
+
+			logger.debug("Backfill first object $firstObj")
 
 			firstObj.orderedItems.forEach {
 				QueueService.insertBackfillJob(

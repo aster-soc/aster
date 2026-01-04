@@ -5,6 +5,7 @@ import org.jetbrains.annotations.ApiStatus
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import site.remlit.aster.route.FrontendRoutes
+import site.remlit.aster.route.StreamingRoutes
 import site.remlit.aster.route.UploadRoutes
 import site.remlit.aster.route.admin.AdminDebugRoutes
 import site.remlit.aster.route.admin.AdminIndexRoutes
@@ -120,6 +121,7 @@ object RouteRegistry {
 		UserRoutes.register()
 
 		FrontendRoutes.register()
+		StreamingRoutes.register()
 		UploadRoutes.register()
 	}
 

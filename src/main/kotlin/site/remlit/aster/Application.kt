@@ -16,6 +16,7 @@ import io.ktor.server.plugins.forwardedheaders.*
 import io.ktor.server.plugins.statuspages.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
+import io.ktor.server.websocket.WebSockets
 import kotlinx.coroutines.runBlocking
 import org.jetbrains.annotations.ApiStatus
 import site.remlit.aster.common.model.ApiError
@@ -193,6 +194,8 @@ fun Application.module() {
 	}
 
 	install(DoubleReceive)
+
+	install(WebSockets)
 
 	configureRouting()
 
