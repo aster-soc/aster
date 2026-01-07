@@ -76,9 +76,11 @@ dependencies {
 
 	// authentication
 	implementation("at.favre.lib:bcrypt:0.10.2")
+	implementation("com.j256.two-factor-auth:two-factor-auth:1.3")
+	implementation("org.wso2.orbit.webauthn4j:webauthn4j:0.21.0.wso2v1")
 
 	// misc
-	implementation("org.jetbrains.kotlin:kotlin-reflect:2.2.21")
+	implementation("org.jetbrains.kotlin:kotlin-reflect:2.3.0")
 	implementation("com.googlecode.owasp-java-html-sanitizer:owasp-java-html-sanitizer:20260101.1")
 	implementation("site.remlit:effekt:0.2.1")
 

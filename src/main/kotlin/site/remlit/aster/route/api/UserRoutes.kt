@@ -5,15 +5,15 @@ import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.server.util.*
-import org.jetbrains.exposed.v1.core.and
-import org.jetbrains.exposed.v1.core.eq
 import site.remlit.aster.common.model.User
 import site.remlit.aster.common.model.generated.PartialUser
+import site.remlit.aster.common.model.request.RegisterTotpConfirmRequest
 import site.remlit.aster.common.model.request.ReportRequest
-import site.remlit.aster.db.table.UserTable
+import site.remlit.aster.common.model.response.RegisterTotpResponse
 import site.remlit.aster.model.ApiException
 import site.remlit.aster.model.Configuration
 import site.remlit.aster.registry.RouteRegistry
+import site.remlit.aster.service.AuthService
 import site.remlit.aster.service.NotificationService
 import site.remlit.aster.service.RelationshipService
 import site.remlit.aster.service.ReportService
@@ -194,6 +194,29 @@ internal object UserRoutes {
 							RelationshipService.getPair(requestingUser.id.toString(), user.id.toString())
 						)
 					)
+				}
+
+				post("/api/user/register-totp") {
+					val authenticatedUser = call.attributes[authenticatedUserKey]
+					call.respond(RegisterTotpResponse(
+						AuthService.registerTotp(authenticatedUser.id.toString())
+					))
+				}
+
+				post("/api/user/register-totp/confirm") {
+					val authenticatedUser = call.attributes[authenticatedUserKey]
+					val body = call.receive<RegisterTotpConfirmRequest>()
+
+					if (!AuthService.confirmTotp(authenticatedUser.id.toString(), body.code))
+						throw ApiException(HttpStatusCode.Forbidden, "One time password incorrect")
+
+					call.respond(HttpStatusCode.OK)
+				}
+
+				post("/api/user/unregister-totp") {
+					val authenticatedUser = call.attributes[authenticatedUserKey]
+					AuthService.removeTotp(authenticatedUser.id.toString())
+					call.respond(HttpStatusCode.OK)
 				}
 			}
 		}
