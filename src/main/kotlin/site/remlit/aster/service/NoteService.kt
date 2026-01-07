@@ -336,8 +336,9 @@ object NoteService : Service {
 		note: Note,
         cw: String? = note.cw,
         content: String? = note.content,
-	): Note? {
-        val user = UserService.getById(note.user.id) ?: return null
+	): Note {
+        val user = UserService.getById(note.user.id)
+			?: throw IllegalArgumentException("Note author not found")
 
 		if (cw != null && cw.length > Configuration.note.maxLength.cw)
 			throw IllegalArgumentException("Content warning cannot be longer than ${Configuration.note.maxLength.cw}")
@@ -372,7 +373,7 @@ object NoteService : Service {
 			)
 		}
 
-        return getById(newNote.id.toString())!!
+        return newNote
     }
 
 	/**

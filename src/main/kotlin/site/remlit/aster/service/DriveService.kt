@@ -2,6 +2,7 @@ package site.remlit.aster.service
 
 import io.ktor.http.*
 import org.jetbrains.exposed.v1.core.Op
+import org.jetbrains.exposed.v1.core.and
 import org.jetbrains.exposed.v1.core.eq
 import org.jetbrains.exposed.v1.dao.load
 import org.jetbrains.exposed.v1.jdbc.select
@@ -11,14 +12,22 @@ import site.remlit.aster.common.model.DriveFile
 import site.remlit.aster.db.entity.DriveFileEntity
 import site.remlit.aster.db.entity.UserEntity
 import site.remlit.aster.db.table.DriveFileTable
+import site.remlit.aster.db.table.NoteTable
 import site.remlit.aster.db.table.UserTable
 import site.remlit.aster.event.drive.DriveFileCreateEvent
 import site.remlit.aster.event.drive.DriveFileDeleteEvent
+import site.remlit.aster.event.drive.DriveFileEditEvent
 import site.remlit.aster.exception.InsertFailureException
 import site.remlit.aster.model.Configuration
 import site.remlit.aster.model.Service
+import site.remlit.aster.model.ap.ApIdOrObject
+import site.remlit.aster.model.ap.ApNote
+import site.remlit.aster.model.ap.activity.ApUpdateActivity
+import site.remlit.aster.service.ap.ApDeliverService
+import site.remlit.aster.service.ap.ApIdService
 import site.remlit.aster.util.model.fromEntities
 import site.remlit.aster.util.model.fromEntity
+import site.remlit.aster.util.sql.arrayContains
 import java.nio.file.Path
 import kotlin.io.path.name
 
@@ -139,7 +148,7 @@ object DriveService : Service {
 				this.alt = alt
 			}
 
-			val driveFile = getById(id) ?: throw InsertFailureException("Failed to create drive file")
+			val driveFile = getById(id)!!
 			DriveFileCreateEvent(driveFile).call()
 
 			return@transaction driveFile
@@ -172,7 +181,7 @@ object DriveService : Service {
 				this.alt = alt
 			}
 
-			val driveFile = getById(id) ?: throw InsertFailureException("Failed to create drive file")
+			val driveFile = getById(id)!!
 			DriveFileCreateEvent(driveFile).call()
 
 			return@transaction driveFile
@@ -190,7 +199,10 @@ object DriveService : Service {
 			.singleOrNull()
 		if (entity == null) return@transaction
 
+		// TODO: Delete file, if local
+
 		DriveFileDeleteEvent(DriveFile.fromEntity(entity)).call()
+
 		entity.delete()
 	}
 
@@ -209,4 +221,62 @@ object DriveService : Service {
 	 * */
 	@JvmStatic
 	fun deleteBySrc(src: String) = delete(DriveFileTable.src eq src)
+
+	/**
+	 * Update a drive file
+	 *
+	 * @param driveFile Drive file to update
+	 * @param alt Updated alt text
+	 * @param sensitive Updated sensitive boolean
+	 *
+	 * @return Updated drive file
+	 * */
+	@JvmStatic
+	fun update(
+		driveFile: DriveFile,
+		alt: String? = driveFile.alt,
+		sensitive: Boolean = driveFile.sensitive
+	): DriveFile {
+		if (alt != null && alt.length > Configuration.note.maxLength.content)
+			throw IllegalArgumentException("Alt text cannot be longer than ${Configuration.note.maxLength.content}")
+
+		transaction {
+			DriveFileEntity.findByIdAndUpdate(driveFile.id) {
+				it.alt = alt?.ifEmpty { null }
+				it.sensitive = sensitive
+			}
+		}
+
+		val newFile = getById(driveFile.id)!!
+
+		DriveFileEditEvent(newFile).call()
+
+		if (newFile.user.isLocal()) {
+			val notes = NoteService.getMany(
+				NoteTable.attachments arrayContains listOf(driveFile.id) and
+					(NoteTable.user eq newFile.user.id)
+			)
+
+			val user = transaction { UserEntity[newFile.user.id] }
+
+			if (!notes.isEmpty()) {
+				notes.forEach {
+					val apNote = ApNote.fromEntity(it)
+
+					ApDeliverService.deliverToFollowers<ApUpdateActivity>(
+						ApUpdateActivity(
+							ApIdService.renderActivityApId(IdentifierService.generate()),
+							actor = user.apId,
+							`object` = ApIdOrObject.createObject { apNote },
+							to = apNote.to,
+							cc = apNote.cc
+						),
+						user
+					)
+				}
+			}
+		}
+
+		return newFile
+	}
 }
