@@ -86,7 +86,7 @@ internal object NoteRoutes {
 						note,
 						body.cw,
 						body.content
-					) ?: throw ApiException(HttpStatusCode.NotFound, "Note not found.")
+					)
 
 					call.respond(HttpStatusCode.OK, new)
 				}
