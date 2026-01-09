@@ -7,7 +7,7 @@ import io.ktor.server.routing.*
 import io.ktor.server.util.*
 import site.remlit.aster.common.model.User
 import site.remlit.aster.common.model.generated.PartialUser
-import site.remlit.aster.common.model.request.RegisterTotpConfirmRequest
+import site.remlit.aster.common.model.request.TotpConfirmRequest
 import site.remlit.aster.common.model.request.ReportRequest
 import site.remlit.aster.common.model.response.RegisterTotpResponse
 import site.remlit.aster.model.ApiException
@@ -196,16 +196,16 @@ internal object UserRoutes {
 					)
 				}
 
-				post("/api/user/register-totp") {
+				post("/api/user/totp/register") {
 					val authenticatedUser = call.attributes[authenticatedUserKey]
 					call.respond(RegisterTotpResponse(
 						AuthService.registerTotp(authenticatedUser.id.toString())
 					))
 				}
 
-				post("/api/user/register-totp/confirm") {
+				post("/api/user/totp/confirm") {
 					val authenticatedUser = call.attributes[authenticatedUserKey]
-					val body = call.receive<RegisterTotpConfirmRequest>()
+					val body = call.receive<TotpConfirmRequest>()
 
 					if (!AuthService.confirmTotp(authenticatedUser.id.toString(), body.code))
 						throw ApiException(HttpStatusCode.Forbidden, "One time password incorrect")
@@ -213,7 +213,7 @@ internal object UserRoutes {
 					call.respond(HttpStatusCode.OK)
 				}
 
-				post("/api/user/unregister-totp") {
+				post("/api/user/totp/unregister") {
 					val authenticatedUser = call.attributes[authenticatedUserKey]
 					AuthService.removeTotp(authenticatedUser.id.toString())
 					call.respond(HttpStatusCode.OK)

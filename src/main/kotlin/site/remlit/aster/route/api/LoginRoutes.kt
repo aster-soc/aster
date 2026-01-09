@@ -11,7 +11,9 @@ import org.jetbrains.exposed.v1.core.and
 import org.jetbrains.exposed.v1.core.eq
 import site.remlit.aster.common.model.User
 import site.remlit.aster.common.model.request.LoginRequest
+import site.remlit.aster.common.model.request.LoginRequirementsRequest
 import site.remlit.aster.common.model.response.AuthResponse
+import site.remlit.aster.common.model.response.LoginRequirementsResponse
 import site.remlit.aster.db.table.UserTable
 import site.remlit.aster.model.ApiException
 import site.remlit.aster.registry.RouteRegistry
@@ -57,6 +59,18 @@ internal object LoginRoutes {
 				val token = AuthService.registerToken(user.id)
 
 				call.respond(AuthResponse(token, user))
+			}
+
+			post("/api/login/requirements") {
+				val body = call.receive<LoginRequirementsRequest>()
+
+				val private = UserService.getPrivate(UserTable.host eq null and
+					(UserTable.username eq body.username))
+					?: throw ApiException(HttpStatusCode.NotFound, "User not found")
+
+				call.respond(LoginRequirementsResponse(
+					totp = private.totpSecret != null,
+				))
 			}
 		}
 }

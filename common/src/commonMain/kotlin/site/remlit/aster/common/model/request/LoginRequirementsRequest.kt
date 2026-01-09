@@ -5,6 +5,6 @@ import kotlin.js.JsExport
 
 @JsExport
 @Serializable
-data class RegisterTotpConfirmRequest(
-	val code: Int,
+data class LoginRequirementsRequest(
+	val username: String,
 )

@@ -77,7 +77,6 @@ dependencies {
 	// authentication
 	implementation("at.favre.lib:bcrypt:0.10.2")
 	implementation("com.j256.two-factor-auth:two-factor-auth:1.3")
-	implementation("org.wso2.orbit.webauthn4j:webauthn4j:0.21.0.wso2v1")
 
 	// misc
 	implementation("org.jetbrains.kotlin:kotlin-reflect:2.3.0")

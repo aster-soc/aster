@@ -10,6 +10,8 @@ import site.remlit.aster.common.model.User
 import site.remlit.aster.common.model.Visibility
 import site.remlit.aster.common.model.request.CreateNoteRequest
 import site.remlit.aster.common.model.response.AuthResponse
+import site.remlit.aster.common.model.response.LoginRequirementsResponse
+import site.remlit.aster.common.model.response.RegisterTotpResponse
 import site.remlit.aster.common.util.Https
 import site.remlit.aster.common.util.toObject
 import kotlin.js.Promise
@@ -32,15 +34,26 @@ class Api {
 			).unsafeCast<Promise<AuthResponse?>>()
 
 		@JsStatic
-		fun login(username: String, password: String) =
+		fun login(username: String, password: String, totp: Int? = null) =
 			Https.post(
 				"/api/login",
 				false,
 				mapOf(
 					"username" to username,
-					"password" to password
+					"password" to password,
+					"totp" to totp
 				).toObject()
 			).unsafeCast<Promise<AuthResponse?>>()
+
+		@JsStatic
+		fun getLoginRequirements(username: String) =
+			Https.post(
+				"/api/login/requirements",
+				false,
+				mapOf(
+					"username" to username,
+				).toObject()
+			).unsafeCast<Promise<LoginRequirementsResponse?>>()
 
 		@JsStatic
 		fun passwordReset(code: String, password: String) =
@@ -51,6 +64,27 @@ class Api {
 					"code" to code,
 					"password" to password
 				).toObject()
+			)
+
+		@JsStatic
+		fun userRegisterTotp() =
+			Https.post(
+				"/api/user/totp/register",
+				true
+			).unsafeCast<Promise<RegisterTotpResponse?>>()
+
+		@JsStatic
+		fun userConfirmTotp() =
+			Https.post(
+				"/api/user/totp/confirm",
+				true
+			)
+
+		@JsStatic
+		fun userUnregisterTotp() =
+			Https.post(
+				"/api/user/totp/unregister",
+				true
 			)
 
 		@JsStatic
