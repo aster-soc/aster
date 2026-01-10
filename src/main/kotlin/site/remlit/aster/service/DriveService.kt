@@ -1,6 +1,7 @@
 package site.remlit.aster.service
 
 import io.ktor.http.*
+import io.trbl.blurhash.BlurHash
 import org.jetbrains.exposed.v1.core.Op
 import org.jetbrains.exposed.v1.core.and
 import org.jetbrains.exposed.v1.core.eq
@@ -9,6 +10,7 @@ import org.jetbrains.exposed.v1.jdbc.select
 import org.jetbrains.exposed.v1.jdbc.selectAll
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 import site.remlit.aster.common.model.DriveFile
+import site.remlit.aster.common.util.orNull
 import site.remlit.aster.db.entity.DriveFileEntity
 import site.remlit.aster.db.entity.UserEntity
 import site.remlit.aster.db.table.DriveFileTable
@@ -29,6 +31,8 @@ import site.remlit.aster.util.model.fromEntities
 import site.remlit.aster.util.model.fromEntity
 import site.remlit.aster.util.sql.arrayContains
 import java.nio.file.Path
+import javax.imageio.ImageIO
+import kotlin.io.path.exists
 import kotlin.io.path.name
 
 /**
@@ -142,10 +146,12 @@ object DriveService : Service {
 
 			DriveFileEntity.new(id) {
 				this.type = type.toString()
-				this.src =
-					"${Configuration.url.protocol.name}://${Configuration.url.host}/uploads/${user.id}/${path.name}"
+				this.src = "${Configuration.url.protocol.name}://${Configuration.url.host}/uploads/${user.id}/${path.name}"
 				this.user = user
 				this.alt = alt
+				this.blurHash = if (type.toString().startsWith("image"))
+					orNull { generateBlurHash(path) }
+				else null
 			}
 
 			val driveFile = getById(id)!!
@@ -278,5 +284,20 @@ object DriveService : Service {
 		}
 
 		return newFile
+	}
+
+	/**
+	 * Generate a blur hash for a file
+	 *
+	 * @param path Local path of file
+	 *
+	 * @return Generated blur hash
+	 * */
+	@JvmStatic
+	fun generateBlurHash(path: Path): String {
+		if (!path.exists())
+			throw IllegalArgumentException("Path does not exist")
+
+		return BlurHash.encode(ImageIO.read(path.toFile()))
 	}
 }

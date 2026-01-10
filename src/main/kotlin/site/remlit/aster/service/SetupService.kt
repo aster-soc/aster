@@ -1,9 +1,12 @@
 package site.remlit.aster.service
 
 import at.favre.lib.crypto.bcrypt.BCrypt
+import io.ktor.http.Url
+import io.ktor.http.fullPath
 import org.jetbrains.annotations.ApiStatus
 import org.jetbrains.exposed.v1.core.and
 import org.jetbrains.exposed.v1.core.eq
+import org.jetbrains.exposed.v1.core.neq
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -16,6 +19,7 @@ import site.remlit.aster.db.table.UserTable
 import site.remlit.aster.model.Configuration
 import site.remlit.aster.model.KeyType
 import site.remlit.aster.model.Service
+import site.remlit.aster.service.DriveService.generateBlurHash
 import site.remlit.aster.service.ap.ApIdService
 import java.nio.file.Files
 import kotlin.io.path.Path
@@ -33,7 +37,7 @@ object SetupService : Service {
 	 * Ensure instance is properly set up
 	 * */
 	@ApiStatus.Internal
-	fun setup() {
+	internal fun setup() {
 		setupRoles()
 		setupInstanceActor()
 
@@ -44,8 +48,7 @@ object SetupService : Service {
 	/**
 	 * Creates admin and mod roles, if they don't already exist
 	 * */
-	@ApiStatus.Internal
-	fun setupRoles() {
+	private fun setupRoles() {
 		val existingAdminRole = RoleService.get(RoleTable.type eq RoleType.Admin)
 
 		if (existingAdminRole != null) {
@@ -89,8 +92,7 @@ object SetupService : Service {
 	/**
 	 * Creates instance actor, if it doesn't already exist
 	 * */
-	@ApiStatus.Internal
-	fun setupInstanceActor() {
+	private fun setupInstanceActor() {
 		val existingActor = UserService.get(
 			UserTable.username eq "instance.actor"
 					and (UserTable.host eq null)

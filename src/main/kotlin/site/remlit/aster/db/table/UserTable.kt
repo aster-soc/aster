@@ -37,9 +37,14 @@ object UserTable : IdTable<String>("user") {
 		.nullable()
 	val avatarAlt = varchar("avatarAlt", length = TEXT_LONG)
 		.nullable()
+	val avatarBlurHash = varchar("avatarBlurHash", length = TEXT_TINY)
+		.nullable()
+
 	val banner = varchar("banner", length = TEXT_MEDIUM)
 		.nullable()
 	val bannerAlt = varchar("bannerAlt", length = TEXT_LONG)
+		.nullable()
+	val bannerBlurHash = varchar("bannerBlurHash", length = TEXT_TINY)
 		.nullable()
 
 	val locked = bool("locked")

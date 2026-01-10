@@ -1,12 +1,20 @@
 package site.remlit.aster.service
 
+import io.ktor.http.Url
+import io.ktor.http.fullPath
+import org.jetbrains.exposed.v1.core.and
 import org.jetbrains.exposed.v1.core.eq
 import org.jetbrains.exposed.v1.core.neq
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 import org.slf4j.LoggerFactory
+import site.remlit.aster.common.util.ifFails
+import site.remlit.aster.common.util.orNull
 import site.remlit.aster.db.Database
+import site.remlit.aster.db.entity.DriveFileEntity
 import site.remlit.aster.db.entity.InviteEntity
+import site.remlit.aster.db.entity.UserEntity
 import site.remlit.aster.db.table.DriveFileTable
+import site.remlit.aster.db.table.UserTable
 import site.remlit.aster.model.Configuration
 import site.remlit.aster.model.PackageInformation
 import site.remlit.aster.model.Service
@@ -28,7 +36,8 @@ object CommandLineService : Service {
 		logger.info("${PackageInformation.name} ${PackageInformation.version}")
 		logger.info("Run without arguments to start server")
 		logger.info("help					Show this page")
-		logger.info("clean:files					Clean up drive files that are no longer in the file storage")
+		logger.info("files:clean					Clean up drive files that are no longer in the file storage")
+		logger.info("files:generateblurhashes					Generate blur hashes for all media")
 		logger.info("migration:generate			Generate migrations (for developer use)")
 		logger.info("migration:execute			Execute migrations")
 		logger.info("role:list				List all roles")
@@ -79,7 +88,7 @@ object CommandLineService : Service {
 					return
 				}
 
-				"clean:files" -> {
+				"files:clean" -> {
 					val files = DriveService.getMany(DriveFileTable.id neq "")
 
 					logger.info("${files.size} drive files found")
@@ -106,6 +115,59 @@ object CommandLineService : Service {
 							DriveService.delete(DriveFileTable.id eq file.id)
 						}
 					}
+				}
+
+				"files:generateblurhashes" -> {
+					fun generateBlurHash(url: String): String? {
+						return orNull {
+							val url = Url(url)
+
+							println(url)
+
+							if (url.host != Configuration.url.host || !url.fullPath.startsWith("/uploads"))
+								return null
+
+							return DriveService.generateBlurHash(Path(Configuration.fileStorage.localPath.toString() +
+								url.fullPath.replace("uploads/", "")))
+						}
+					}
+
+					val files = DriveService.getMany(UserTable.host eq null and
+						(DriveFileTable.blurHash eq null))
+
+					files.forEach { file ->
+						if (!file.type.startsWith("image"))
+							return@forEach
+
+						val hash = generateBlurHash(file.src)
+						logger.info("Generated blurhash $hash for file ${file.id}")
+
+						transaction {
+							DriveFileEntity.findByIdAndUpdate(file.id) {
+								it.blurHash = hash
+							}
+						}
+
+						UserService.getMany(UserTable.avatar eq file.src).forEach { user ->
+							logger.info("Found avatar for user ${user.id} with same source, adding blurhash")
+							transaction {
+								UserEntity.findByIdAndUpdate(user.id.toString()) {
+									it.avatarBlurHash = hash
+								}
+							}
+						}
+
+						UserService.getMany(UserTable.banner eq file.src).forEach { user ->
+							logger.info("Found banner for user ${user.id} with same source, adding blurhash")
+							transaction {
+								UserEntity.findByIdAndUpdate(user.id.toString()) {
+									it.bannerBlurHash = hash
+								}
+							}
+						}
+					}
+
+					return
 				}
 
 				"migration:generate" -> {

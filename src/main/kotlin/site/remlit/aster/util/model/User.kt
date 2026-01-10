@@ -21,8 +21,11 @@ fun User.Companion.fromEntity(entity: UserEntity) = User(
 
 	avatar = entity.avatar,
 	avatarAlt = entity.avatarAlt,
+	avatarBlurHash = entity.avatarBlurHash,
+
 	banner = entity.banner,
 	bannerAlt = entity.bannerAlt,
+	bannerBlurHash = entity.bannerBlurHash,
 
 	locked = entity.locked,
 	suspended = entity.suspended,

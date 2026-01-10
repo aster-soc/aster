@@ -21,8 +21,11 @@ class UserEntity(id: EntityID<String>) : Entity<String>(id) {
 
 	var avatar by UserTable.avatar
 	var avatarAlt by UserTable.avatarAlt
+	var avatarBlurHash by UserTable.avatarBlurHash
+
 	var banner by UserTable.banner
 	var bannerAlt by UserTable.bannerAlt
+	var bannerBlurHash by UserTable.bannerBlurHash
 
 	var locked by UserTable.locked
 	var suspended by UserTable.suspended

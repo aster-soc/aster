@@ -16,6 +16,8 @@ object DriveFileTable : IdTable<String>("drive_file") {
 	val src = varchar("src", length = TEXT_MEDIUM)
 	val alt = varchar("alt", length = TEXT_LONG)
 		.nullable()
+	val blurHash = varchar("blurHash", length = TEXT_TINY)
+		.nullable()
 
 	val sensitive = bool("sensitive")
 		.default(false)
