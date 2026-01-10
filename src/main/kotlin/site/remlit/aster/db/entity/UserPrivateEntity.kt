@@ -8,6 +8,7 @@ import site.remlit.aster.db.table.UserPrivateTable
 class UserPrivateEntity(id: EntityID<String>) : Entity<String>(id) {
 	companion object : EntityClass<String, UserPrivateEntity>(UserPrivateTable)
 
+	var totpSecret by UserPrivateTable.totpSecret
 	var password by UserPrivateTable.password
 	var privateKey by UserPrivateTable.privateKey
 }

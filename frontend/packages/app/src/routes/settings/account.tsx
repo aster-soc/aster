@@ -22,6 +22,8 @@ import Input from "../../lib/components/Input.tsx";
 import TextArea from "../../lib/components/TextArea.tsx";
 import Button from "../../lib/components/Button.tsx";
 import {Api} from 'aster-common'
+import Modal from "../../lib/components/modal/Modal.tsx";
+import {createRef} from "preact";
 
 export const Route = createFileRoute('/settings/account')({
     component: RouteComponent,
@@ -263,24 +265,52 @@ function RouteComponent() {
                     </>
                 )
 			case 1:
+				const [show2faModal, setShow2faModal] = useState(false);
+				const [secret, setSecret] = useState("");
+
+				function start2faRegistration() {
+					setShow2faModal(true);
+					Api.userRegisterTotp().then((e) => {
+						setSecret(e.secret);
+					})
+				}
+
 				return (
 					<>
 						<Container gap={"md"} align={"startHorizontal"} fill>
 							<Container gap={"md"} align={"left"}>
-								<Button>
+								<Button onClick={start2faRegistration}>
 									<IconPassword size={18} />
 									Enable 2FA
 								</Button>
 							</Container>
 							<Container gap={"md"} align={"right"}>
 								<Button>
-									<div>
-										<IconKey size={18} />
-									</div>
+									<IconKey size={18} />
 									Setup passkey
 								</Button>
 							</Container>
 						</Container>
+
+						<Modal
+							title={"Enable 2FA"}
+							show={show2faModal}
+							setShow={setShow2faModal}
+						>
+							<Container gap={"md"} align={"left"}>
+								<p>In your 2FA app, enter the following secret</p>
+								<p>
+									<code>{secret}</code>
+								</p>
+								<p>
+									Afterwards, you can confirm the codes generated work by clicking "Test 2FA," or you
+									can choose to disable it by pressing "Disable 2FA."
+								</p>
+								<Button onClick={() => setShow2faModal(false)}>
+									All set
+								</Button>
+							</Container>
+						</Modal>
 					</>
 				)
         }

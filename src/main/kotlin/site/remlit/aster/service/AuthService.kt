@@ -1,14 +1,23 @@
 package site.remlit.aster.service
 
+import com.j256.twofactorauth.TimeBasedOneTimePasswordUtil
+import kotlinx.html.S
 import org.jetbrains.exposed.v1.core.Op
 import org.jetbrains.exposed.v1.core.eq
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
+import site.remlit.aster.common.model.User
 import site.remlit.aster.db.entity.AuthEntity
 import site.remlit.aster.db.entity.UserEntity
+import site.remlit.aster.db.entity.UserPrivateEntity
 import site.remlit.aster.db.table.AuthTable
+import site.remlit.aster.db.table.UserPrivateTable
 import site.remlit.aster.db.table.UserTable
 import site.remlit.aster.event.auth.AuthTokenCreateEvent
+import site.remlit.aster.event.user.UserTotpRegisterEvent
+import site.remlit.aster.event.user.UserTotpUnregisterEvent
+import site.remlit.aster.model.Configuration
 import site.remlit.aster.model.Service
+import site.remlit.aster.util.model.fromEntity
 
 /**
  * Service for managing user authentication.
@@ -86,5 +95,65 @@ object AuthService : Service {
         AuthTokenCreateEvent(getByToken(generatedToken)!!).call()
 
 		return generatedToken
+	}
+
+	/**
+	 * Register time-based one time passwords for a user
+	 *
+	 * @param user ID of user
+	 *
+	 * @return Generated secret
+	 * */
+	@JvmStatic
+	fun registerTotp(user: String): String {
+		val user = UserService.getById(user)
+			?: throw IllegalArgumentException("User not found")
+
+		val secret = TimeBasedOneTimePasswordUtil.generateBase32Secret()
+
+		transaction {
+			UserPrivateEntity.findByIdAndUpdate(user.id.toString()) {
+				it.totpSecret = secret
+			}
+		}
+
+		UserTotpRegisterEvent(User.fromEntity(user)).call()
+
+		return secret
+	}
+
+	/**
+	 * Determines if a time-based one time password is valid or not
+	 *
+	 * @param user ID of user
+	 * @param code User submitted one time password
+	 *
+	 * @return If one time password is valid
+	 * */
+	@JvmStatic
+	fun confirmTotp(user: String, code: Int): Boolean {
+		val private = UserService.getPrivateById(user)
+			?: throw IllegalArgumentException("User not found")
+
+		return TimeBasedOneTimePasswordUtil.generateCurrentNumber(private.totpSecret) == code
+	}
+
+	/**
+	 * Removes the time-based one time passwords for a user
+	 *
+	 * @param user ID of user
+	 * */
+	@JvmStatic
+	fun removeTotp(user: String) {
+		val user = UserService.getById(user)
+			?: throw IllegalArgumentException("User not found")
+
+		transaction {
+			UserPrivateEntity.findByIdAndUpdate(user.id.toString()) {
+				it.totpSecret = null
+			}
+		}
+
+		UserTotpUnregisterEvent(User.fromEntity(user)).call()
 	}
 }

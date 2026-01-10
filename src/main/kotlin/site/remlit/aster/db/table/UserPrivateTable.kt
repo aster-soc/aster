@@ -9,6 +9,7 @@ object UserPrivateTable : IdTable<String>("user_private") {
 	override val id = varchar("id", length = TEXT_TINY)
 		.uniqueIndex().entityId()
 
+	val totpSecret = varchar("totpSecret", length = TEXT_SMALL).nullable()
 	val password = varchar("password", length = TEXT_SMALL)
 	val privateKey = varchar("privateKey", length = TEXT_MEDIUM)
 
