@@ -8,7 +8,6 @@
         <ID>LongMethod:CommandLineService.kt$CommandLineService$suspend fun execute(args: Array&lt;String>)</ID>
         <ID>LoopWithTooManyJumpStatements:InstanceService.kt$InstanceService$for</ID>
         <ID>LoopWithTooManyJumpStatements:MigrationService.kt$MigrationService$for</ID>
-        <ID>MagicNumber:AidCounter.kt$10</ID>
         <ID>MagicNumber:ApValidationService.kt$ApValidationService$150</ID>
         <ID>MagicNumber:Application.kt$10</ID>
         <ID>MagicNumber:Configuration.kt$Configuration$1000L</ID>

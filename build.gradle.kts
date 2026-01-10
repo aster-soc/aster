@@ -81,6 +81,7 @@ dependencies {
 	// misc
 	implementation("org.jetbrains.kotlin:kotlin-reflect:2.3.0")
 	implementation("com.googlecode.owasp-java-html-sanitizer:owasp-java-html-sanitizer:20260101.1")
+	implementation("site.remlit:aidx4j:1.0.0")
 	implementation("site.remlit:effekt:0.2.1")
 
 	compileOnly("org.jetbrains:annotations:26.0.2-1")
