@@ -54,6 +54,9 @@ importers:
       aster-common:
         specifier: link:../../../common/build/dist/js/productionLibrary
         version: link:../../../common/build/dist/js/productionLibrary
+      fast-blurhash:
+        specifier: ^1.1.4
+        version: 1.1.4
       mfm-js:
         specifier: ^0.25.0
         version: 0.25.0
@@ -1433,6 +1436,9 @@ packages:
   ext-name@5.0.0:
     resolution: {integrity: sha512-yblEwXAbGv1VQDmow7s38W77hzAgJAO50ztBLMcUyUBfxv1HC+LGwtiEN+Co6LtlqT/5uwVOxsD4TNIilWhwdQ==}
     engines: {node: '>=4'}
+
+  fast-blurhash@1.1.4:
+    resolution: {integrity: sha512-xeH121M027hgWHHhHWYYjUmMKl8vCH3PPkXk439ixsP8Bvb/r3UFqg12oMSToD/aSAw8EE6XiTdfZ6M5jaLfzg==}
 
   fast-deep-equal@3.1.3:
     resolution: {integrity: sha512-f3qQ9oQy9j2AhBe/H9VC91wLmKBCCU/gDOnKNAYG5hswO7BLKj09Hc5HYNz9cGI++xlpDCIgDaitVs03ATR84Q==}
@@ -3505,6 +3511,8 @@ snapshots:
     dependencies:
       ext-list: 2.2.2
       sort-keys-length: 1.0.1
+
+  fast-blurhash@1.1.4: {}
 
   fast-deep-equal@3.1.3: {}
 

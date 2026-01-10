@@ -13,14 +13,41 @@ import {
     IconVideo
 } from "@tabler/icons-react";
 import * as React from "react";
+import {useEffect, useState} from "react";
+import {decodeBlurHash} from "fast-blurhash";
+import {createRef} from "preact";
 
 function DriveFile({data}: { data: common.DriveFile }) {
     const [hidden, setHidden] = React.useState(false);
 
+	const [useFallback, setUseFallback] = useState(false);
+	const canvasRef = createRef<HTMLCanvasElement>()
+
+	useEffect(() => {
+		if (!data.blurHash) return
+
+		try {
+			const decoded = decodeBlurHash(data.blurHash, 115, 115)
+			const ctx = canvasRef.current?.getContext('2d');
+			const imageData = ctx?.createImageData(115, 115);
+			imageData.data.set(decoded);
+			ctx.putImageData(imageData, 0, 0);
+		} catch (_) {}
+	})
+
     function renderPreview() {
         const type = data.type
         if (type.startsWith("image")) {
-            return <img src={data.src} alt={data.alt}/>
+			return (
+				<div className={"preview"}>
+					{useFallback ? (
+						<canvas ref={canvasRef} width={115} height={115} />
+					) : (
+						<img src={data.src} alt={data.alt}
+							 onError={() => setUseFallback(true)}/>
+					)}
+				</div>
+			)
         } else if (type.startsWith("video")) {
             return <div className={"preview"}>
                 <IconVideo size={30}/>

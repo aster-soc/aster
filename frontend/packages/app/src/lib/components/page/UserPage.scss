@@ -1,49 +1,50 @@
 .userPage {
-  .userHeader {
-    --th: 12px;
-    --nth: calc(var(--th) * -1);
+	.userHeader {
+		--th: 12px;
+		--nth: calc(var(--th) * -1);
 
-    --w: calc(100% + (var(--th) * 2));
+		--w: calc(100% + (var(--th) * 2));
 
-    box-sizing: border-box;
+		box-sizing: border-box;
 
-    margin: var(--nth) var(--nth) 0 var(--nth);
+		margin: var(--nth) var(--nth) 0 var(--nth);
 
-    width: var(--w);
-    height: 250px;
+		width: var(--w);
+		height: 250px;
 
-    background: var(--bg-3);
-    background-position: center;
-    background-size: cover;
-    
-    box-shadow: inset 0 0 65px 5px var(--bg-2);
-  }
+		background: var(--bg-3);
+		background-position: center;
+		background-size: cover;
 
-  .userIdentity {
-    margin-top: calc(-1 * (55px + (2 * 12px)));
-  }
+		box-shadow: inset 0 0 65px 5px var(--bg-2);
+	}
 
-  --username-shadow: 0 0 5px #00000080, 0 0 10px #00000050, 0 0 15px #000000;
+	.userIdentity {
+		margin-top: calc(-1 * (55px + (2 * 12px)));
+	}
 
-  .displayName {
-    font-size: var(--fs-xxl);
-    font-weight: 600;
-    text-shadow: var(--username-shadow);
-  }
+	--username-shadow: 0 0 5px #00000080, 0 0 10px #00000050, 0 0 15px #000000;
 
-  .username {
-    font-weight: 400;
-    text-shadow: var(--username-shadow);
-  }
+	.displayName {
+		color: var(--tx-1);
+		font-size: var(--fs-xxl);
+		font-weight: 600;
+		text-shadow: var(--username-shadow);
+	}
 
-  .underHeader {
-    margin: 20px 0 20px 0;
+	.username {
+		font-weight: 400;
+		text-shadow: var(--username-shadow);
+	}
 
-    .bio {
-      &.none {
-        color: var(--tx-3);
-        font-style: italic;
-      }
-    }
-  }
+	.underHeader {
+		margin: 20px 0 20px 0;
+
+		.bio {
+			&.none {
+				color: var(--tx-3);
+				font-style: italic;
+			}
+		}
+	}
 }

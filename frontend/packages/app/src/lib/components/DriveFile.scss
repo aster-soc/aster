@@ -1,36 +1,37 @@
 .driveFile {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  padding: 12px;
-  gap: 6px;
-  box-sizing: border-box;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	flex-direction: column;
+	padding: 12px;
+	gap: 6px;
+	box-sizing: border-box;
 
-  border-radius: var(--br-md);
+	border-radius: var(--br-md);
 
-  &:hover {
-    background-color: var(--bg-3-50);
-  }
+	&:hover {
+		background-color: var(--bg-3-50);
+	}
 
-  img, .preview {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+	img, .preview {
+		display: flex;
+		align-items: center;
+		justify-content: center;
 
-    height: 115px;
-    width: 115px;
-    object-fit: cover;
+		height: 115px;
+		width: 115px;
+		object-fit: cover;
+		overflow: hidden;
 
-    border-radius: var(--br-sm);
-    background-color: var(--bg-3);
-    color: var(--tx-3);
-  }
+		border-radius: var(--br-sm);
+		background-color: var(--bg-3);
+		color: var(--tx-3);
+	}
 
-  .name {
-    max-width: 110px;
-    text-wrap: wrap;
-    word-break: break-all;
-    text-align: center;
-  }
+	.name {
+		max-width: 110px;
+		text-wrap: wrap;
+		word-break: break-all;
+		text-align: center;
+	}
 }
