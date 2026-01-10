@@ -181,10 +181,15 @@ object ApActorService : Service {
 			birthday = null,
 			location = null,
 
+			// TODO: Blurhashes for incoming remote actors
+
 			avatar = icon?.url,
 			avatarAlt = icon?.summary ?: icon?.name,
+			avatarBlurHash = null,
+
 			banner = image?.url,
 			bannerAlt = image?.summary ?: image?.name,
+			bannerBlurHash = null,
 
 			inbox = inbox,
 			outbox = extractString { json["outbox"] },

@@ -1,6 +1,14 @@
 import {createFileRoute, useNavigate} from '@tanstack/react-router'
 import PageHeader from "../../lib/components/PageHeader.tsx";
-import {IconDeviceDesktop, IconLogout, IconSettings, IconUser} from "@tabler/icons-react";
+import {
+	IconAuth2fa,
+	IconDeviceDesktop, IconKey,
+	IconLockPassword,
+	IconLogout, IconPassword,
+	IconSettings,
+	IconShield,
+	IconUser
+} from "@tabler/icons-react";
 import Tab from "../../lib/components/Tab.tsx";
 import PageWrapper from "../../lib/components/PageWrapper.tsx";
 import Container from "../../lib/components/Container.tsx";
@@ -254,6 +262,27 @@ function RouteComponent() {
                         )}
                     </>
                 )
+			case 1:
+				return (
+					<>
+						<Container gap={"md"} align={"startHorizontal"} fill>
+							<Container gap={"md"} align={"left"}>
+								<Button>
+									<IconPassword size={18} />
+									Enable 2FA
+								</Button>
+							</Container>
+							<Container gap={"md"} align={"right"}>
+								<Button>
+									<div>
+										<IconKey size={18} />
+									</div>
+									Setup passkey
+								</Button>
+							</Container>
+						</Container>
+					</>
+				)
         }
     }
 
@@ -276,19 +305,27 @@ function RouteComponent() {
             </PageHeader>
             <PageWrapper padding={"none"} center={false}>
                 <Container align={"horizontal"} padding={"0 12px"} border={"bottom"}>
-                    <Container align={"left"}>
-                        <Tab
-                            selected={tab === 0}
-                            onClick={() => setTab(0)}
-                        >
-                            General
-                        </Tab>
-                    </Container>
+					<Tab
+						selected={tab === 0}
+						onClick={() => setTab(0)}
+					>
+						<IconSettings size={18}/>
+						General
+					</Tab>
+					<Tab
+						selected={tab === 1}
+						onClick={() => setTab(1)}
+					>
+						<IconShield size={18}/>
+						Security
+					</Tab>
 
-                    <Button danger to={"/logout"}>
-                        <IconLogout size={18}/>
-                        Logout
-                    </Button>
+                    <Container align={"right"}>
+						<Button danger to={"/logout"}>
+							<IconLogout size={18}/>
+							Logout
+						</Button>
+					</Container>
                 </Container>
                 <Container gap={"md"} padding={"12px"}>
                     {renderTab()}

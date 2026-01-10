@@ -10,6 +10,7 @@ fun DriveFile.Companion.fromEntity(entity: DriveFileEntity): DriveFile = DriveFi
 	type = entity.type,
 	src = entity.src,
 	alt = entity.alt,
+	blurHash = entity.blurHash,
 	sensitive = entity.sensitive,
 	user = User.fromEntity(entity.user),
 	createdAt = entity.createdAt.toLocalInstant(),

@@ -4,6 +4,7 @@ import org.jetbrains.exposed.v1.core.Op
 import org.jetbrains.exposed.v1.core.and
 import org.jetbrains.exposed.v1.core.eq
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
+import site.remlit.aster.common.model.DriveFile
 import site.remlit.aster.common.model.User
 import site.remlit.aster.db.entity.UserEntity
 import site.remlit.aster.db.entity.UserPrivateEntity
@@ -183,6 +184,7 @@ object UserService : Service {
 
         avatar: String? = user.avatar,
         avatarAlt: String? = user.avatarAlt,
+
         banner: String? = user.banner,
         bannerAlt: String? = user.bannerAlt,
 
@@ -203,8 +205,15 @@ object UserService : Service {
 
             it.avatar = avatar?.ifEmpty { null }
             it.avatarAlt = avatarAlt?.ifEmpty { null }
+			it.avatarBlurHash = if (it.avatar != null)
+				DriveService.getBySrc(it.avatar!!)?.blurHash
+			else null
+
             it.banner = banner?.ifEmpty { null }
             it.bannerAlt = bannerAlt?.ifEmpty { null }
+			it.bannerBlurHash = if (it.banner != null)
+				DriveService.getBySrc(it.banner!!)?.blurHash
+			else null
 
             it.locked = locked
             it.automated = automated
