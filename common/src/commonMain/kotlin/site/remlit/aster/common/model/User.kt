@@ -22,8 +22,11 @@ data class User(
 
 	val avatar: String? = null,
 	val avatarAlt: String? = null,
+	val avatarBlurHash: String? = null,
+
 	val banner: String? = null,
 	val bannerAlt: String? = null,
+	val bannerBlurHash: String? = null,
 
 	val locked: Boolean = false,
 	val suspended: Boolean = false,

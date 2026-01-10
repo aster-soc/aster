@@ -11,6 +11,7 @@ class DriveFileEntity(id: EntityID<String>) : Entity<String>(id = id) {
 	var type by DriveFileTable.type
 	var src by DriveFileTable.src
 	var alt by DriveFileTable.alt
+	var blurHash by DriveFileTable.blurHash
 
 	var sensitive by DriveFileTable.sensitive
 

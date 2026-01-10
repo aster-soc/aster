@@ -1,7 +1,7 @@
 import {createFileRoute, useNavigate} from '@tanstack/react-router'
 import PageHeader from "../../lib/components/PageHeader.tsx";
 import PageWrapper from "../../lib/components/PageWrapper.tsx";
-import {IconDeviceDesktop, IconSettings, IconUser} from "@tabler/icons-react";
+import {IconAccessible, IconBrush, IconDeviceDesktop, IconSettings, IconShield, IconUser} from "@tabler/icons-react";
 import Tab from "../../lib/components/Tab.tsx";
 import Container from "../../lib/components/Container.tsx";
 import {useState} from "react";
@@ -64,18 +64,21 @@ function RouteComponent() {
                         selected={tab === 0}
                         onClick={() => setTab(0)}
                     >
+						<IconSettings size={18}/>
                         General
                     </Tab>
                     <Tab
                         selected={tab === 1}
                         onClick={() => setTab(1)}
                     >
+						<IconBrush size={18}/>
                         Appearance
                     </Tab>
                     <Tab
                         selected={tab === 2}
                         onClick={() => setTab(2)}
                     >
+						<IconAccessible size={18}/>
                         Accessibility
                     </Tab>
                 </Container>

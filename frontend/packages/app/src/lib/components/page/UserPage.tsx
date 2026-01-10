@@ -6,7 +6,7 @@ import {useQuery} from "@tanstack/react-query";
 import Loading from "../Loading.tsx";
 import Error from "../Error.tsx";
 import Avatar from "../Avatar.tsx";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import Container from "../Container.tsx";
 import Button from "../Button.tsx";
 import Mfm from "../Mfm.tsx";
@@ -31,7 +31,10 @@ function UserPage(
         return (
             <>
                 <Container gap={"lg"}>
-                    <div className={"userHeader"} style={{backgroundImage: `url(${data?.banner})`}}></div>
+                    <div
+						className={"userHeader"}
+						style={{ backgroundImage: `url(${data?.banner})` }}
+					/>
                     <div className={"userIdentity"}>
                         <Container gap={"xl"} align={"horizontal"}>
                             <Container align={"horizontal"} gap={"md"}>

@@ -79,6 +79,7 @@ dependencies {
 	implementation("com.j256.two-factor-auth:two-factor-auth:1.3")
 
 	// misc
+	implementation("io.trbl:blurhash:1.0.0")
 	implementation("org.jetbrains.kotlin:kotlin-reflect:2.3.0")
 	implementation("com.googlecode.owasp-java-html-sanitizer:owasp-java-html-sanitizer:20260101.1")
 	implementation("site.remlit:aidx4j:1.0.0")

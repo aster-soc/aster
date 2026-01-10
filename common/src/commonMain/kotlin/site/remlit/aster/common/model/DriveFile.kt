@@ -12,6 +12,7 @@ data class DriveFile(
 	val type: String,
 	val src: String,
 	val alt: String?,
+	val blurHash: String?,
 
 	val sensitive: Boolean,
 
