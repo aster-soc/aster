@@ -198,6 +198,12 @@ internal object UserRoutes {
 
 				post("/api/user/totp/register") {
 					val authenticatedUser = call.attributes[authenticatedUserKey]
+
+					val private = UserService.getPrivateById(authenticatedUser.id.toString())
+
+					if (private?.totpSecret != null)
+						throw ApiException(HttpStatusCode.Conflict, "Already setup")
+
 					call.respond(RegisterTotpResponse(
 						AuthService.registerTotp(authenticatedUser.id.toString())
 					))

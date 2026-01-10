@@ -64,8 +64,10 @@ internal object LoginRoutes {
 			post("/api/login/requirements") {
 				val body = call.receive<LoginRequirementsRequest>()
 
-				val private = UserService.getPrivate(UserTable.host eq null and
-					(UserTable.username eq body.username))
+				val user = UserService.getByUsername(body.username)
+					?: throw ApiException(HttpStatusCode.NotFound, "User not found")
+
+				val private = UserService.getPrivateById(user.id.toString())
 					?: throw ApiException(HttpStatusCode.NotFound, "User not found")
 
 				call.respond(LoginRequirementsResponse(

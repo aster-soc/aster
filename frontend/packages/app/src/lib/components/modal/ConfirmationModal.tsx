@@ -15,15 +15,15 @@ function ConfirmationModal({title, body = "Are you sure you want to do this?", a
 			title={title}
 			show={show}
 			setShow={setShow}
+			actions={<>
+				<Button primary onClick={() => {
+					setShow(false); action()
+				}}>Continue</Button>
+				<Button onClick={() => setShow(false)}>Cancel</Button>
+			</>}
 		>
 			<Container gap={"md"}>
 				<p>{body}</p>
-				<Container gap={"md"} align={"horizontal"}>
-					<Button primary onClick={() => {
-						setShow(false); action()
-					}}>Continue</Button>
-					<Button onClick={() => setShow(false)}>Cancel</Button>
-				</Container>
 			</Container>
 		</Modal>
 	)

@@ -18,6 +18,7 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as FollowRequestsRouteImport } from './routes/follow-requests'
 import { Route as DriveRouteImport } from './routes/drive'
+import { Route as ComposeRouteImport } from './routes/compose'
 import { Route as BookmarksRouteImport } from './routes/bookmarks'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as SplatRouteImport } from './routes/$'
@@ -71,6 +72,11 @@ const DriveRoute = DriveRouteImport.update({
   path: '/drive',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ComposeRoute = ComposeRouteImport.update({
+  id: '/compose',
+  path: '/compose',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const BookmarksRoute = BookmarksRouteImport.update({
   id: '/bookmarks',
   path: '/bookmarks',
@@ -112,6 +118,7 @@ export interface FileRoutesByFullPath {
   '/$': typeof SplatRoute
   '/about': typeof AboutRoute
   '/bookmarks': typeof BookmarksRoute
+  '/compose': typeof ComposeRoute
   '/drive': typeof DriveRoute
   '/follow-requests': typeof FollowRequestsRoute
   '/forgot-password': typeof ForgotPasswordRoute
@@ -130,6 +137,7 @@ export interface FileRoutesByTo {
   '/$': typeof SplatRoute
   '/about': typeof AboutRoute
   '/bookmarks': typeof BookmarksRoute
+  '/compose': typeof ComposeRoute
   '/drive': typeof DriveRoute
   '/follow-requests': typeof FollowRequestsRoute
   '/forgot-password': typeof ForgotPasswordRoute
@@ -149,6 +157,7 @@ export interface FileRoutesById {
   '/$': typeof SplatRoute
   '/about': typeof AboutRoute
   '/bookmarks': typeof BookmarksRoute
+  '/compose': typeof ComposeRoute
   '/drive': typeof DriveRoute
   '/follow-requests': typeof FollowRequestsRoute
   '/forgot-password': typeof ForgotPasswordRoute
@@ -169,6 +178,7 @@ export interface FileRouteTypes {
     | '/$'
     | '/about'
     | '/bookmarks'
+    | '/compose'
     | '/drive'
     | '/follow-requests'
     | '/forgot-password'
@@ -187,6 +197,7 @@ export interface FileRouteTypes {
     | '/$'
     | '/about'
     | '/bookmarks'
+    | '/compose'
     | '/drive'
     | '/follow-requests'
     | '/forgot-password'
@@ -205,6 +216,7 @@ export interface FileRouteTypes {
     | '/$'
     | '/about'
     | '/bookmarks'
+    | '/compose'
     | '/drive'
     | '/follow-requests'
     | '/forgot-password'
@@ -224,6 +236,7 @@ export interface RootRouteChildren {
   SplatRoute: typeof SplatRoute
   AboutRoute: typeof AboutRoute
   BookmarksRoute: typeof BookmarksRoute
+  ComposeRoute: typeof ComposeRoute
   DriveRoute: typeof DriveRoute
   FollowRequestsRoute: typeof FollowRequestsRoute
   ForgotPasswordRoute: typeof ForgotPasswordRoute
@@ -303,6 +316,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DriveRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/compose': {
+      id: '/compose'
+      path: '/compose'
+      fullPath: '/compose'
+      preLoaderRoute: typeof ComposeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/bookmarks': {
       id: '/bookmarks'
       path: '/bookmarks'
@@ -360,6 +380,7 @@ const rootRouteChildren: RootRouteChildren = {
   SplatRoute: SplatRoute,
   AboutRoute: AboutRoute,
   BookmarksRoute: BookmarksRoute,
+  ComposeRoute: ComposeRoute,
   DriveRoute: DriveRoute,
   FollowRequestsRoute: FollowRequestsRoute,
   ForgotPasswordRoute: ForgotPasswordRoute,
