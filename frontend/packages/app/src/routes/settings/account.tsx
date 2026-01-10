@@ -1,10 +1,10 @@
 import {createFileRoute, useNavigate} from '@tanstack/react-router'
 import PageHeader from "../../lib/components/PageHeader.tsx";
 import {
-	IconAuth2fa,
-	IconDeviceDesktop, IconKey,
-	IconLockPassword,
-	IconLogout, IconPassword,
+	IconDeviceDesktop,
+	IconKey, IconLock, IconLockOff,
+	IconLogout,
+	IconPassword,
 	IconSettings,
 	IconShield,
 	IconUser
@@ -22,6 +22,9 @@ import Input from "../../lib/components/Input.tsx";
 import TextArea from "../../lib/components/TextArea.tsx";
 import Button from "../../lib/components/Button.tsx";
 import {Api} from 'aster-common'
+import Modal from "../../lib/components/modal/Modal.tsx";
+import ConfirmationModal from "../../lib/components/modal/ConfirmationModal.tsx";
+import alert, {Alert, AlertType} from "../../lib/utils/alert.ts";
 
 export const Route = createFileRoute('/settings/account')({
     component: RouteComponent,
@@ -32,48 +35,54 @@ function RouteComponent() {
 
     const [tab, setTab] = useState(0)
 
+	function navigateTab(tab: number) {
+		setTab(tab)
+	}
+
     let self = localstore.getSelf()
 
     if (!self) navigate({to: "/"})
 
-    const {data, error, isPending, isFetching, refetch} = useQuery({
-        queryKey: [`user_${localstore.getSelf()?.id}`],
-        queryFn: () => Api.getUser(self.id),
-    });
+	const {data, error, isPending, isFetching, refetch} = useQuery({
+		queryKey: [`user_${localstore.getSelf()?.id}`],
+		queryFn: () => Api.getUser(self.id),
+	});
 
-    const form = useForm({
-        defaultValues: {
-            displayName: data?.displayName,
-            bio: data?.bio,
-            location: data?.location,
-            birthday: data?.birthday,
+	const form = useForm({
+		defaultValues: {
+			displayName: data?.displayName,
+			bio: data?.bio,
+			location: data?.location,
+			birthday: data?.birthday,
 
-            avatar: data?.avatar,
-            avatarAlt: data?.avatarAlt,
-            banner: data?.banner,
-            bannerAlt: data?.bannerAlt,
+			avatar: data?.avatar,
+			avatarAlt: data?.avatarAlt,
+			banner: data?.banner,
+			bannerAlt: data?.bannerAlt,
 
-            locked: data?.locked,
-            suspended: data?.suspended,
-            activated: data?.activated,
-            automated: data?.automated,
-            discoverable: data?.discoverable,
-            indexable: data?.indexable,
-            sensitive: data?.sensitive,
+			locked: data?.locked,
+			suspended: data?.suspended,
+			activated: data?.activated,
+			automated: data?.automated,
+			discoverable: data?.discoverable,
+			indexable: data?.indexable,
+			sensitive: data?.sensitive,
 
-            isCat: data?.isCat,
-            speakAsCat: data?.speakAsCat
-        },
-        onSubmit: async (values) => {
-            console.log(values)
-            Api.editUser(self.id, values.value).then((result) => {
-                if (result) {
-                    self = result
-                    localstore.set("self", JSON.stringify(self))
-                }
-            })
-        }
-    })
+			isCat: data?.isCat,
+			speakAsCat: data?.speakAsCat
+		},
+		onSubmit: async (values) => {
+			console.log(values)
+			Api.editUser(self.id, values.value).then((result) => {
+				if (result) {
+					self = result
+					localstore.set("self", JSON.stringify(self))
+				}
+			})
+		}
+	})
+
+	const [showLogoutModel, setShowLogoutModel] = useState(false);
 
     function renderTab() {
         switch (tab) {
@@ -263,24 +272,81 @@ function RouteComponent() {
                     </>
                 )
 			case 1:
+				const loginRequirement = useQuery({
+					queryKey: [`user_loginreq_${localstore.getSelf()?.id}`],
+					queryFn: () => Api.getLoginRequirements(self.username),
+				});
+
+				const [show2faModal, setShow2faModal] = useState(false);
+				const [secret, setSecret] = useState("");
+
+				function start2faRegistration() {
+					setShow2faModal(true);
+					Api.userRegisterTotp().then((e) => {
+						setSecret(e?.secret);
+					})
+				}
+
+				function unregister2fa() {
+					Api.userUnregisterTotp()
+					alert.add(new Alert("", AlertType.Success, "Unregistered 2FA"))
+				}
+
 				return (
 					<>
 						<Container gap={"md"} align={"startHorizontal"} fill>
 							<Container gap={"md"} align={"left"}>
-								<Button>
-									<IconPassword size={18} />
-									Enable 2FA
-								</Button>
+								{loginRequirement.data?.totp ? (
+										<>
+											{/*
+											<Button onClick={}>
+												<IconPassword size={18} />
+												Test 2FA
+											</Button>
+											*/}
+											<Button danger onClick={unregister2fa}>
+												<IconLockOff size={18} />
+												Disable 2FA
+											</Button>
+										</>
+								) : (
+									<Button onClick={start2faRegistration}>
+										<IconLock size={18} />
+										Enable 2FA
+									</Button>
+								)}
 							</Container>
+							{/*
 							<Container gap={"md"} align={"right"}>
 								<Button>
-									<div>
-										<IconKey size={18} />
-									</div>
+									<IconKey size={18} />
 									Setup passkey
 								</Button>
 							</Container>
+							*/}
 						</Container>
+
+						<Modal
+							title={"Enable 2FA"}
+							show={show2faModal}
+							setShow={setShow2faModal}
+							actions={<>
+								<Button onClick={() => setShow2faModal(false)}>
+									Continue
+								</Button>
+							</>}
+						>
+							<Container gap={"lg"} align={"left"}>
+								<p>In your 2FA app, enter the following secret:</p>
+								<p>
+									<code>{secret}</code>
+								</p>
+								<p>
+									Afterwards, you can confirm the codes generated work by clicking "Test 2FA," or you
+									can choose to disable it by pressing "Disable 2FA."
+								</p>
+							</Container>
+						</Modal>
 					</>
 				)
         }
@@ -307,21 +373,21 @@ function RouteComponent() {
                 <Container align={"horizontal"} padding={"0 12px"} border={"bottom"}>
 					<Tab
 						selected={tab === 0}
-						onClick={() => setTab(0)}
+						onClick={() => navigateTab(0)}
 					>
 						<IconSettings size={18}/>
 						General
 					</Tab>
 					<Tab
 						selected={tab === 1}
-						onClick={() => setTab(1)}
+						onClick={() => navigateTab(1)}
 					>
 						<IconShield size={18}/>
 						Security
 					</Tab>
 
                     <Container align={"right"}>
-						<Button danger to={"/logout"}>
+						<Button danger onClick={() => setShowLogoutModel(true)}>
 							<IconLogout size={18}/>
 							Logout
 						</Button>
@@ -330,6 +396,14 @@ function RouteComponent() {
                 <Container gap={"md"} padding={"12px"}>
                     {renderTab()}
                 </Container>
+
+				<ConfirmationModal
+					title={"Logout"}
+					body={"Are you sure you'd like to logout?"}
+					action={() => navigate({to:"/logout"})}
+					show={showLogoutModel}
+					setShow={setShowLogoutModel}
+				/>
             </PageWrapper>
         </>
     )

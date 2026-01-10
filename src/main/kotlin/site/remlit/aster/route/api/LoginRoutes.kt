@@ -5,11 +5,15 @@ import io.ktor.http.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import kotlinx.html.A
 import kotlinx.serialization.Serializable
 import org.jetbrains.exposed.v1.core.and
 import org.jetbrains.exposed.v1.core.eq
 import site.remlit.aster.common.model.User
+import site.remlit.aster.common.model.request.LoginRequest
+import site.remlit.aster.common.model.request.LoginRequirementsRequest
 import site.remlit.aster.common.model.response.AuthResponse
+import site.remlit.aster.common.model.response.LoginRequirementsResponse
 import site.remlit.aster.db.table.UserTable
 import site.remlit.aster.model.ApiException
 import site.remlit.aster.registry.RouteRegistry
@@ -18,16 +22,11 @@ import site.remlit.aster.service.UserService
 import site.remlit.aster.util.model.fromEntity
 
 internal object LoginRoutes {
-	@Serializable
-	data class LoginBody(
-		val username: String,
-		val password: String
-	)
 
 	fun register() =
 		RouteRegistry.registerRoute {
 			post("/api/login") {
-				val body = call.receive<LoginBody>()
+				val body = call.receive<LoginRequest>()
 
 				if (body.username.isBlank())
 					throw ApiException(HttpStatusCode.BadRequest, "Username required")
@@ -43,7 +42,7 @@ internal object LoginRoutes {
 				)
 
 				val userPrivate = UserService.getPrivateById(user.id)
-					?: throw ApiException(HttpStatusCode.BadRequest, "User's private table not found")
+					?: throw ApiException(HttpStatusCode.BadRequest, "User not found")
 
 				val passwordValid =
 					BCrypt.verifyer().verify(body.password.toCharArray(), userPrivate.password.toCharArray())
@@ -51,9 +50,29 @@ internal object LoginRoutes {
 				if (!passwordValid.verified)
 					throw ApiException(HttpStatusCode.BadRequest, "Incorrect password")
 
+				if (userPrivate.totpSecret != null && body.totp == null)
+					throw ApiException(HttpStatusCode.BadRequest, "One time password required")
+
+				if (userPrivate.totpSecret != null && !AuthService.confirmTotp(user.id, body.totp!!))
+					throw ApiException(HttpStatusCode.BadRequest, "One time password incorrect")
+
 				val token = AuthService.registerToken(user.id)
 
 				call.respond(AuthResponse(token, user))
+			}
+
+			post("/api/login/requirements") {
+				val body = call.receive<LoginRequirementsRequest>()
+
+				val user = UserService.getByUsername(body.username)
+					?: throw ApiException(HttpStatusCode.NotFound, "User not found")
+
+				val private = UserService.getPrivateById(user.id.toString())
+					?: throw ApiException(HttpStatusCode.NotFound, "User not found")
+
+				call.respond(LoginRequirementsResponse(
+					totp = private.totpSecret != null,
+				))
 			}
 		}
 }
