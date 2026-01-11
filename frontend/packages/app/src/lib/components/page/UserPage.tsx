@@ -1,7 +1,7 @@
 import "./UserPage.scss";
 import PageHeader from "../PageHeader.tsx";
 import PageWrapper from "../PageWrapper.tsx";
-import {IconCake, IconDots, IconUser} from "@tabler/icons-react";
+import {IconCake, IconDots, IconLocation, IconMapPin, IconPin, IconUser} from "@tabler/icons-react";
 import {useQuery} from "@tanstack/react-query";
 import Loading from "../Loading.tsx";
 import Error from "../Error.tsx";
@@ -48,7 +48,9 @@ function UserPage(
                             </Container>
 
                             <FollowButton id={data?.id}/>
-                            <Button><IconDots size={18}/></Button>
+                            <Button>
+								<IconDots size={18}/>
+							</Button>
                         </Container>
                     </div>
                     <div className={"underHeader"}>
@@ -61,21 +63,32 @@ function UserPage(
                                 )}
                             </span>
 
+							{data?.location != null ? (
+								<Container align={"horizontal"} gap={"md"}>
+									<IconMapPin size={18}/>
+									<span className={"birthday"}>{data.location}</span>
+								</Container>
+							) : null}
+
                             {data?.birthday != null ? (
                                 <Container align={"horizontal"} gap={"md"}>
                                     <IconCake size={18}/>
-                                    <span className={"birthday"}>Birthday!</span>
+                                    <span className={"birthday"}>
+										{new Date(data?.birthday).toLocaleString(
+											[],
+											{ dateStyle: "long" }
+										)}
+									</span>
                                 </Container>
                             ) : null}
 
                             {data?.createdAt != null ? (
-                                <span className={"createdAt"}>Joined on {new Date(
-                                    data.createdAt
-                                ).toLocaleString(undefined, {
-                                    month: 'long',
-                                    day: 'numeric',
-                                    year: 'numeric'
-                                })}</span>
+                                <span className={"createdAt"}>Joined on {
+									new Date(data.createdAt).toLocaleString(
+										[],
+										{ dateStyle: "long", timeStyle: "short" }
+									)
+								}</span>
                             ) : null}
                         </Container>
                     </div>
