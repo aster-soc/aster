@@ -222,6 +222,21 @@ object RelationshipService : Service {
 
 		return relationship != null && relationship.type == RelationshipType.Mute
 	}
+
+	/**
+	 * Determine if there is a following relationship in one direction
+	 *
+	 * @param to Relationship target
+	 * @param from Relationship owner
+	 *
+	 * @return If `from` is following `to`
+	 * */
+	@JvmStatic
+	fun followExists(to: String, from: String): Boolean {
+		val relationship = this.get(RelationshipTable.to eq to and (RelationshipTable.from eq from))
+
+		return relationship != null && relationship.type == RelationshipType.Follow
+	}
 	//</editor-fold>
 
 	//<editor-fold desc="Creation">

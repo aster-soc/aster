@@ -3,6 +3,7 @@ package site.remlit.aster.route.api
 import io.ktor.http.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import io.ktor.server.util.getOrFail
 import org.jetbrains.exposed.v1.core.and
 import org.jetbrains.exposed.v1.core.eq
 import org.jetbrains.exposed.v1.core.inList
@@ -25,6 +26,25 @@ import site.remlit.aster.util.sql.arrayContains
 internal object TimelineRoutes {
 	fun register() =
 		RouteRegistry.registerRoute {
+			get("/api/user/{id}/timeline") {
+				val authenticatedUser = call.attributes[authenticatedUserKey]
+				val id = call.parameters.getOrFail("id")
+
+				val since = TimelineService.normalizeSince(call.parameters["since"])
+				val take = TimelineService.normalizeTake(call.parameters["take"]?.toIntOrNull())
+
+				val notes = NoteService.getMany(
+					where = NoteTable.user eq authenticatedUser.id and
+						(NoteTable.createdAt less since),
+					take = take
+				)
+
+				if (notes.isEmpty())
+					return@get call.respond(HttpStatusCode.NoContent)
+
+				call.respond(notes)
+			}
+
 			authentication(
 				required = true,
 			) {

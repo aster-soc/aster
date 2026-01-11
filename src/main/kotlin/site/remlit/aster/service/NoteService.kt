@@ -246,7 +246,7 @@ object NoteService : Service {
 
 		transaction {
 			NoteEntity.new(id) {
-				apId = ApIdService.renderNoteApId(id)
+				this.apId = ApIdService.renderNoteApId(id)
 				this.user = user
 				this.cw = if (cw != null) SanitizerService.sanitize(cw, true) else null
 				this.content = SanitizerService.sanitize(content, true)
@@ -262,8 +262,10 @@ object NoteService : Service {
 							replyingTo.user.id,
 							replyingTo.to,
 							user.id.toString()
-						)
-					) throw IllegalArgumentException("Replying to target not found")
+						)) throw IllegalArgumentException("Replying to target not found")
+
+					if (replyingTo.visibility > this.visibility)
+						throw IllegalArgumentException("Cannot reply to this note with a more public visibility")
 
 					this.replyingTo = NoteEntity[replyingTo.id]
 				}

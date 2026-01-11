@@ -1,7 +1,8 @@
 .userPage {
+	--th: 12px;
+	--nth: calc(var(--th) * -1);
+
 	.userHeader {
-		--th: 12px;
-		--nth: calc(var(--th) * -1);
 
 		--w: calc(100% + (var(--th) * 2));
 
@@ -46,5 +47,12 @@
 				font-style: italic;
 			}
 		}
+	}
+
+	.underHeaderTabs {
+		padding: 0 12px;
+		margin: 0 var(--nth) 0 var(--nth);
+		border-top: 1px solid var(--bg-3);
+		border-bottom: 1px solid var(--bg-3);
 	}
 }

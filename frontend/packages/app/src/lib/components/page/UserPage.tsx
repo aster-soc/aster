@@ -1,7 +1,16 @@
 import "./UserPage.scss";
 import PageHeader from "../PageHeader.tsx";
 import PageWrapper from "../PageWrapper.tsx";
-import {IconCake, IconDots, IconLocation, IconMapPin, IconPin, IconUser} from "@tabler/icons-react";
+import {
+	IconArrowBackUp,
+	IconCake,
+	IconDots,
+	IconLocation,
+	IconMapPin,
+	IconNote, IconPhoto,
+	IconPin,
+	IconUser
+} from "@tabler/icons-react";
 import {useQuery} from "@tanstack/react-query";
 import Loading from "../Loading.tsx";
 import Error from "../Error.tsx";
@@ -13,11 +22,14 @@ import Mfm from "../Mfm.tsx";
 import * as Common from 'aster-common'
 import {Api} from 'aster-common'
 import FollowButton from "../FollowButton.tsx";
+import Tab from "../Tab.tsx";
+import UserPage_Notes from "./UserPage_Notes.tsx";
 
 function UserPage(
     {handle}: { handle: string }
 ) {
-    let [displayName, setDisplayName] = useState(handle);
+	let [displayName, setDisplayName] = useState(handle);
+    let [tab, setTab] = useState(0);
 
     const {isLoading, isError, error, data} = useQuery({
         queryKey: [`user_${handle}`],
@@ -26,6 +38,14 @@ function UserPage(
             return e
         }),
     });
+
+	function renderTab() {
+		switch (tab) {
+			case 0: return <UserPage_Notes />;
+			case 1: return <UserPage_Notes withReplies />;
+			case 2: return <UserPage_Notes media />;
+		}
+	}
 
     function render() {
         return (
@@ -93,6 +113,32 @@ function UserPage(
                         </Container>
                     </div>
                 </Container>
+				<div className={"underHeaderTabs"}>
+					<Container gap={"xl"} align={"horizontal"}>
+						<Tab
+							selected={tab === 0}
+							onClick={() => setTab(0)}
+						>
+							<IconNote size={18} />
+							Notes
+						</Tab>
+						<Tab
+							selected={tab === 1}
+							onClick={() => setTab(1)}
+						>
+							<IconArrowBackUp size={18} />
+							Notes with Replies
+						</Tab>
+						<Tab
+							selected={tab === 2}
+							onClick={() => setTab(2)}
+						>
+							<IconPhoto size={18} />
+							Media
+						</Tab>
+					</Container>
+				</div>
+				{renderTab()}
             </>
         )
     }

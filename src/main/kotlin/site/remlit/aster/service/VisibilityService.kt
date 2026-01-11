@@ -19,7 +19,7 @@ object VisibilityService : Service {
 	 * @param to List of user ids, other users who can see this entity
 	 *           (for direct visibility). Not applicable to all entities.
 	 * @param user User who is trying to view the entity
-	 * @param ignoreBlock Whether to take block relationships into account
+	 * @param ignoreRelationship Whether to take relationships into account
 	 *
 	 * @return If the user can see the entity
 	 * */
@@ -29,7 +29,7 @@ object VisibilityService : Service {
 		author: String,
 		to: List<String>? = null,
 		user: String,
-		ignoreBlock: Boolean = false
+		ignoreRelationship: Boolean = false
 	): Boolean {
 		val author = User.fromEntity(
 			UserService.getById(author)
@@ -40,22 +40,27 @@ object VisibilityService : Service {
 				?: throw IllegalArgumentException("User not found")
 		)
 
-		var ignoreBlock = ignoreBlock
+		var ignoreRelationship = ignoreRelationship
 
-		// if neither are local, we don't have to take blocks into account
+		// if neither are local, we don't have to take blocks or follows into account
 		if (!author.isLocal() && !user.isLocal())
-			ignoreBlock = true
+			ignoreRelationship = true
 
-		if (!ignoreBlock && RelationshipService.eitherBlocking(user.id, author.id))
+		if (!ignoreRelationship && RelationshipService.eitherBlocking(user.id, author.id))
 			return false
 
 		if (to != null && to.contains(user.id))
 			return true
 
+		if (!ignoreRelationship &&
+			visibility == Visibility.Followers &&
+			!RelationshipService.followExists(user.id, author.id)
+			) return false
+
 		return when (visibility) {
 			Visibility.Public -> true
 			Visibility.Unlisted -> true
-			Visibility.Followers -> false
+			Visibility.Followers -> true
 			Visibility.Direct -> false
 		}
 	}

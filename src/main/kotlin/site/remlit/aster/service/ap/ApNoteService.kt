@@ -32,6 +32,7 @@ import site.remlit.aster.service.InstanceService
 import site.remlit.aster.service.NoteService
 import site.remlit.aster.service.ResolverService
 import site.remlit.aster.service.UserService
+import site.remlit.aster.service.VisibilityService
 import site.remlit.aster.util.detached
 import site.remlit.aster.util.jsonConfig
 import site.remlit.aster.util.model.fromEntity
@@ -103,11 +104,35 @@ object ApNoteService : Service {
 
 		val author = ApActorService.resolve(attributedTo) ?: return null
 
-		// todo: maximum depth, otherwise this gets messy fast
+		val to = jsonConfig.decodeFromJsonElement<List<String>>(json["to"] ?: return null)
+		val cc = jsonConfig.decodeFromJsonElement<List<String>>(json["cc"] ?: return null)
+
+		val determinedVisibility = ApVisibilityService.determineVisibility(
+			to,
+			cc,
+			author.followersUrl,
+			extractString { json["visibility"] }
+		)
+
 		val inReplyTo = extractString { json["inReplyTo"] }
-		val replyingTo = if (inReplyTo.isNullOrBlank())
-			null
-		else orNull { resolve(inReplyTo, depth = depth + 1) }
+		val replyingTo = if (!inReplyTo.isNullOrBlank())
+			orNull {
+				val resolved = resolve(inReplyTo, depth = depth + 1)
+					?: return@orNull null
+
+				if (!VisibilityService.canISee(
+						resolved.visibility,
+						resolved.user.id,
+						resolved.to,
+						author.id.toString()
+					)) return@orNull null
+
+				if (resolved.visibility > determinedVisibility)
+					return@orNull null
+
+				return@orNull resolved
+			}
+		else null
 
 		val summary = extractString { json["summary"] }
 		val misskeySummary = extractString { json["_misskey_summary"] }
@@ -146,17 +171,6 @@ object ApNoteService : Service {
 		val published = if (extractedPublished != null)
 			orNull { Instant.parse(extractedPublished) } ?: Clock.System.now()
 		else Clock.System.now()
-
-		val to = jsonConfig.decodeFromJsonElement<List<String>>(json["to"] ?: return null)
-		val cc = jsonConfig.decodeFromJsonElement<List<String>>(json["cc"] ?: return null)
-
-		val determinedVisibility =
-			ApVisibilityService.determineVisibility(
-				to,
-				cc,
-				author.followersUrl,
-				extractString { json["visibility"] }
-			)
 
 		val finalSummary = misskeySummary ?: summary
 		val finalContent = misskeyContent ?: content
@@ -222,8 +236,9 @@ object ApNoteService : Service {
 					it.content = note.content.orEmpty()
 					it.visibility = note.visibility ?: Visibility.Direct
 
-					it.replyingTo =
-						if (note.replyingTo != null) transaction { NoteEntity[note.replyingTo!!.id] } else null
+					it.replyingTo = if (note.replyingTo != null)
+						transaction { NoteEntity[note.replyingTo!!.id] }
+					else null
 					it.attachments = note.attachments?.map { a -> a.id } ?: emptyList()
 
 					// todo: to
@@ -267,8 +282,9 @@ object ApNoteService : Service {
 					this.content = note.content.orEmpty()
 					this.visibility = note.visibility ?: Visibility.Direct
 
-					this.replyingTo =
-						if (note.replyingTo != null) transaction { NoteEntity[note.replyingTo!!.id] } else null
+					this.replyingTo = if (note.replyingTo != null)
+						transaction { NoteEntity[note.replyingTo!!.id] }
+					else null
 					this.attachments = note.attachments?.map { a -> a.id } ?: emptyList()
 
 					// todo: to
