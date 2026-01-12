@@ -4,6 +4,7 @@ import org.jetbrains.exposed.v1.core.eq
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 import site.remlit.aster.common.model.Note
 import site.remlit.aster.common.model.NoteAttachment
+import site.remlit.aster.common.model.NoteWithReplies
 import site.remlit.aster.common.model.SmallNote
 import site.remlit.aster.common.model.SmallUser
 import site.remlit.aster.common.model.User
@@ -13,6 +14,7 @@ import site.remlit.aster.db.entity.NoteLikeEntity
 import site.remlit.aster.db.table.NoteLikeTable
 import site.remlit.aster.db.table.NoteTable
 import site.remlit.aster.service.NoteService
+import site.remlit.aster.service.VisibilityService
 
 
 fun Note.Companion.fromEntity(entity: NoteEntity, depth: Int = 0): Note {
@@ -71,3 +73,29 @@ fun Note.Companion.findAttachments(ids: List<String>): List<NoteAttachment> =
 
 fun Note.Companion.fromEntities(entities: List<NoteEntity>): List<Note> =
 	entities.map { fromEntity(it) }
+
+fun Note.Companion.findReplies(id: String, user: String? = null, depth: Int = 0): List<NoteWithReplies> {
+	if (depth >= 5) return emptyList()
+	val list = mutableListOf<NoteWithReplies>()
+
+	NoteService.getMany(
+		NoteService.replyingToAlias[NoteTable.id] eq id
+	).forEach {
+		if (!VisibilityService.canISee(
+			it.visibility,
+			it.user.id,
+			it.to,
+			user
+		)) return@forEach
+
+		list.add(
+			NoteWithReplies(
+				note = it,
+				replies = findReplies(it.id, user, depth + 1)
+			)
+		)
+	}
+
+	return list
+}
+

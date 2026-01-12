@@ -28,9 +28,19 @@ object VisibilityService : Service {
 		visibility: Visibility,
 		author: String,
 		to: List<String>? = null,
-		user: String,
+		user: String? = null,
 		ignoreRelationship: Boolean = false
 	): Boolean {
+		if (author == user)
+			return true
+
+		if (
+			user == null &&
+			(visibility == Visibility.Unlisted || visibility == Visibility.Public)
+		) return true
+		
+		if (user == null) return false
+
 		val author = User.fromEntity(
 			UserService.getById(author)
 				?: throw IllegalArgumentException("Author not found")

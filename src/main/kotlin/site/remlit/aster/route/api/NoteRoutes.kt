@@ -5,6 +5,7 @@ import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.server.util.*
+import site.remlit.aster.common.model.Note
 import site.remlit.aster.common.model.User
 import site.remlit.aster.common.model.Visibility
 import site.remlit.aster.common.model.request.CreateNoteRequest
@@ -22,6 +23,7 @@ import site.remlit.aster.service.RoleService
 import site.remlit.aster.service.VisibilityService
 import site.remlit.aster.util.authenticatedUserKey
 import site.remlit.aster.util.authentication
+import site.remlit.aster.util.model.findReplies
 import site.remlit.aster.util.model.fromEntity
 
 internal object NoteRoutes {
@@ -29,23 +31,46 @@ internal object NoteRoutes {
 		RouteRegistry.registerRoute {
 			authentication {
 				get("/api/note/{id}") {
+					val authenticatedUser = call.attributes.getOrNull(authenticatedUserKey)
 					val note = NoteService.getById(call.parameters.getOrFail("id"))
+						?: throw ApiException(HttpStatusCode.NotFound, "Note not found")
 
-					if (
-						note == null ||
-						!note.user.activated ||
-						note.user.suspended ||
-						(note.visibility != Visibility.Public &&
-								note.visibility != Visibility.Unlisted) ||
-						(Configuration.hideRemoteContent && !note.user.isLocal() && call.attributes.getOrNull(
-							authenticatedUserKey
-						) == null)
-					) throw ApiException(HttpStatusCode.NotFound, "Note not found.")
+					if (!note.user.activated || note.user.suspended)
+						throw ApiException(HttpStatusCode.NotFound, "Note not found")
+
+					if (!VisibilityService.canISee(
+							note.visibility,
+							note.user.id,
+							note.to,
+							authenticatedUser?.id.toString()
+						)) throw ApiException(HttpStatusCode.NotFound, "Note not found")
+
+					if (Configuration.hideRemoteContent && !note.user.isLocal() &&
+						authenticatedUser == null) throw ApiException(HttpStatusCode.NotFound, "Note not found.")
 
 					call.respond(note)
 				}
 
 				get("/api/note/{id}/replies") {
+					val authenticatedUser = call.attributes.getOrNull(authenticatedUserKey)
+					val note = NoteService.getById(call.parameters.getOrFail("id"))
+						?: throw ApiException(HttpStatusCode.NotFound, "Note not found")
+
+					if (!note.user.activated || note.user.suspended)
+						throw ApiException(HttpStatusCode.NotFound, "Note not found")
+
+					if (!VisibilityService.canISee(
+							note.visibility,
+							note.user.id,
+							note.to,
+							authenticatedUser?.id.toString()
+						)) throw ApiException(HttpStatusCode.NotFound, "Note not found")
+
+					if (Configuration.hideRemoteContent && !note.user.isLocal() &&
+						authenticatedUser == null) throw ApiException(HttpStatusCode.NotFound, "Note not found.")
+
+					call.respond(Note.findReplies(note.id, authenticatedUser?.id.toString()))
+
 					throw ApiException(HttpStatusCode.NotImplemented)
 				}
 			}

@@ -13,6 +13,7 @@ import site.remlit.aster.common.model.Visibility
 import site.remlit.aster.db.table.NoteBookmarkTable
 import site.remlit.aster.db.table.NoteTable
 import site.remlit.aster.db.table.UserTable
+import site.remlit.aster.model.ApiException
 import site.remlit.aster.model.Configuration
 import site.remlit.aster.registry.RouteRegistry
 import site.remlit.aster.service.BookmarkService
@@ -27,6 +28,9 @@ internal object TimelineRoutes {
 	fun register() =
 		RouteRegistry.registerRoute {
 			get("/api/user/{id}/timeline") {
+				throw ApiException(HttpStatusCode.NotImplemented)
+
+				/*
 				val authenticatedUser = call.attributes[authenticatedUserKey]
 				val id = call.parameters.getOrFail("id")
 
@@ -43,6 +47,7 @@ internal object TimelineRoutes {
 					return@get call.respond(HttpStatusCode.NoContent)
 
 				call.respond(notes)
+				* */
 			}
 
 			authentication(
