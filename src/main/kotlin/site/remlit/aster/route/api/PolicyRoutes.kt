@@ -41,10 +41,8 @@ internal object PolicyRoutes {
 
 					val policies = PolicyService.getMany(PolicyTable.createdAt less since, take)
 
-					if (policies.isEmpty()) {
-						call.respond(HttpStatusCode.NoContent)
-						return@get
-					}
+					if (policies.isEmpty())
+						return@get call.respond(HttpStatusCode.NoContent)
 
 					call.respond(Policy.fromEntities(policies))
 				}
@@ -52,10 +50,9 @@ internal object PolicyRoutes {
 				post("/api/mod/policy") {
 					val body = call.receive<PolicyBody>()
 
-					if (
-						(body.type == PolicyType.ForceContentWarning) && body.content == null
-					)
-						throw ApiException(HttpStatusCode.BadRequest, "This policy type requires content")
+					if ((body.type == PolicyType.ForceContentWarning) &&
+						body.content == null
+					) throw ApiException(HttpStatusCode.BadRequest, "This policy type requires content")
 
 					val policy = PolicyService.create(body.type, body.host, body.content)
 
@@ -63,8 +60,7 @@ internal object PolicyRoutes {
 				}
 
 				patch("/api/mod/policy/{id}") {
-					val policy =
-						PolicyService.getById(call.parameters.getOrFail("id"))
+					val policy = PolicyService.getById(call.parameters.getOrFail("id"))
 							?: throw ApiException(HttpStatusCode.NotFound)
 
 					throw ApiException(HttpStatusCode.NotImplemented)
@@ -75,9 +71,7 @@ internal object PolicyRoutes {
 						PolicyService.getById(call.parameters.getOrFail("id"))
 							?: throw ApiException(HttpStatusCode.NotFound)
 
-					transaction {
-						policy.delete()
-					}
+					transaction { policy.delete() }
 
 					call.respond(HttpStatusCode.OK)
 				}

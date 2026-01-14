@@ -163,10 +163,8 @@ internal object NoteRoutes {
 						id
 					)
 
-					call.respond(
-						HttpStatusCode.OK,
-						NoteService.getById(id) ?: throw ApiException(HttpStatusCode.NotFound, "Note not found")
-					)
+					call.respond(NoteService.getById(id)
+						?: throw ApiException(HttpStatusCode.NotFound, "Note not found"))
 				}
 
 				post("/api/note/{id}/react") {

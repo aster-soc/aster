@@ -11,7 +11,7 @@ internal object MetaRoutes {
 	fun register() =
 		RouteRegistry.registerRoute {
 			get("/api/meta") {
-				call.respond(HttpStatusCode.OK, Meta.getMeta())
+				call.respond(Meta.getMeta())
 			}
 		}
 }

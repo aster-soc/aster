@@ -43,7 +43,7 @@ object PasswordResetRoutes {
 						authenticatedUser
 					)
 
-					call.respond(HttpStatusCode.OK, PasswordResetCodeResponse(code))
+					call.respond(PasswordResetCodeResponse(code))
 				}
 			}
 

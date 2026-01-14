@@ -31,10 +31,8 @@ internal object NotificationRoutes {
 						take = take
 					)
 
-					if (notifications.isEmpty()) {
-						call.respond(HttpStatusCode.NoContent)
-						return@get
-					}
+					if (notifications.isEmpty())
+						return@get call.respond(HttpStatusCode.NoContent)
 
 					call.respond(notifications)
 				}

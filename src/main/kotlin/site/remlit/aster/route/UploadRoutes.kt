@@ -51,14 +51,13 @@ internal object UploadRoutes {
 						val path =
 							Path("${Configuration.fileStorage.localPath.absolutePathString()}/${authenticatedUser.id}/$name").let {
 								if (it.exists())
-									Path(
-										"${Configuration.fileStorage.localPath.absolutePathString()}" +
-												"/${authenticatedUser.id}/${IdentifierService.generate()}-$name"
-									)
+									Path("${Configuration.fileStorage.localPath.absolutePathString()}" +
+										"/${authenticatedUser.id}/${IdentifierService.generate()}-$name")
 								else it
 							}
 
-						if (!path.exists()) Files.createDirectories(path.parent)
+						if (!path.exists())
+							Files.createDirectories(path.parent)
 
 						logger.debug(
 							"Uploading file ({}, {} v {}) to {}",

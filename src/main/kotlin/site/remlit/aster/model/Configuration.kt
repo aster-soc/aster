@@ -44,7 +44,6 @@ object Configuration : ConfigurationObject {
 	val port: Int get() = config?.propertyOrNull("port")?.getString()?.toInt() ?: 9782
 	val host: String get() = config?.propertyOrNull("host")?.getString() ?: "0.0.0.0"
 
-	val debug: Boolean get() = config?.propertyOrNull("debug")?.getString()?.toBoolean() ?: false
 	val builtinFrontend: Boolean get() = config?.propertyOrNull("builtinFrontend")?.getString()?.toBoolean() ?: true
 
 	val registrations: InstanceRegistrationsType
@@ -68,6 +67,9 @@ object Configuration : ConfigurationObject {
 	val reservedUsernames: List<String>
 		get() =
 			config?.propertyOrNull("reservedUsernames")?.getList().orEmpty()
+
+	val debug: Boolean get() = config?.propertyOrNull("debug")?.getString()?.toBoolean() ?: false
+	val pauseInbox: Boolean get() = config?.propertyOrNull("pauseInbox")?.getString()?.toBoolean() ?: false
 
 	init {
 		thread(name = "Configuration Refresher") {

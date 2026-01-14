@@ -89,9 +89,7 @@ internal object NodeInfoRoutes {
 						)
 					)
 
-				call.respond(
-					nodeInfo,
-				)
+				call.respond(nodeInfo)
 			}
 		}
 }

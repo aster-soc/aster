@@ -24,6 +24,7 @@ import site.remlit.aster.db.table.PolicyTable
 import site.remlit.aster.db.table.RelationshipTable
 import site.remlit.aster.db.table.ReportTable
 import site.remlit.aster.db.table.RoleTable
+import site.remlit.aster.db.table.TakenUsernameTable
 import site.remlit.aster.db.table.UserPrivateTable
 import site.remlit.aster.db.table.UserTable
 import site.remlit.aster.exception.MigrationException
@@ -115,6 +116,7 @@ object MigrationService : Service {
 				PolicyTable,
 				RelationshipTable,
 				RoleTable,
+				TakenUsernameTable,
 				UserTable,
 				UserPrivateTable,
 			)

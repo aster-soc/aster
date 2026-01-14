@@ -36,7 +36,6 @@ object ApActivityRoutes {
 
 		get("/activities/{id}/accept") {
 			val id = call.parameters.getOrFail("id")
-
 			val relationship = RelationshipService.getById(id)
 
 			if (

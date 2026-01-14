@@ -2,6 +2,7 @@ package site.remlit.aster.service
 
 import io.ktor.http.Url
 import io.ktor.http.fullPath
+import io.ktor.server.application.Application
 import org.jetbrains.exposed.v1.core.and
 import org.jetbrains.exposed.v1.core.eq
 import org.jetbrains.exposed.v1.core.neq
@@ -15,6 +16,7 @@ import site.remlit.aster.db.entity.InviteEntity
 import site.remlit.aster.db.entity.UserEntity
 import site.remlit.aster.db.table.DriveFileTable
 import site.remlit.aster.db.table.UserTable
+import site.remlit.aster.main
 import site.remlit.aster.model.Configuration
 import site.remlit.aster.model.PackageInformation
 import site.remlit.aster.model.Service
@@ -40,6 +42,7 @@ object CommandLineService : Service {
 		logger.info("files:generateblurhashes					Generate blur hashes for all media")
 		logger.info("migration:generate			Generate migrations (for developer use)")
 		logger.info("migration:execute			Execute migrations")
+		logger.info("migration:executestart			Execute migrations then start the server")
 		logger.info("role:list				List all roles")
 		logger.info("role:create				Create a role")
 		logger.info("role:give				Give role to user")
@@ -180,6 +183,11 @@ object CommandLineService : Service {
 					return
 				}
 
+				"migration:executestart" -> {
+					MigrationService.execute()
+					return main(emptyArray())
+				}
+
 				"role:list" -> {
 					val roles = RoleService.getAll()
 
@@ -258,7 +266,7 @@ object CommandLineService : Service {
 						}
 					}
 
-					logger.info("Created new invite: $code")
+					logger.info("Created new invite $code")
 				}
 
 				else -> println("Unknown command ${args[0]}. Run with 'help' for commands.")

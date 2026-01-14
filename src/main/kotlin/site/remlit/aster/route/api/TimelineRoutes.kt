@@ -20,6 +20,9 @@ import site.remlit.aster.service.BookmarkService
 import site.remlit.aster.service.NoteService
 import site.remlit.aster.service.RelationshipService
 import site.remlit.aster.service.TimelineService
+import site.remlit.aster.service.UserService
+import site.remlit.aster.service.ValidationService
+import site.remlit.aster.service.VisibilityService
 import site.remlit.aster.util.authenticatedUserKey
 import site.remlit.aster.util.authentication
 import site.remlit.aster.util.sql.arrayContains
@@ -28,26 +31,36 @@ internal object TimelineRoutes {
 	fun register() =
 		RouteRegistry.registerRoute {
 			get("/api/user/{id}/timeline") {
-				throw ApiException(HttpStatusCode.NotImplemented)
-
-				/*
-				val authenticatedUser = call.attributes[authenticatedUserKey]
+				val authenticatedUser = call.attributes.getOrNull(authenticatedUserKey)
 				val id = call.parameters.getOrFail("id")
+
+				val user = UserService.getById(id)
+					?: throw ApiException(HttpStatusCode.NotFound, "User not found")
+
+				if (authenticatedUser != null &&
+					!RelationshipService.eitherBlocking(
+						user.id.toString(),
+						authenticatedUser.id.toString()
+					)) throw ApiException(HttpStatusCode.NotFound, "User not found")
 
 				val since = TimelineService.normalizeSince(call.parameters["since"])
 				val take = TimelineService.normalizeTake(call.parameters["take"]?.toIntOrNull())
 
-				val notes = NoteService.getMany(
-					where = NoteTable.user eq authenticatedUser.id and
-						(NoteTable.createdAt less since),
-					take = take
-				)
+				var where = (NoteTable.user eq user.id and (NoteTable.createdAt less since))
+
+				if (authenticatedUser != null)
+					where = where or ((NoteTable.user eq user.id) and
+						(NoteTable.to arrayContains listOf(authenticatedUser.id.toString())))
+
+				where = where or (NoteTable.user eq user.id) and
+					(NoteTable.visibility inList listOf(Visibility.Public, Visibility.Unlisted))
+
+				val notes = NoteService.getMany(where, take)
 
 				if (notes.isEmpty())
 					return@get call.respond(HttpStatusCode.NoContent)
 
 				call.respond(notes)
-				* */
 			}
 
 			authentication(

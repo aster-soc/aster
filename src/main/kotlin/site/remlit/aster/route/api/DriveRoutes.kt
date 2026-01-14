@@ -33,10 +33,8 @@ internal object DriveRoutes {
 						take = take
 					)
 
-					if (files.isEmpty()) {
-						call.respond(HttpStatusCode.NoContent)
-						return@get
-					}
+					if (files.isEmpty())
+						return@get call.respond(HttpStatusCode.NoContent)
 
 					call.respond(files)
 				}
@@ -49,7 +47,7 @@ internal object DriveRoutes {
 					if (
 						file == null ||
 						file.user.id != authenticatedUser.id.toString()
-					) throw ApiException(HttpStatusCode.NotFound, "File not found")
+						) throw ApiException(HttpStatusCode.NotFound, "File not found")
 
 					call.respond(file)
 				}
@@ -62,7 +60,7 @@ internal object DriveRoutes {
 					if (
 						file == null ||
 						file.user.id != authenticatedUser.id.toString()
-					) throw ApiException(HttpStatusCode.NotFound, "File not found")
+						) throw ApiException(HttpStatusCode.NotFound, "File not found")
 
 					DriveService.deleteById(file.id)
 

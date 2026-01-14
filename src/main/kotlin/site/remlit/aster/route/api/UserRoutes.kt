@@ -50,9 +50,7 @@ internal object UserRoutes {
 					(Configuration.hideRemoteContent && !user.isLocal() && authenticatedUser == null)
 				) throw ApiException(HttpStatusCode.NotFound)
 
-				call.respond(
-					User.fromEntity(user)
-				)
+				call.respond(User.fromEntity(user))
 			}
 
 			authentication(
@@ -68,32 +66,32 @@ internal object UserRoutes {
 					if (user.id != authenticatedUser.id && !RoleService.isModOrAdmin(authenticatedUser.id.toString()))
 						throw ApiException(HttpStatusCode.BadRequest, "You don't have permission to edit this users")
 
-                    val body = call.receive<PartialUser>()
+					val body = call.receive<PartialUser>()
 
-                    val updated = UserService.update(
-                        user,
+					val updated = UserService.update(
+						user,
 
-                        body.displayName,
-                        body.bio,
-                        body.location,
-                        body.birthday,
+						body.displayName,
+						body.bio,
+						body.location,
+						body.birthday,
 
-                        body.avatar,
-                        body.avatarAlt,
-                        body.banner,
-                        body.bannerAlt,
+						body.avatar,
+						body.avatarAlt,
+						body.banner,
+						body.bannerAlt,
 
-                        body.locked == true,
-                        body.automated == true,
-                        body.discoverable == true,
-                        body.indexable == true,
-                        body.sensitive == true,
+						body.locked == true,
+						body.automated == true,
+						body.discoverable == true,
+						body.indexable == true,
+						body.sensitive == true,
 
-                        body.isCat == true,
-                        body.speakAsCat == true,
-                    )
+						body.isCat == true,
+						body.speakAsCat == true,
+					)
 
-                    call.respond(User.fromEntity(updated))
+					call.respond(User.fromEntity(updated))
 				}
 
 				post("/api/user/{id}/bite") {
@@ -121,11 +119,9 @@ internal object UserRoutes {
 					if (user == null || !user.activated || user.suspended)
 						throw ApiException(HttpStatusCode.NotFound)
 
-					call.respond(
-						RelationshipService.mapPair(
-							RelationshipService.follow(user.id.toString(), authenticatedUser.id.toString())
-						)
-					)
+					call.respond(RelationshipService.mapPair(
+						RelationshipService.follow(user.id.toString(), authenticatedUser.id.toString())
+					))
 				}
 
 				post("/api/user/{id}/report") {
@@ -178,7 +174,7 @@ internal object UserRoutes {
 					val freshUser = UserService.getById(user.id.toString())
 						?: throw ApiException(HttpStatusCode.NotFound)
 
-					return@post call.respond(HttpStatusCode.OK, User.fromEntity(freshUser))
+					call.respond(User.fromEntity(freshUser))
 				}
 
 				get("/api/user/{id}/relationship") {
@@ -189,11 +185,9 @@ internal object UserRoutes {
 
 					val requestingUser = call.attributes[authenticatedUserKey]
 
-					call.respond(
-						RelationshipService.mapPair(
-							RelationshipService.getPair(requestingUser.id.toString(), user.id.toString())
-						)
-					)
+					call.respond(RelationshipService.mapPair(
+						RelationshipService.getPair(requestingUser.id.toString(), user.id.toString())
+					))
 				}
 
 				post("/api/user/totp/register") {

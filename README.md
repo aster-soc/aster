@@ -34,6 +34,11 @@ go!
 After setting up a user, you can promote them to an Admin role with the CLI. First, get the ID of the generated Admin
 role by running `java -jar aster.jar role:list`, and then `java -jar aster.jar role:give {User ID} {Role ID}`.
 
+## Configuring
+
+The main configuration is `configuration.yaml`, you can copy `configuration.example.yaml` and modify it. There's also
+some environment variables that are important.
+
 ## Contributing
 
 Code contributions are welcome, but Aster is in early development and I may have plans for how to do things already. You

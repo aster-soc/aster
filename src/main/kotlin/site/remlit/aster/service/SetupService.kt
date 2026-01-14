@@ -12,9 +12,11 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import site.remlit.aster.common.model.type.RoleType
 import site.remlit.aster.db.entity.RoleEntity
+import site.remlit.aster.db.entity.TakenUsernameEntity
 import site.remlit.aster.db.entity.UserEntity
 import site.remlit.aster.db.entity.UserPrivateEntity
 import site.remlit.aster.db.table.RoleTable
+import site.remlit.aster.db.table.TakenUsernameTable
 import site.remlit.aster.db.table.UserTable
 import site.remlit.aster.model.Configuration
 import site.remlit.aster.model.KeyType
@@ -40,6 +42,7 @@ object SetupService : Service {
 	internal fun setup() {
 		setupRoles()
 		setupInstanceActor()
+		setupUsedUsernames()
 
 		val pluginsDir = Path("plugins")
 		if (!pluginsDir.exists()) Files.createDirectories(pluginsDir)
@@ -95,7 +98,7 @@ object SetupService : Service {
 	private fun setupInstanceActor() {
 		val existingActor = UserService.get(
 			UserTable.username eq "instance.actor"
-					and (UserTable.host eq null)
+				and (UserTable.host eq null)
 		)
 
 		if (existingActor != null) {
@@ -129,6 +132,24 @@ object SetupService : Service {
 			}
 
 			logger.info("Instance actor generated")
+		}
+	}
+
+	private fun setupUsedUsernames() {
+		UserService.getMany(UserTable.host eq null).forEach { user ->
+			transaction {
+				val takenUsername = TakenUsernameEntity.find(TakenUsernameTable.username eq user.username)
+					.singleOrNull()
+
+				if (takenUsername == null)
+					return@transaction
+
+				logger.debug("Added taken username ${takenUsername.username}")
+
+				TakenUsernameEntity.new(user.id.toString()) {
+					username = user.username
+				}
+			}
 		}
 	}
 }

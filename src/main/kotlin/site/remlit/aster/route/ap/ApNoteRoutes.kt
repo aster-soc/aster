@@ -28,7 +28,7 @@ internal object ApNoteRoutes {
 					note.user.suspended ||
 					!note.user.host.isNullOrBlank() ||
 					(note.visibility != Visibility.Public &&
-							note.visibility != Visibility.Unlisted)
+						note.visibility != Visibility.Unlisted)
 				)
 					throw ApiException(HttpStatusCode.NotFound)
 
@@ -58,15 +58,14 @@ internal object ApNoteRoutes {
 
 				val note = NoteService.getById(call.parameters.getOrFail("id"))
 
-				if (
-					note == null ||
-					!note.user.activated ||
-					note.user.suspended ||
-					!note.user.host.isNullOrBlank() ||
-					(note.visibility != Visibility.Public &&
-							note.visibility != Visibility.Unlisted)
-				)
+				if (note == null || !note.user.activated || note.user.suspended)
 					throw ApiException(HttpStatusCode.NotFound)
+
+
+				if (!note.user.host.isNullOrBlank() ||
+					(note.visibility != Visibility.Public &&
+						note.visibility != Visibility.Unlisted)
+				) throw ApiException(HttpStatusCode.NotFound)
 
 				// todo: these shouldnt be null
 				val (to, cc) = ApVisibilityService.visibilityToCc(note.visibility, null, null)
