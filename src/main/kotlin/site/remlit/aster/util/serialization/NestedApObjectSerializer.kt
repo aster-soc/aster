@@ -15,7 +15,6 @@ import kotlinx.serialization.json.jsonObject
 import site.remlit.aster.model.ap.ApIdOrObject
 
 object NestedApObjectSerializer : KSerializer<ApIdOrObject> {
-
 	@OptIn(InternalSerializationApi::class)
 	override val descriptor: SerialDescriptor =
 		buildSerialDescriptor("site.remlit.aster.util.serialization.NestedApObjectSerializer", PrimitiveKind.STRING)

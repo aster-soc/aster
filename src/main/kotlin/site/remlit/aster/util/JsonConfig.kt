@@ -33,6 +33,7 @@ fun setJsonConfig() {
 			}
 		}
 
+		// ActivityPub was triggering this by accident, so I disabled this and I made it overly specific.
 		classDiscriminator = "@classDiscriminator"
 		classDiscriminatorMode = ClassDiscriminatorMode.NONE
 	}

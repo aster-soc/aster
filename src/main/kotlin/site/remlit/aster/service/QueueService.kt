@@ -303,14 +303,12 @@ object QueueService : Service {
 	fun insertInboxJob(
 		data: ByteArray,
 		sender: UserEntity?
-	) {
-		transaction {
-			InboxQueueEntity.new(IdentifierService.generate()) {
-				this.status = QueueStatus.PENDING
-				this.content = ExposedBlob(data)
-				this.sender = sender
-				this.retries = 0
-			}
+	) = transaction {
+		InboxQueueEntity.new(IdentifierService.generate()) {
+			this.status = QueueStatus.PENDING
+			this.content = ExposedBlob(data)
+			this.sender = sender
+			this.retries = 0
 		}
 	}
 
@@ -327,15 +325,13 @@ object QueueService : Service {
 		data: ByteArray,
 		sender: UserEntity?,
 		inbox: String
-	) {
-		transaction {
-			DeliverQueueEntity.new(IdentifierService.generate()) {
-				this.status = QueueStatus.PENDING
-				this.content = ExposedBlob(data)
-				this.sender = sender
-				this.inbox = inbox
-				this.retries = 0
-			}
+	) = transaction {
+		DeliverQueueEntity.new(IdentifierService.generate()) {
+			this.status = QueueStatus.PENDING
+			this.content = ExposedBlob(data)
+			this.sender = sender
+			this.inbox = inbox
+			this.retries = 0
 		}
 	}
 

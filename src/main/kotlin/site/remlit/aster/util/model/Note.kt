@@ -15,7 +15,7 @@ import site.remlit.aster.db.table.NoteLikeTable
 import site.remlit.aster.db.table.NoteTable
 import site.remlit.aster.service.NoteService
 import site.remlit.aster.service.VisibilityService
-
+import site.remlit.aster.util.REPLY_DEPTH
 
 fun Note.Companion.fromEntity(entity: NoteEntity, depth: Int = 0): Note {
 	return Note(
@@ -23,19 +23,17 @@ fun Note.Companion.fromEntity(entity: NoteEntity, depth: Int = 0): Note {
 		apId = entity.apId,
 		conversation = entity.conversation,
 		user = User.fromEntity(entity.user),
-		replyingTo = if (entity.replyingTo != null && depth < 1) Note.fromEntity(
-			entity.replyingTo!!,
-			1
-		) else null,
+		replyingTo = if (entity.replyingTo != null && depth < 1)
+			Note.fromEntity(entity.replyingTo!!, 1)
+		else null,
 		cw = entity.cw,
 		content = entity.content,
 		visibility = entity.visibility,
 		to = entity.to,
 		tags = entity.tags,
-		repeat = if (entity.repeat != null && depth < 2) Note.fromEntity(
-			entity.repeat!!,
-			1
-		) else null,
+		repeat = if (entity.repeat != null && depth < 2)
+			Note.fromEntity(entity.repeat!!, 1)
+		else null,
 		createdAt = entity.createdAt.toLocalInstant(),
 		updatedAt = entity.updatedAt?.toLocalInstant(),
 		likes = findLikes(entity.id.toString()),
@@ -74,8 +72,17 @@ fun Note.Companion.findAttachments(ids: List<String>): List<NoteAttachment> =
 fun Note.Companion.fromEntities(entities: List<NoteEntity>): List<Note> =
 	entities.map { fromEntity(it) }
 
+/**
+ * Gets a list of replies to the specified note
+ *
+ * @param id ID of note
+ * @param user User viewing replies
+ * @param depth Depth of fetch, used for recursively getting replies
+ *
+ * @return List of replies
+ * */
 fun Note.Companion.findReplies(id: String, user: String? = null, depth: Int = 0): List<NoteWithReplies> {
-	if (depth >= 5) return emptyList()
+	if (depth >= REPLY_DEPTH) return emptyList()
 	val list = mutableListOf<NoteWithReplies>()
 
 	NoteService.getMany(

@@ -36,60 +36,60 @@ import site.remlit.aster.service.CommandLineService
 import site.remlit.aster.service.IdentifierService
 import site.remlit.aster.service.MigrationService
 import site.remlit.aster.service.SetupService
+import site.remlit.aster.util.addShutdownHook
 import site.remlit.aster.util.jsonConfig
 import site.remlit.aster.util.setJsonConfig
+import site.remlit.effekt.EventRegistry
 import site.remlit.effekt.effect
 
+/**
+ * Entrypoint for Aster
+ * */
 internal fun main(args: Array<String>) {
-	if (Configuration.debug) CommandLineService.printDebug(args)
-
-	if (args.isNotEmpty() && !args[0].startsWith("-")) {
-		runBlocking {
+	if (args.isNotEmpty() && !args[0].startsWith("-"))
+		return runBlocking {
 			CommandLineService.execute(args)
 		}
-		return
-	}
+
+	if (Configuration.debug) CommandLineService.printDebug(args)
 
 	ApplicationBeginStartEvent().call()
 
 	val server = embeddedServer(Netty, Configuration.port, Configuration.host, module = Application::module)
 
-	Runtime.getRuntime().addShutdownHook(Thread {
-		Thread.currentThread().name = "ShutdownMain"
-		runBlocking {
-			server.stop()
-			Database.dataSource.close()
-		}
+	addShutdownHook {
+		server.stop()
+		Database.dataSource.close()
 		ApplicationFinishShutdownEvent().call()
-		return@Thread
-	})
+	}
 
 	server.start(wait = true)
 }
 
 @ApiStatus.Internal
 fun Application.module() {
-	// this hook completes first, always
-	Runtime.getRuntime().addShutdownHook(Thread {
-		Thread.currentThread().name = "ShutdownApplication"
-		this.log.info("Shutting down...")
+	addShutdownHook {
 		ApplicationBeginShutdownEvent().call()
+		this.log.info("Shutting down...")
 		PluginRegistry.disableAll()
-		return@Thread
-	})
+	}
 
-	// access connection before using it
+	// Initializes database
 	Database.connection
 
 	MigrationService.isUpToDate()
-
 	ApObjectTypeRegistry.registerInternal()
 
 	setJsonConfig()
 
 	SetupService.setup()
-
 	PluginRegistry.initialize()
+
+	install(DoubleReceive)
+	install(AutoHeadResponse)
+	install(DefaultHeaders)
+	install(ForwardedHeaders)
+	install(WebSockets)
 
 	install(CallLogging) {
 		filter { call ->
@@ -116,10 +116,6 @@ fun Application.module() {
 		header(HttpHeaders.XRequestId)
 		generate { IdentifierService.generate() }
 	}
-
-	install(AutoHeadResponse)
-	install(DefaultHeaders)
-	install(ForwardedHeaders)
 
 	install(ContentNegotiation) {
 		json(jsonConfig)
@@ -193,14 +189,10 @@ fun Application.module() {
 		}
 	}
 
-	install(DoubleReceive)
-
-	install(WebSockets)
-
 	configureRouting()
 
 	effect<InternalRouterReloadEvent> {
-		log.warn("Unable to restart router. Please restart Aster for routes to update.")
+		log.warn("Unable to restart router. Please restart for routes to update.")
 	}
 
 	configureQueue()

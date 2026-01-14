@@ -141,10 +141,10 @@ object SetupService : Service {
 				val takenUsername = TakenUsernameEntity.find(TakenUsernameTable.username eq user.username)
 					.singleOrNull()
 
-				if (takenUsername == null)
+				if (takenUsername != null)
 					return@transaction
 
-				logger.debug("Added taken username ${takenUsername.username}")
+				logger.debug("Added taken username ${user.username}")
 
 				TakenUsernameEntity.new(user.id.toString()) {
 					username = user.username
