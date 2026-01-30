@@ -1,3 +1,5 @@
+@file:OptIn(OpenApiPreview::class)
+
 import io.ktor.plugin.*
 import org.gradle.internal.extensions.stdlib.capitalized
 
@@ -30,38 +32,39 @@ dependencies {
 	implementation("org.slf4j:slf4j-api:2.0.17")
 
 	// ktor server
-	implementation("io.ktor:ktor-server-core-jvm:3.3.3")
-	implementation("io.ktor:ktor-server-netty-jvm:3.3.3")
-	implementation("io.ktor:ktor-server-csrf-jvm:3.3.3")
-	implementation("io.ktor:ktor-server-config-yaml-jvm:3.3.3")
-	implementation("io.ktor:ktor-server-call-logging-jvm:3.3.3")
-	implementation("io.ktor:ktor-server-request-validation-jvm:3.3.3")
-	implementation("io.ktor:ktor-server-call-id-jvm:3.3.3")
-	implementation("io.ktor:ktor-server-cors-jvm:3.3.3")
-	implementation("io.ktor:ktor-server-call-logging-jvm:3.3.3")
-	implementation("io.ktor:ktor-server-default-headers-jvm:3.3.3")
-	implementation("io.ktor:ktor-server-forwarded-header-jvm:3.3.3")
-	implementation("io.ktor:ktor-server-openapi-jvm:3.3.3")
-	implementation("io.ktor:ktor-server-swagger-jvm:3.3.3")
-	implementation("io.ktor:ktor-server-status-pages-jvm:3.3.3")
-	implementation("io.ktor:ktor-server-auto-head-response-jvm:3.3.3")
-	implementation("io.ktor:ktor-server-double-receive-jvm:3.3.3")
-	implementation("io.ktor:ktor-server-websockets-jvm:3.3.3")
+	implementation("io.ktor:ktor-server-core-jvm:3.4.0")
+	implementation("io.ktor:ktor-server-netty-jvm:3.4.0")
+	implementation("io.ktor:ktor-server-csrf-jvm:3.4.0")
+	implementation("io.ktor:ktor-server-config-yaml-jvm:3.4.0")
+	implementation("io.ktor:ktor-server-call-logging-jvm:3.4.0")
+	implementation("io.ktor:ktor-server-request-validation-jvm:3.4.0")
+	implementation("io.ktor:ktor-server-call-id-jvm:3.4.0")
+	implementation("io.ktor:ktor-server-cors-jvm:3.4.0")
+	implementation("io.ktor:ktor-server-call-logging-jvm:3.4.0")
+	implementation("io.ktor:ktor-server-default-headers-jvm:3.4.0")
+	implementation("io.ktor:ktor-server-forwarded-header-jvm:3.4.0")
+	implementation("io.ktor:ktor-server-routing-openapi:3.4.0")
+	implementation("io.ktor:ktor-server-openapi-jvm:3.4.0")
+	implementation("io.ktor:ktor-server-swagger-jvm:3.4.0")
+	implementation("io.ktor:ktor-server-status-pages-jvm:3.4.0")
+	implementation("io.ktor:ktor-server-auto-head-response-jvm:3.4.0")
+	implementation("io.ktor:ktor-server-double-receive-jvm:3.4.0")
+	implementation("io.ktor:ktor-server-websockets-jvm:3.4.0")
 
 	// templating
-	implementation("io.ktor:ktor-server-html-builder-jvm:3.3.3")
+	implementation("io.ktor:ktor-server-html-builder-jvm:3.4.0")
 	implementation("org.jetbrains.kotlinx:kotlinx-html:0.12.0")
 
 	// serialization
 	implementation("org.jetbrains.kotlinx:kotlinx-serialization-core-jvm:1.9.0")
 	implementation("org.jetbrains.kotlinx:kotlinx-serialization-json-jvm:1.9.0")
-	implementation("io.ktor:ktor-server-content-negotiation-jvm:3.3.3")
-	implementation("io.ktor:ktor-serialization-kotlinx-json-jvm:3.3.3")
+	implementation("io.ktor:ktor-server-content-negotiation-jvm:3.4.0")
+	implementation("io.ktor:ktor-serialization-kotlinx-json-jvm:3.4.0")
 
 	// ktor client
-	implementation("io.ktor:ktor-client-core-jvm:3.3.3")
-	implementation("io.ktor:ktor-client-cio-jvm:3.3.3")
-	implementation("io.ktor:ktor-client-content-negotiation-jvm:3.3.3")
+	implementation("io.ktor:ktor-client-core-jvm:3.4.0")
+	implementation("io.ktor:ktor-client-cio-jvm:3.4.0")
+	implementation("io.ktor:ktor-client-content-negotiation-jvm:3.4.0")
 
 	// database
 	implementation("com.zaxxer:HikariCP:7.0.2")
@@ -114,11 +117,10 @@ application {
 }
 
 ktor {
-	@OptIn(OpenApiPreview::class)
 	openApi {
-		title = project.name
-		version = project.version.toString()
-		target = project.layout.buildDirectory.file("openapi.json")
+		enabled = true
+		codeInferenceEnabled = true
+		onlyCommented = false
 	}
 }
 

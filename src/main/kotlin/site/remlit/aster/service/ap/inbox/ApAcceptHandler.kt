@@ -4,14 +4,14 @@ import kotlinx.serialization.json.decodeFromJsonElement
 import org.slf4j.LoggerFactory
 import site.remlit.aster.db.entity.InboxQueueEntity
 import site.remlit.aster.model.ap.ApIdOrObject
-import site.remlit.aster.model.ap.ApInboxHandler
+import site.remlit.aster.model.ap.InboxHandler
 import site.remlit.aster.model.ap.ApTypedObject
 import site.remlit.aster.model.ap.activity.ApAcceptActivity
 import site.remlit.aster.model.ap.activity.ApFollowActivity
 import site.remlit.aster.service.RelationshipService
 import site.remlit.aster.util.jsonConfig
 
-class ApAcceptHandler : ApInboxHandler {
+class ApAcceptHandler : InboxHandler {
 	private val logger = LoggerFactory.getLogger(ApAcceptHandler::class.java)
 
 	override suspend fun handle(job: InboxQueueEntity) {

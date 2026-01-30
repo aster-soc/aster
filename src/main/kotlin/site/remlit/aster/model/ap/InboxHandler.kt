@@ -5,10 +5,9 @@ import site.remlit.aster.db.entity.InboxQueueEntity
 
 /**
  * Handler for inbox activities.
- * To be registered with the InboxHandlerRegistry.
+ * Must be registered with the InboxHandlerRegistry.
  * */
-// Consider making this <T>
 @ApiStatus.OverrideOnly
-interface ApInboxHandler {
+interface InboxHandler {
 	suspend fun handle(job: InboxQueueEntity)
 }

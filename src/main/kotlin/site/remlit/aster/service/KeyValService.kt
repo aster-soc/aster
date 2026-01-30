@@ -1,11 +1,16 @@
 package site.remlit.aster.service
 
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.runBlocking
 import org.jetbrains.exposed.v1.core.Op
 import org.jetbrains.exposed.v1.core.eq
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 import site.remlit.aster.db.entity.KeyValEntity
 import site.remlit.aster.db.table.KeyValTable
 import site.remlit.aster.model.Service
+import site.remlit.aster.util.detached
+import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.seconds
 
 /**
  * Service for persistently storing data for plugins and caching.

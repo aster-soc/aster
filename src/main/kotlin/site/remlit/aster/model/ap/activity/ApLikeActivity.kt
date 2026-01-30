@@ -13,4 +13,5 @@ data class ApLikeActivity(
 	val actor: String? = null,
 	@Serializable(with = NestedApObjectSerializer::class)
 	val `object`: ApIdOrObject,
+	val content: String? = null
 ) : ApObjectWithContext()

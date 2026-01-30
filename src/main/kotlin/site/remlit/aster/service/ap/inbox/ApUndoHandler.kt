@@ -12,7 +12,7 @@ import site.remlit.aster.db.entity.UserEntity
 import site.remlit.aster.db.table.NoteTable
 import site.remlit.aster.exception.GracefulInboxException
 import site.remlit.aster.model.ap.ApIdOrObject
-import site.remlit.aster.model.ap.ApInboxHandler
+import site.remlit.aster.model.ap.InboxHandler
 import site.remlit.aster.model.ap.ApNote
 import site.remlit.aster.model.ap.ApTypedObject
 import site.remlit.aster.model.ap.activity.ApAnnounceActivity
@@ -26,7 +26,7 @@ import site.remlit.aster.service.ap.ApNoteService
 import site.remlit.aster.util.jsonConfig
 import site.remlit.aster.util.model.fromEntity
 
-class ApUndoHandler : ApInboxHandler {
+class ApUndoHandler : InboxHandler {
 	private val logger = LoggerFactory.getLogger(ApUndoHandler::class.java)
 
 	override suspend fun handle(job: InboxQueueEntity) {
@@ -53,12 +53,10 @@ class ApUndoHandler : ApInboxHandler {
 						sender
 					)
 
-					/*
 					"Follow" -> handleFollow(
 						jsonConfig.decodeFromJsonElement<ApFollowActivity>(copy.`object`.value),
 						sender
 					)
-					*/
 
 					else -> throw NotImplementedError("No Undo handler for ${obj.type}")
 				}

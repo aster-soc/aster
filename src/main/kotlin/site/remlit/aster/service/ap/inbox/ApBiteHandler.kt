@@ -3,16 +3,15 @@ package site.remlit.aster.service.ap.inbox
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 import site.remlit.aster.db.entity.InboxQueueEntity
 import site.remlit.aster.exception.GracefulInboxException
-import site.remlit.aster.model.ap.ApInboxHandler
+import site.remlit.aster.model.ap.InboxHandler
 import site.remlit.aster.model.ap.activity.ApBiteActivity
 import site.remlit.aster.service.NoteService
 import site.remlit.aster.service.NotificationService
 import site.remlit.aster.service.RelationshipService
 import site.remlit.aster.service.UserService
-import site.remlit.aster.service.ap.ApActorService
 import site.remlit.aster.util.jsonConfig
 
-class ApBiteHandler : ApInboxHandler {
+class ApBiteHandler : InboxHandler {
 	override suspend fun handle(job: InboxQueueEntity) {
 		val activity = jsonConfig.decodeFromString<ApBiteActivity>(String(job.content.bytes))
 		val sender = transaction { job.sender }

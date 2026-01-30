@@ -5,16 +5,15 @@ import site.remlit.aster.common.model.User
 import site.remlit.aster.db.entity.InboxQueueEntity
 import site.remlit.aster.exception.GracefulInboxException
 import site.remlit.aster.model.ap.ApIdOrObject
-import site.remlit.aster.model.ap.ApInboxHandler
+import site.remlit.aster.model.ap.InboxHandler
 import site.remlit.aster.model.ap.activity.ApLikeActivity
 import site.remlit.aster.service.NoteService
 import site.remlit.aster.service.RelationshipService
-import site.remlit.aster.service.ap.ApActorService
 import site.remlit.aster.service.ap.ApNoteService
 import site.remlit.aster.util.jsonConfig
 import site.remlit.aster.util.model.fromEntity
 
-class ApLikeHandler : ApInboxHandler {
+class ApLikeHandler : InboxHandler {
 	override suspend fun handle(job: InboxQueueEntity) {
 		val activity = jsonConfig.decodeFromString<ApLikeActivity>(String(job.content.bytes))
 		val sender = transaction { job.sender }

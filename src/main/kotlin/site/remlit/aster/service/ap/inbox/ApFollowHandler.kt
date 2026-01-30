@@ -6,17 +6,16 @@ import site.remlit.aster.common.model.type.RelationshipType
 import site.remlit.aster.db.entity.InboxQueueEntity
 import site.remlit.aster.exception.GracefulInboxException
 import site.remlit.aster.model.ap.ApIdOrObject
-import site.remlit.aster.model.ap.ApInboxHandler
+import site.remlit.aster.model.ap.InboxHandler
 import site.remlit.aster.model.ap.activity.ApAcceptActivity
 import site.remlit.aster.model.ap.activity.ApFollowActivity
-import site.remlit.aster.service.IdentifierService
 import site.remlit.aster.service.RelationshipService
 import site.remlit.aster.service.ap.ApActorService
 import site.remlit.aster.service.ap.ApDeliverService
 import site.remlit.aster.service.ap.ApIdService
 import site.remlit.aster.util.jsonConfig
 
-class ApFollowHandler : ApInboxHandler {
+class ApFollowHandler : InboxHandler {
 	private val logger = LoggerFactory.getLogger(ApFollowHandler::class.java)
 
 	override suspend fun handle(job: InboxQueueEntity) {

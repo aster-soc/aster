@@ -29,6 +29,7 @@ object PluginRegistry {
 	/**
 	 * List of currently enabled plugins
 	 * */
+	// TODO: Convert to using a mutable map rather than a list
 	@JvmStatic
 	val plugins: MutableList<Pair<PluginManifest, AsterPlugin>> =
 		emptyList<Pair<PluginManifest, AsterPlugin>>().toMutableList()

@@ -65,6 +65,43 @@ get("/example/route") {
 }
 ```
 
+## Queue Flow
+
+### Inbox and Deliver
+
+The inbox and deliver queues follow a very similar flow. First, preprocessors are ran on the job, then
+the job is handled. The inbox is handled with the InboxHandlerRegistry, while deliver is handled by the ApDeliverService.
+Jobs can be cancelled by preprocessors by setting the job to null. 
+
+Queue preprocessors, unlike handlers, do not require a type. Preprocessors are passed the raw queue entity and would need
+to do type checks after serialization. Due to this, preprocessors are less performant than overriding an existing handler.
+
+Queue preprocessors and handlers can be registered with Java and Kotlin specific methods. For the Kotlin methods, you don't
+need to pass anything besides the type argument. 
+
+```kotlin
+fun main() {
+	InboxHandlerRegistry.register<ApTypeHandler>("Type")
+}
+```
+
+```java
+void main() {
+	InboxHandlerRegistry.register("Type", new ApTypeHandler());
+}
+```
+
+## JvmSynthetic methods
+
+Sometimes, there's easier ways to write methods where only type arguments can replace arguments in a method. These are
+only usable in Kotlin, so they need to be marked `@JvmSynthetic`. They should only be used as a wrapper around a main function
+doing the same thing that is Java friendly. For example, the two register methods on the InboxHandlerRegistry.
+
+# Services
+
+Services must be Kotlin objects, and all public methods are to be marked with either `@JvmStatic` or `@JvmSynthetic`.
+This allows clean APIs to be used in Java.
+
 ## Database
 
 Jetbrains Exposed (the ORM used) doesn't persist joins outside the current transaction context. That's why NoteService

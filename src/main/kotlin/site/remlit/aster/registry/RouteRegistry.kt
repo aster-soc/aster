@@ -4,6 +4,7 @@ import io.ktor.server.routing.*
 import org.jetbrains.annotations.ApiStatus
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import site.remlit.aster.route.DocumentationRoutes
 import site.remlit.aster.route.FrontendRoutes
 import site.remlit.aster.route.StreamingRoutes
 import site.remlit.aster.route.UploadRoutes
@@ -123,6 +124,8 @@ object RouteRegistry {
 		FrontendRoutes.register()
 		StreamingRoutes.register()
 		UploadRoutes.register()
+
+		DocumentationRoutes.register()
 	}
 
 	/**

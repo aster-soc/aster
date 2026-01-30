@@ -6,9 +6,9 @@ import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 import org.slf4j.LoggerFactory
 import site.remlit.aster.db.entity.InboxQueueEntity
 import site.remlit.aster.exception.GracefulInboxException
-import site.remlit.aster.model.Configuration
-import site.remlit.aster.model.ap.ApInboxHandler
+import site.remlit.aster.model.ap.InboxHandler
 import site.remlit.aster.model.ap.ApTypedObject
+import site.remlit.aster.model.ap.InboxPreprocessor
 import site.remlit.aster.service.QueueService
 import site.remlit.aster.service.ap.inbox.ApAcceptHandler
 import site.remlit.aster.service.ap.inbox.ApAddHandler
@@ -31,15 +31,45 @@ object InboxHandlerRegistry {
 	private val logger = LoggerFactory.getLogger(InboxHandlerRegistry::class.java)
 
 	@JvmStatic
-	val inboxHandlers = mutableListOf<Pair<String, ApInboxHandler>>()
+	val inboxPreprocessors = mutableSetOf<InboxPreprocessor>()
+
+	@JvmStatic
+	val inboxHandlers = mutableMapOf<String, InboxHandler>()
 
 	/**
-	 * Handle running an inbox job.
+	 * Handle preprocessing for an inbox job
+	 *
+	 * @param job Job to preprocess
+	 *
+	 * @return Processed job
+	 * */
+	suspend fun handlePreprocess(job: InboxQueueEntity): InboxQueueEntity? {
+		var modifiedJob: InboxQueueEntity? = job
+
+		logger.debug("Preprocessing for inbox job {}", job.id)
+
+		inboxPreprocessors.forEach {
+			modifiedJob = it.preprocess(modifiedJob)
+			if (modifiedJob == null) return@forEach
+			logger.debug("Running preprocessor {} on inbox job {}", it::class.qualifiedName, modifiedJob.id)
+		}
+
+		if (modifiedJob == null)
+			logger.debug("Inbox job {} cancelled by preprocessing", job.id)
+
+		return modifiedJob
+	}
+
+	/**
+	 * Handle running an inbox job
 	 *
 	 * @param job Job to run
 	 * */
 	@ApiStatus.Internal
 	fun handle(job: InboxQueueEntity) {
+		val job = runBlocking { handlePreprocess(job) }
+			?: return
+
 		val typedObject = jsonConfig.decodeFromString<ApTypedObject>(String(job.content.bytes))
 
 		logger.debug(
@@ -53,12 +83,12 @@ object InboxHandlerRegistry {
 		runBlocking {
 			try {
 				for (handler in inboxHandlers) {
-					if (handler.first == typedObject.type)
-						handler.second.handle(job)
+					if (handler.key == typedObject.type)
+						handler.value.handle(job)
 				}
 				QueueService.completeInboxJob(job)
 			} catch (e: GracefulInboxException) {
-				logger.debug("Inbox job ${job.id} gracefully failed: ${e.message?.replace("\n", "")}")
+				logger.debug("Inbox job {} gracefully failed: {}", job.id, e.message?.replace("\n", ""))
 				QueueService.completeInboxJob(job)
 			} catch (e: Throwable) {
 				QueueService.errorInboxJob(job, e)
@@ -67,14 +97,32 @@ object InboxHandlerRegistry {
 	}
 
 	/**
+	 * Registers an inbox preprocessor
+	 *
+	 * @param preprocessor Preprocessor for inbox jobs
+	 * */
+	@JvmStatic
+	fun registerPreprocessor(preprocessor: InboxPreprocessor) {
+		inboxPreprocessors.add(preprocessor)
+		logger.debug("Added inbox preprocessor ${preprocessor::class.simpleName}")
+	}
+
+	/**
+	 * Registers an inbox preprocessor
+	 * */
+	@JvmSynthetic
+	inline fun <reified T : InboxPreprocessor> registerPreprocessor() =
+		registerPreprocessor(T::class.createInstance())
+
+	/**
 	 * Registers an inbox handler
 	 *
 	 * @param type Activity type to handle
 	 * @param handler Handler for activity
 	 * */
 	@JvmStatic
-	fun register(type: String, handler: ApInboxHandler) {
-		inboxHandlers.add(Pair(type, handler))
+	fun register(type: String, handler: InboxHandler) {
+		inboxHandlers[type] = handler
 		logger.debug("Added $type activity handler ${handler::class.simpleName}")
 	}
 
@@ -84,14 +132,14 @@ object InboxHandlerRegistry {
 	 * @param type Activity type to handle
 	 * */
 	@JvmSynthetic
-	inline fun <reified T : ApInboxHandler> register(type: String) =
+	inline fun <reified T : InboxHandler> register(type: String) =
 		register(type, T::class.createInstance())
 
 	/**
 	 * Registers default inbox handlers
 	 * */
 	@ApiStatus.Internal
-	fun registerDefaults() {
+	internal fun registerDefaults() {
 		register<ApAcceptHandler>("Accept")
 		register<ApAddHandler>("Add")
 		register<ApAnnounceHandler>("Announce")

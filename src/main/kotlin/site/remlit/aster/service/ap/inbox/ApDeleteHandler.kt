@@ -9,7 +9,7 @@ import site.remlit.aster.db.entity.UserEntity
 import site.remlit.aster.db.table.UserTable
 import site.remlit.aster.exception.GracefulInboxException
 import site.remlit.aster.model.ap.ApIdOrObject
-import site.remlit.aster.model.ap.ApInboxHandler
+import site.remlit.aster.model.ap.InboxHandler
 import site.remlit.aster.model.ap.ApTombstone
 import site.remlit.aster.model.ap.ApTypedObject
 import site.remlit.aster.model.ap.activity.ApDeleteActivity
@@ -17,7 +17,7 @@ import site.remlit.aster.service.NoteService
 import site.remlit.aster.service.UserService
 import site.remlit.aster.util.jsonConfig
 
-class ApDeleteHandler : ApInboxHandler {
+class ApDeleteHandler : InboxHandler {
 	private val logger = LoggerFactory.getLogger(ApDeleteHandler::class.java)
 
 	override suspend fun handle(job: InboxQueueEntity) {
