@@ -13,6 +13,7 @@ import io.ktor.server.plugins.contentnegotiation.*
 import io.ktor.server.plugins.defaultheaders.*
 import io.ktor.server.plugins.doublereceive.*
 import io.ktor.server.plugins.forwardedheaders.*
+import io.ktor.server.plugins.ratelimit.RateLimit
 import io.ktor.server.plugins.statuspages.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
@@ -41,6 +42,7 @@ import site.remlit.aster.util.jsonConfig
 import site.remlit.aster.util.setJsonConfig
 import site.remlit.effekt.EventRegistry
 import site.remlit.effekt.effect
+import kotlin.time.Duration.Companion.seconds
 
 /**
  * Entrypoint for Aster

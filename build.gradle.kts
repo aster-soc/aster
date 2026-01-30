@@ -50,6 +50,7 @@ dependencies {
 	implementation("io.ktor:ktor-server-auto-head-response-jvm:3.4.0")
 	implementation("io.ktor:ktor-server-double-receive-jvm:3.4.0")
 	implementation("io.ktor:ktor-server-websockets-jvm:3.4.0")
+	implementation("io.ktor:ktor-server-rate-limit:3.4.0")
 
 	// templating
 	implementation("io.ktor:ktor-server-html-builder-jvm:3.4.0")
@@ -69,13 +70,13 @@ dependencies {
 	// database
 	implementation("com.zaxxer:HikariCP:7.0.2")
 	implementation("org.postgresql:postgresql:42.7.8")
-	implementation("org.jetbrains.exposed:exposed-core:1.0.0-rc-4")
-	implementation("org.jetbrains.exposed:exposed-dao:1.0.0-rc-4")
-	implementation("org.jetbrains.exposed:exposed-jdbc:1.0.0-rc-4")
-	implementation("org.jetbrains.exposed:exposed-json:1.0.0-rc-4")
-	implementation("org.jetbrains.exposed:exposed-kotlin-datetime:1.0.0-rc-4")
-	implementation("org.jetbrains.exposed:exposed-migration-core:1.0.0-rc-4")
-	implementation("org.jetbrains.exposed:exposed-migration-jdbc:1.0.0-rc-4")
+	implementation("org.jetbrains.exposed:exposed-core:1.0.0")
+	implementation("org.jetbrains.exposed:exposed-dao:1.0.0")
+	implementation("org.jetbrains.exposed:exposed-jdbc:1.0.0")
+	implementation("org.jetbrains.exposed:exposed-json:1.0.0")
+	implementation("org.jetbrains.exposed:exposed-kotlin-datetime:1.0.0")
+	implementation("org.jetbrains.exposed:exposed-migration-core:1.0.0")
+	implementation("org.jetbrains.exposed:exposed-migration-jdbc:1.0.0")
 
 	// authentication
 	implementation("at.favre.lib:bcrypt:0.10.2")
