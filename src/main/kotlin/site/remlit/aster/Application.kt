@@ -13,7 +13,6 @@ import io.ktor.server.plugins.contentnegotiation.*
 import io.ktor.server.plugins.defaultheaders.*
 import io.ktor.server.plugins.doublereceive.*
 import io.ktor.server.plugins.forwardedheaders.*
-import io.ktor.server.plugins.ratelimit.RateLimit
 import io.ktor.server.plugins.statuspages.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
@@ -36,13 +35,12 @@ import site.remlit.aster.registry.PluginRegistry
 import site.remlit.aster.service.CommandLineService
 import site.remlit.aster.service.IdentifierService
 import site.remlit.aster.service.MigrationService
+import site.remlit.aster.service.QueueService
 import site.remlit.aster.service.SetupService
 import site.remlit.aster.util.addShutdownHook
 import site.remlit.aster.util.jsonConfig
 import site.remlit.aster.util.setJsonConfig
-import site.remlit.effekt.EventRegistry
 import site.remlit.effekt.effect
-import kotlin.time.Duration.Companion.seconds
 
 /**
  * Entrypoint for Aster
@@ -74,6 +72,7 @@ fun Application.module() {
 		ApplicationBeginShutdownEvent().call()
 		this.log.info("Shutting down...")
 		PluginRegistry.disableAll()
+		QueueService.stop()
 	}
 
 	// Initializes database

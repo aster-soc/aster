@@ -9,7 +9,6 @@ import site.remlit.aster.registry.RouteRegistry
 import site.remlit.aster.service.QueueService
 import site.remlit.aster.service.ap.ApValidationService
 import site.remlit.aster.util.detached
-import java.lang.Boolean
 
 internal object InboxRoutes {
 	fun register() =

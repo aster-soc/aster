@@ -67,7 +67,7 @@ object QueueService : Service {
 	val backfillScope = CoroutineScope(Dispatchers.Default + CoroutineName("BackfillDispatcher"))
 
 	/**
-	 * Deliver queue coroutine scope
+	 * Queue cleaner coroutine scope
 	 * */
 	@JvmStatic
 	val cleanerScope = CoroutineScope(Dispatchers.Default + CoroutineName("QueueCleanerDispatcher"))
@@ -96,31 +96,56 @@ object QueueService : Service {
 	@JvmStatic
 	var lockedIds = mutableSetOf<String>()
 
+	@JvmStatic
+	var queueEnabled = false;
+
+	/**
+	 * Pauses all queues until started again
+	 *
+	 * @since 2026.2.1.0-SNAPSHOT
+	 * */
+	fun stop() {
+		logger.debug("Stopping queues...")
+		queueEnabled = false
+	}
+
+	/**
+	 * Starts all queues
+	 *
+	 * @since 2026.2.1.0-SNAPSHOT
+	 * */
+	fun start() {
+		logger.debug("Starting queues...")
+		queueEnabled = true
+	}
+
 	/**
 	 * Initialize queue managers. These check frequently for new items in the queue, and then launch a consumer.
 	 * */
 	@ApiStatus.Internal
 	fun initialize() {
+		start()
+
 		inboxScope.launch {
-			while (true) {
+			while (queueEnabled) {
 				summonInboxConsumersIfNeeded()
 				delay(1.seconds)
 			}
 		}
 		deliverScope.launch {
-			while (true) {
+			while (queueEnabled) {
 				summonDeliverConsumersIfNeeded()
 				delay(1.seconds)
 			}
 		}
 		backfillScope.launch {
-			while (true) {
+			while (queueEnabled) {
 				summonBackfillConsumersIfNeeded()
 				delay(1.seconds)
 			}
 		}
 		cleanerScope.launch {
-			while (true) {
+			while (queueEnabled) {
 				clean()
 				delay(30.minutes)
 			}
