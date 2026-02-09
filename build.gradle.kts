@@ -22,13 +22,12 @@ group = "site.remlit"
 version = gradle.extra.get("rootVersion") as String
 
 repositories {
+	maven("https://repo.remlit.site/mirror")
 	mavenCentral()
-	maven("https://repo.remlit.site/releases")
-	maven("https://repo.remlit.site/snapshots")
 }
 
 dependencies {
-	implementation("ch.qos.logback:logback-classic:1.5.20")
+	implementation("ch.qos.logback:logback-classic:1.5.27")
 	implementation("org.slf4j:slf4j-api:2.0.17")
 
 	// ktor server
@@ -57,8 +56,8 @@ dependencies {
 	implementation("org.jetbrains.kotlinx:kotlinx-html:0.12.0")
 
 	// serialization
-	implementation("org.jetbrains.kotlinx:kotlinx-serialization-core-jvm:1.9.0")
-	implementation("org.jetbrains.kotlinx:kotlinx-serialization-json-jvm:1.9.0")
+	implementation("org.jetbrains.kotlinx:kotlinx-serialization-core-jvm:1.10.0")
+	implementation("org.jetbrains.kotlinx:kotlinx-serialization-json-jvm:1.10.0")
 	implementation("io.ktor:ktor-server-content-negotiation-jvm:3.4.0")
 	implementation("io.ktor:ktor-serialization-kotlinx-json-jvm:3.4.0")
 
@@ -69,7 +68,7 @@ dependencies {
 
 	// database
 	implementation("com.zaxxer:HikariCP:7.0.2")
-	implementation("org.postgresql:postgresql:42.7.8")
+	implementation("org.postgresql:postgresql:42.7.9")
 	implementation("org.jetbrains.exposed:exposed-core:1.0.0")
 	implementation("org.jetbrains.exposed:exposed-dao:1.0.0")
 	implementation("org.jetbrains.exposed:exposed-jdbc:1.0.0")
@@ -85,15 +84,15 @@ dependencies {
 	// misc
 	implementation("io.trbl:blurhash:1.0.0")
 	implementation("org.jetbrains.kotlin:kotlin-reflect:2.3.0")
-	implementation("com.googlecode.owasp-java-html-sanitizer:owasp-java-html-sanitizer:20260101.1")
+	implementation("com.googlecode.owasp-java-html-sanitizer:owasp-java-html-sanitizer:20260102.1")
 	implementation("site.remlit:aidx4j:1.0.0")
 	implementation("site.remlit:effekt:0.2.1")
 
 	compileOnly("org.jetbrains:annotations:26.0.2-1")
 
 	// test
-	testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4")
-	testImplementation("io.ktor:ktor-server-test-host:2.2.21")
+	testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.10.2")
+	testImplementation("io.ktor:ktor-server-test-host:2.4.0")
 	testImplementation(kotlin("test"))
 
 	api(project(":common"))
