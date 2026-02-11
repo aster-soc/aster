@@ -10,7 +10,7 @@ import org.jetbrains.exposed.v1.core.neq
 import site.remlit.aster.common.model.type.InstanceRegistrationsType
 import site.remlit.aster.db.table.UserTable
 import site.remlit.aster.model.ApiException
-import site.remlit.aster.model.Configuration
+import site.remlit.aster.model.config.Configuration
 import site.remlit.aster.model.NodeInfo
 import site.remlit.aster.model.NodeInfoMetadata
 import site.remlit.aster.model.NodeInfoMetadataMaintainer

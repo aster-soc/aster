@@ -15,7 +15,7 @@ import site.remlit.aster.db.table.UserTable
 import site.remlit.aster.event.report.ReportDeleteEvent
 import site.remlit.aster.event.report.ReportResolveEvent
 import site.remlit.aster.exception.InsertFailureException
-import site.remlit.aster.model.Configuration
+import site.remlit.aster.model.config.Configuration
 import site.remlit.aster.model.Service
 import site.remlit.aster.util.model.fromEntities
 import site.remlit.aster.util.model.fromEntity

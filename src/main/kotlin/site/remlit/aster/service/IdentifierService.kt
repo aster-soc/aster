@@ -1,7 +1,7 @@
 package site.remlit.aster.service
 
 import org.jetbrains.annotations.ApiStatus
-import site.remlit.aster.model.Configuration
+import site.remlit.aster.model.config.Configuration
 import site.remlit.aster.model.IdentifierType
 import site.remlit.aster.model.Service
 import site.remlit.aidx4j.AidUtil

@@ -1,6 +1,6 @@
 package site.remlit.aster.service.ap
 
-import site.remlit.aster.model.Configuration
+import site.remlit.aster.model.config.Configuration
 import site.remlit.aster.model.Service
 
 /*

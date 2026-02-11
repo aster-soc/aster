@@ -6,7 +6,6 @@ import io.ktor.server.plugins.callid.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import kotlinx.serialization.Serializable
 import org.jetbrains.exposed.v1.core.eq
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 import site.remlit.aster.common.model.ApiError
@@ -20,7 +19,7 @@ import site.remlit.aster.db.entity.UserPrivateEntity
 import site.remlit.aster.db.table.TakenUsernameTable
 import site.remlit.aster.event.user.UserCreateEvent
 import site.remlit.aster.model.ApiException
-import site.remlit.aster.model.Configuration
+import site.remlit.aster.model.config.Configuration
 import site.remlit.aster.model.KeyType
 import site.remlit.aster.registry.RouteRegistry
 import site.remlit.aster.service.AuthService

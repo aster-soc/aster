@@ -18,7 +18,7 @@ import site.remlit.aster.common.model.User
 import site.remlit.aster.common.model.type.RoleType
 import site.remlit.aster.common.util.renderHandle
 import site.remlit.aster.db.table.UserTable
-import site.remlit.aster.model.Configuration
+import site.remlit.aster.model.config.Configuration
 import site.remlit.aster.registry.RouteRegistry
 import site.remlit.aster.service.RoleService
 import site.remlit.aster.service.UserService

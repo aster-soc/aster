@@ -4,7 +4,6 @@ import org.jetbrains.exposed.v1.core.Op
 import org.jetbrains.exposed.v1.core.and
 import org.jetbrains.exposed.v1.core.eq
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
-import site.remlit.aster.common.model.DriveFile
 import site.remlit.aster.common.model.User
 import site.remlit.aster.db.entity.UserEntity
 import site.remlit.aster.db.entity.UserPrivateEntity
@@ -12,7 +11,7 @@ import site.remlit.aster.db.table.UserPrivateTable
 import site.remlit.aster.db.table.UserTable
 import site.remlit.aster.event.user.UserEditEvent
 import site.remlit.aster.exception.SetupException
-import site.remlit.aster.model.Configuration
+import site.remlit.aster.model.config.Configuration
 import site.remlit.aster.model.Service
 import site.remlit.aster.model.ap.ApActor
 import site.remlit.aster.model.ap.ApIdOrObject

@@ -12,7 +12,7 @@ import site.remlit.aster.db.entity.UserEntity
 import site.remlit.aster.db.table.NoteBookmarkTable
 import site.remlit.aster.event.note.NoteBookmarkEvent
 import site.remlit.aster.event.note.NoteUnbookmarkEvent
-import site.remlit.aster.model.Configuration
+import site.remlit.aster.model.config.Configuration
 import site.remlit.aster.model.Service
 import site.remlit.aster.util.model.fromEntities
 

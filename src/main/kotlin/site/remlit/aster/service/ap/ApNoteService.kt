@@ -22,7 +22,7 @@ import site.remlit.aster.common.util.toLocalDateTime
 import site.remlit.aster.db.entity.NoteEntity
 import site.remlit.aster.event.note.NoteCreateEvent
 import site.remlit.aster.event.note.NoteEditEvent
-import site.remlit.aster.model.Configuration
+import site.remlit.aster.model.config.Configuration
 import site.remlit.aster.model.Service
 import site.remlit.aster.model.ap.ApDocument
 import site.remlit.aster.model.ap.ApIdOrObject
@@ -33,7 +33,6 @@ import site.remlit.aster.service.NoteService
 import site.remlit.aster.service.ResolverService
 import site.remlit.aster.service.UserService
 import site.remlit.aster.service.VisibilityService
-import site.remlit.aster.util.detached
 import site.remlit.aster.util.jsonConfig
 import site.remlit.aster.util.model.fromEntity
 import kotlin.time.Clock

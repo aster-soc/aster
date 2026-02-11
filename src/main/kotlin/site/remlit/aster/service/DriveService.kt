@@ -19,8 +19,7 @@ import site.remlit.aster.db.table.UserTable
 import site.remlit.aster.event.drive.DriveFileCreateEvent
 import site.remlit.aster.event.drive.DriveFileDeleteEvent
 import site.remlit.aster.event.drive.DriveFileEditEvent
-import site.remlit.aster.exception.InsertFailureException
-import site.remlit.aster.model.Configuration
+import site.remlit.aster.model.config.Configuration
 import site.remlit.aster.model.Service
 import site.remlit.aster.model.ap.ApIdOrObject
 import site.remlit.aster.model.ap.ApNote

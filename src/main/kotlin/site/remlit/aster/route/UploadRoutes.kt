@@ -10,7 +10,7 @@ import io.ktor.util.cio.*
 import io.ktor.utils.io.*
 import org.slf4j.LoggerFactory
 import site.remlit.aster.model.ApiException
-import site.remlit.aster.model.Configuration
+import site.remlit.aster.model.config.Configuration
 import site.remlit.aster.registry.RouteRegistry
 import site.remlit.aster.service.DriveService
 import site.remlit.aster.service.IdentifierService

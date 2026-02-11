@@ -7,7 +7,6 @@ import org.jetbrains.exposed.v1.core.alias
 import org.jetbrains.exposed.v1.core.and
 import org.jetbrains.exposed.v1.core.eq
 import org.jetbrains.exposed.v1.core.inList
-import org.jetbrains.exposed.v1.dao.load
 import org.jetbrains.exposed.v1.jdbc.select
 import org.jetbrains.exposed.v1.jdbc.selectAll
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
@@ -34,7 +33,7 @@ import site.remlit.aster.event.note.NoteLikeEvent
 import site.remlit.aster.event.note.NoteRepeatEvent
 import site.remlit.aster.event.note.NoteUnlikeEvent
 import site.remlit.aster.exception.InsertFailureException
-import site.remlit.aster.model.Configuration
+import site.remlit.aster.model.config.Configuration
 import site.remlit.aster.model.Service
 import site.remlit.aster.model.ap.ApIdOrObject
 import site.remlit.aster.model.ap.ApNote

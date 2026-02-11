@@ -12,7 +12,7 @@ import site.remlit.aster.common.model.request.CreateNoteRequest
 import site.remlit.aster.common.model.request.ReportRequest
 import site.remlit.aster.db.entity.UserEntity
 import site.remlit.aster.model.ApiException
-import site.remlit.aster.model.Configuration
+import site.remlit.aster.model.config.Configuration
 import site.remlit.aster.registry.RouteRegistry
 import site.remlit.aster.service.BookmarkService
 import site.remlit.aster.service.IdentifierService

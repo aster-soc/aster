@@ -28,7 +28,7 @@ import site.remlit.aster.db.table.BackfillQueueTable
 import site.remlit.aster.db.table.DeliverQueueTable
 import site.remlit.aster.db.table.InboxQueueTable
 import site.remlit.aster.model.BackfillType
-import site.remlit.aster.model.Configuration
+import site.remlit.aster.model.config.Configuration
 import site.remlit.aster.model.QueueStatus
 import site.remlit.aster.model.Service
 import site.remlit.aster.registry.InboxHandlerRegistry

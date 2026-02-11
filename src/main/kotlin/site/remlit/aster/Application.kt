@@ -27,7 +27,7 @@ import site.remlit.aster.event.application.ApplicationFinishShutdownEvent
 import site.remlit.aster.event.application.ApplicationFinishStartEvent
 import site.remlit.aster.event.internal.InternalRouterReloadEvent
 import site.remlit.aster.model.ApiException
-import site.remlit.aster.model.Configuration
+import site.remlit.aster.model.config.Configuration
 import site.remlit.aster.model.ap.ApValidationException
 import site.remlit.aster.model.ap.ApValidationExceptionType
 import site.remlit.aster.registry.ApObjectTypeRegistry

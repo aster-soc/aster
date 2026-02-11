@@ -2,13 +2,11 @@ package site.remlit.aster.service
 
 import io.ktor.http.Url
 import io.ktor.http.fullPath
-import io.ktor.server.application.Application
 import org.jetbrains.exposed.v1.core.and
 import org.jetbrains.exposed.v1.core.eq
 import org.jetbrains.exposed.v1.core.neq
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 import org.slf4j.LoggerFactory
-import site.remlit.aster.common.util.ifFails
 import site.remlit.aster.common.util.orNull
 import site.remlit.aster.db.Database
 import site.remlit.aster.db.entity.DriveFileEntity
@@ -17,7 +15,7 @@ import site.remlit.aster.db.entity.UserEntity
 import site.remlit.aster.db.table.DriveFileTable
 import site.remlit.aster.db.table.UserTable
 import site.remlit.aster.main
-import site.remlit.aster.model.Configuration
+import site.remlit.aster.model.config.Configuration
 import site.remlit.aster.model.PackageInformation
 import site.remlit.aster.model.Service
 import java.lang.management.ManagementFactory

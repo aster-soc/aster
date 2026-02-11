@@ -4,7 +4,7 @@ import io.ktor.http.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import site.remlit.aster.model.Configuration
+import site.remlit.aster.model.config.Configuration
 import site.remlit.aster.registry.RouteRegistry
 import site.remlit.aster.service.QueueService
 import site.remlit.aster.service.ap.ApValidationService

@@ -13,7 +13,7 @@ import kotlinx.html.span
 import kotlinx.html.styleLink
 import kotlinx.html.title
 import site.remlit.aster.common.model.type.InstanceRegistrationsType
-import site.remlit.aster.model.Configuration
+import site.remlit.aster.model.config.Configuration
 
 fun HTML.adminPage(path: String, content: FlowContent.() -> Unit) {
 	head {
