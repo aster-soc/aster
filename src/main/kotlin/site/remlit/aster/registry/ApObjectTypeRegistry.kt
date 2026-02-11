@@ -3,6 +3,7 @@ package site.remlit.aster.registry
 import kotlinx.serialization.KSerializer
 import org.jetbrains.annotations.ApiStatus
 import org.slf4j.LoggerFactory
+import site.remlit.aster.model.Configuration
 import site.remlit.aster.model.ap.ApActor
 import site.remlit.aster.model.ap.ApNote
 import site.remlit.aster.model.ap.ApObject

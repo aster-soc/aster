@@ -10,7 +10,7 @@ import site.remlit.aster.common.model.Invite
 import site.remlit.aster.db.entity.InviteEntity
 import site.remlit.aster.db.entity.NoteEntity
 import site.remlit.aster.db.table.InviteTable
-import site.remlit.aster.model.config.Configuration
+import site.remlit.aster.model.Configuration
 import site.remlit.aster.model.Service
 import site.remlit.aster.util.model.fromEntity
 

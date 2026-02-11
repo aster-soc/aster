@@ -13,7 +13,7 @@ import org.jetbrains.exposed.v1.core.like
 import org.jetbrains.exposed.v1.core.neq
 import site.remlit.aster.common.model.type.RoleType
 import site.remlit.aster.db.table.InviteTable
-import site.remlit.aster.model.config.Configuration
+import site.remlit.aster.model.Configuration
 import site.remlit.aster.registry.RouteRegistry
 import site.remlit.aster.service.InviteService
 import site.remlit.aster.util.authentication

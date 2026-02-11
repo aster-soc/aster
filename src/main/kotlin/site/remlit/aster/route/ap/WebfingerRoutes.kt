@@ -8,7 +8,7 @@ import org.jetbrains.exposed.v1.core.and
 import org.jetbrains.exposed.v1.core.eq
 import site.remlit.aster.db.table.UserTable
 import site.remlit.aster.model.ApiException
-import site.remlit.aster.model.config.Configuration
+import site.remlit.aster.model.Configuration
 import site.remlit.aster.model.WellKnown
 import site.remlit.aster.model.WellKnownLink
 import site.remlit.aster.registry.RouteRegistry

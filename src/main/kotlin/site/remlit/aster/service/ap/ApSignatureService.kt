@@ -8,11 +8,6 @@ import java.security.PrivateKey
 import kotlin.io.encoding.Base64
 import kotlin.time.ExperimentalTime
 
-/**
- * Service for validating ActivityPub signatures.
- *
- * @since 2025.12.1.0-SNAPSHOT
- * */
 object ApSignatureService : Service {
 	@JvmStatic
 	fun createSigningString(

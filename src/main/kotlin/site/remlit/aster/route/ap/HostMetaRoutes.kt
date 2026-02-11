@@ -3,7 +3,7 @@ package site.remlit.aster.route.ap
 import io.ktor.http.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import site.remlit.aster.model.config.Configuration
+import site.remlit.aster.model.Configuration
 import site.remlit.aster.model.WellKnown
 import site.remlit.aster.model.WellKnownLink
 import site.remlit.aster.registry.RouteRegistry

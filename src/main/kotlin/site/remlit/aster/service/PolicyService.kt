@@ -12,7 +12,7 @@ import site.remlit.aster.common.model.type.PolicyType
 import site.remlit.aster.db.entity.PolicyEntity
 import site.remlit.aster.db.table.PolicyTable
 import site.remlit.aster.event.policy.PolicyCreateEvent
-import site.remlit.aster.model.config.Configuration
+import site.remlit.aster.model.Configuration
 import site.remlit.aster.model.Service
 import site.remlit.aster.util.model.fromEntity
 

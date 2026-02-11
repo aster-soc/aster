@@ -12,7 +12,7 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import site.remlit.aster.common.util.orNull
 import site.remlit.aster.db.entity.UserEntity
-import site.remlit.aster.model.config.Configuration
+import site.remlit.aster.model.Configuration
 import site.remlit.aster.model.Service
 import site.remlit.aster.model.ap.ApTypedObject
 import site.remlit.aster.model.ap.ApValidationException

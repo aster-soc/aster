@@ -9,7 +9,7 @@ import site.remlit.aster.common.model.type.RoleType
 import site.remlit.aster.db.entity.RoleEntity
 import site.remlit.aster.db.table.RoleTable
 import site.remlit.aster.db.table.UserTable
-import site.remlit.aster.model.config.Configuration
+import site.remlit.aster.model.Configuration
 import site.remlit.aster.model.Service
 import site.remlit.aster.util.model.fromEntity
 import site.remlit.aster.util.sql.arrayContains

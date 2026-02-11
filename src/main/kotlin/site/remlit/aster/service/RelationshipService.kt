@@ -17,7 +17,7 @@ import site.remlit.aster.db.table.RelationshipTable
 import site.remlit.aster.db.table.UserTable
 import site.remlit.aster.event.relationship.RelationshipCreateEvent
 import site.remlit.aster.event.relationship.RelationshipDeleteEvent
-import site.remlit.aster.model.config.Configuration
+import site.remlit.aster.model.Configuration
 import site.remlit.aster.model.Service
 import site.remlit.aster.model.ap.ApIdOrObject
 import site.remlit.aster.model.ap.activity.ApAcceptActivity
