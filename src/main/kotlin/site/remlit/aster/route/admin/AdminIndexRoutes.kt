@@ -18,12 +18,14 @@ import org.jetbrains.exposed.v1.core.greaterEq
 import org.jetbrains.exposed.v1.core.neq
 import site.remlit.aster.common.model.Meta
 import site.remlit.aster.common.model.type.RoleType
+import site.remlit.aster.db.table.InstanceTable
 import site.remlit.aster.db.table.NoteTable
 import site.remlit.aster.db.table.UserTable
 import site.remlit.aster.model.lastConfigReloadAt
 import site.remlit.aster.registry.RouteRegistry
 import site.remlit.aster.service.DriveService
 import site.remlit.aster.service.FormatService
+import site.remlit.aster.service.InstanceService
 import site.remlit.aster.service.NoteService
 import site.remlit.aster.service.TimeService
 import site.remlit.aster.service.UserService
@@ -67,13 +69,16 @@ internal object AdminIndexRoutes {
 							h2 { +"Statistics" }
 							p { +"Last configuration refresh ${FormatService.relativeTime(lastConfigReloadAt)}" }
 							table {
+								val knownInstances = InstanceService.count(InstanceTable.id neq null)
+								val activeInstances = InstanceService.count(InstanceTable.id neq null)
+
 								tr {
 									th { +"Known instances" }
-									td { +"0" }
+									td { +"$knownInstances" }
 								}
 								tr {
 									th { +"Active instances" }
-									td { +"0" }
+									td { +"$activeInstances" }
 								}
 
 								val totalNotes = NoteService.count(NoteTable.id neq null)
