@@ -50,10 +50,10 @@ internal object LoginRoutes {
 				if (!passwordValid.verified)
 					throw ApiException(HttpStatusCode.BadRequest, "Incorrect password")
 
-				if (userPrivate.totpSecret != null && body.totp == null)
+				if (!userPrivate.totpSecret.isNullOrBlank() && body.totp == null)
 					throw ApiException(HttpStatusCode.BadRequest, "One time password required")
 
-				if (userPrivate.totpSecret != null && !AuthService.confirmTotp(user.id, body.totp!!))
+				if (!userPrivate.totpSecret.isNullOrBlank() && !AuthService.confirmTotp(user.id, body.totp!!))
 					throw ApiException(HttpStatusCode.BadRequest, "One time password incorrect")
 
 				val token = AuthService.registerToken(user.id)

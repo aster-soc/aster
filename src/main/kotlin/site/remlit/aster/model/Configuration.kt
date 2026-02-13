@@ -13,6 +13,7 @@ import kotlin.concurrent.thread
 import kotlin.io.path.Path
 import kotlin.io.path.exists
 import kotlin.io.path.isDirectory
+import kotlin.system.measureTimeMillis
 
 val version = System.getenv("CONFIG_VERSION")
 var workingDir = File(".").absolutePath.toString().removeSuffix(".")
