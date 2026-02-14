@@ -20,8 +20,13 @@ internal object WebfingerRoutes {
 			get("/.well-known/webfinger") {
 				val resource = call.queryParameters.getOrFail("resource")
 
-				if (!resource.startsWith("acct:") || resource == "acct:")
-					throw ApiException(HttpStatusCode.BadRequest, "Only 'acct' resource type supported")
+				if (resource == "acct:")
+					throw ApiException(HttpStatusCode.BadRequest, "Something must follow 'acct:'")
+
+				if (!resource.startsWith("acct:") &&
+					!resource.startsWith("http://") &&
+					!resource.startsWith("https://")
+					) throw ApiException(HttpStatusCode.BadRequest, "Only 'acct' resource type supported")
 
 				val username = resource
 					.replace("acct:@", "")
@@ -32,6 +37,9 @@ internal object WebfingerRoutes {
 				val user = UserService.get(
 					UserTable.username eq username
 							and (UserTable.host eq null)
+				) ?: UserService.get(
+					UserTable.apId eq username
+						and (UserTable.host eq null)
 				)
 
 				if (user == null || user.suspended || !user.activated)
