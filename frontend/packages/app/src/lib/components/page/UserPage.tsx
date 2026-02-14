@@ -71,7 +71,7 @@ function UserPage(
                         <Container gap={"xl"} align={"horizontal"}>
                             <Container align={"horizontal"} gap={"md"}>
                                 <Container>
-                                    <Avatar size={"xl"} user={data}/>
+                                    <Avatar size={"xl"} user={data} thought={data?.id} />
                                 </Container>
                                 <Container gap={"sm"}>
                                     <span className={"displayName"}>{displayName}</span>

@@ -43,4 +43,51 @@
 
     object-fit: cover;
   }
+
+	.thoughtCtn {
+		position: absolute;
+		margin-bottom: 100px;
+
+		animation: bobbing 3s;
+		animation-iteration-count: infinite;
+
+		.thought {
+			background-color: var(--bg-3);
+
+			width: 100px;
+			padding: 8px;
+			border-radius: var(--br-md);
+			font-size: var(--fs-sm);
+
+			line-break: anywhere;
+
+			&::after {
+				position: absolute;
+
+				content: "";
+				display: block;
+
+				background-color: var(--bg-3);
+				-webkit-mask-image: url("/assets/ui/thought.svg");
+				-webkit-mask-size: cover;
+
+				width: 100%;
+				max-width: 50px;
+				height: 15px;
+				margin: 8px 0 0 -8px;
+			}
+		}
+	}
+}
+
+@keyframes bobbing {
+	0% {
+		transform: translateY(0%);
+	}
+	50% {
+		transform: translateY(3%);
+	}
+	100% {
+		transform: translateY(0%);
+	}
 }

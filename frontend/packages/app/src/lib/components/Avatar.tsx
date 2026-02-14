@@ -7,13 +7,13 @@ import {createRef} from "preact";
 import {useEffect, useRef, useState} from "react";
 
 function Avatar(
-    {user, size}:
-    { user: any, size?: undefined | 'xl' | 'lg' | 'md' | 'sm' }
+	{user, size, thought}:
+	{ user: any, size?: undefined | 'xl' | 'lg' | 'md' | 'sm', thought?: string }
 ) {
-    const navigate = useNavigate();
+	const navigate = useNavigate();
 	const [useFallback, setUseFallback] = useState(false);
 
-    let fallback = "/assets/img/avatar.png"
+	let fallback = "/assets/img/avatar.png"
 
 	let sizePx = 45;
 	switch (size) {
@@ -38,31 +38,35 @@ function Avatar(
 	})
 
 	function render() {
-		if (useFallback) {
-			return (
-				<canvas ref={canvasRef} width={sizePx} height={sizePx} />
-			)
-		} else {
-			return (
+		return <>
+			{thought ? (
+				<div className={"thoughtCtn"}>
+					<div className={"thought"}>
+						<span>{thought}</span>
+					</div>
+				</div>
+			) : null}
+
+			{useFallback ? (<canvas ref={canvasRef} width={sizePx} height={sizePx} />) : (
 				<img
 					src={user?.avatar ?? fallback}
 					alt={user?.avatarAlt ?? `${user.username}'s avatar`}
 					onError={() => setUseFallback(true)}
 				/>
-			)
-		}
+			)}
+		</>
 	}
 
-    return (
-        <div className={`avatarCtn`}>
-            <div
-                className={`avatar ${size ?? ""} highlightable${localstore.getParsed("rounded_avatars") ? " rounded" : ""}`}
-                onClick={() => navigate({to: `/${Common.renderHandle(user)}`})}
-            >
+	return (
+		<div className={`avatarCtn`}>
+			<div
+				className={`avatar ${size ?? ""} highlightable${localstore.getParsed("rounded_avatars") ? " rounded" : ""}`}
+				onClick={() => navigate({to: `/${Common.renderHandle(user)}`})}
+			>
 				{render()}
-            </div>
-        </div>
-    )
+			</div>
+		</div>
+	)
 }
 
 export default Avatar
