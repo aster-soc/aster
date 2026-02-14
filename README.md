@@ -6,8 +6,6 @@
     </picture>
 </h1>
 
-[Issue Tracker](https://youtrack.remlit.site/projects/AS/issues)
-
 Decentralized social software using ActivityPub, written in Kotlin.
 
 ## Goals

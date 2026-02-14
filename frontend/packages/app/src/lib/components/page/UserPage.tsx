@@ -5,10 +5,8 @@ import {
 	IconArrowBackUp,
 	IconCake,
 	IconDots,
-	IconLocation,
 	IconMapPin,
 	IconNote, IconPhoto,
-	IconPin,
 	IconUser
 } from "@tabler/icons-react";
 import {useQuery} from "@tanstack/react-query";
@@ -28,6 +26,8 @@ import UserPage_Notes from "./UserPage_Notes.tsx";
 function UserPage(
     {handle}: { handle: string }
 ) {
+	if (handle === undefined) return null
+
 	let [displayName, setDisplayName] = useState(handle);
     let [tab, setTab] = useState(0);
 
@@ -39,12 +39,24 @@ function UserPage(
         }),
     });
 
+	const relationship = useQuery({
+		queryKey: [`relationship_${data?.id}`],
+		queryFn: () => (data?.id) ? Api.getUserRelationship(data.id) : undefined,
+	});
+
 	function renderTab() {
 		switch (tab) {
 			case 0: return <UserPage_Notes />;
 			case 1: return <UserPage_Notes withReplies />;
 			case 2: return <UserPage_Notes media />;
 		}
+	}
+
+	function renderRelationshipTag() {
+		const data = relationship?.data
+		if (data === undefined) return null
+
+		//if (data.type === "follow")
 	}
 
     function render() {
@@ -67,7 +79,7 @@ function UserPage(
                                 </Container>
                             </Container>
 
-                            <FollowButton id={data?.id}/>
+                            <FollowButton id={data?.id} query={relationship}/>
                             <Button>
 								<IconDots size={18}/>
 							</Button>

@@ -1,23 +1,23 @@
 import Button from "./Button.tsx";
-import {useQuery} from "@tanstack/react-query";
+import {useQuery, type UseQueryResult} from "@tanstack/react-query";
 import Loading from "./Loading.tsx";
-import {Api} from 'aster-common'
+import {Api, type Nullable, type Relationship} from 'aster-common'
 
-function FollowButton({id}: { id: string }) {
-    const {data, error, isPending, isFetching, refetch} = useQuery({
-        queryKey: [`relationship_${id}`],
-        queryFn: () => Api.getUserRelationship(id),
-    });
+function FollowButton({id, query}: { id: string, query?: UseQueryResult<Nullable<Relationship>, Error> }) {
+    if (query === undefined) query = useQuery({
+		queryKey: [`relationship_${id}`],
+		queryFn: () => Api.getUserRelationship(id),
+	});
 
     return (
         <Button onClick={() => {
-            Api.followUser(id).then(() => refetch());
+            Api.followUser(id).then(() => query.refetch());
         }}>
-            {isPending || isFetching || error ? (
+            {query?.isPending || query?.isFetching || query?.error ? (
                 <Loading/>
             ) : (
-                data?.to && !data?.to?.pending ? ("Unfollow") :
-                    data?.to && data?.to?.pending ? ("Cancel follow") :
+				query?.data?.to && !query?.data?.to?.pending ? ("Unfollow") :
+					query?.data?.to && query?.data?.to?.pending ? ("Cancel follow") :
                         ("Follow")
             )}
         </Button>
