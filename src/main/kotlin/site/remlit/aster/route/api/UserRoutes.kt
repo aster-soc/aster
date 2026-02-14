@@ -5,6 +5,7 @@ import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.server.util.*
+import site.remlit.aster.common.model.RelationshipPair
 import site.remlit.aster.common.model.User
 import site.remlit.aster.common.model.generated.PartialUser
 import site.remlit.aster.common.model.request.TotpConfirmRequest
@@ -185,9 +186,9 @@ internal object UserRoutes {
 
 					val requestingUser = call.attributes[authenticatedUserKey]
 
-					call.respond(RelationshipService.mapPair(
-						RelationshipService.getPair(requestingUser.id.toString(), user.id.toString())
-					))
+					val pair = RelationshipService.getPair(requestingUser.id.toString(), user.id.toString())
+
+					call.respond(RelationshipPair(pair.first, pair.second))
 				}
 
 				post("/api/user/totp/register") {

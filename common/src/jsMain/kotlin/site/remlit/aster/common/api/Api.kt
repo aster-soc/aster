@@ -5,6 +5,8 @@ import site.remlit.aster.common.model.DriveFile
 import site.remlit.aster.common.model.Meta
 import site.remlit.aster.common.model.Note
 import site.remlit.aster.common.model.Notification
+import site.remlit.aster.common.model.Relationship
+import site.remlit.aster.common.model.RelationshipPair
 import site.remlit.aster.common.model.SearchResults
 import site.remlit.aster.common.model.User
 import site.remlit.aster.common.model.Visibility
@@ -110,7 +112,7 @@ class Api {
 		@JsStatic
 		fun getUserRelationship(id: String) =
 			Https.get("/api/user/$id/relationship", true)
-				.unsafeCast<Promise<User?>>()
+				.unsafeCast<Promise<RelationshipPair>>()
 
 		@JsStatic
 		fun lookupUser(handle: String) =
