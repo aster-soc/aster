@@ -77,6 +77,7 @@ function RouteComponent() {
 				if (result) {
 					self = result
 					localstore.set("self", JSON.stringify(self))
+					alert.add(new Alert("", AlertType.Success, "Updated profile"))
 				}
 			})
 		}
