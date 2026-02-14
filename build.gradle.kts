@@ -1,6 +1,3 @@
-@file:OptIn(OpenApiPreview::class)
-
-import io.ktor.plugin.*
 import org.gradle.internal.extensions.stdlib.capitalized
 
 plugins {
@@ -260,7 +257,7 @@ publishing {
 
 			pom {
 				name = "aster"
-				url = "https://github.com/aster-soc/aster"
+				url = "https://git.remlit.site/aster/aster"
 
 				licenses {
 					license {
@@ -278,9 +275,9 @@ publishing {
 				}
 
 				scm {
-					connection = "scm:git:git://github.com/aster-soc/aster.git"
-					developerConnection = "scm:git:ssh://github.com/aster-soc/aster.git"
-					url = "https://github.com/aster-soc/aster"
+					connection = "scm:git:git://git.remlit.site/aster/aster.git"
+					developerConnection = "scm:git:ssh://git.remlit.site/aster/aster.git"
+					url = "https://git.remlit.site/aster/aster"
 				}
 			}
 		}
