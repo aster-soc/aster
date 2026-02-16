@@ -7,6 +7,8 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.decodeFromJsonElement
+import org.jetbrains.exposed.v1.core.and
+import org.jetbrains.exposed.v1.core.eq
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 import org.slf4j.LoggerFactory
 import site.remlit.aster.common.model.User
@@ -17,8 +19,10 @@ import site.remlit.aster.common.util.extractString
 import site.remlit.aster.common.util.orNull
 import site.remlit.aster.common.util.toLocalDateTime
 import site.remlit.aster.db.entity.UserEntity
+import site.remlit.aster.db.table.UserTable
 import site.remlit.aster.event.user.UserCreateEvent
 import site.remlit.aster.event.user.UserEditEvent
+import site.remlit.aster.exception.ResolverException
 import site.remlit.aster.model.Service
 import site.remlit.aster.model.WellKnown
 import site.remlit.aster.model.ap.ApImage
@@ -74,26 +78,42 @@ object ApActorService : Service {
 	 *
 	 * @return UserEntity or null
 	 * */
-	// TODO: move to UserService?
 	@JvmStatic
 	suspend fun resolveHandle(handle: String): UserEntity? {
 		val handle = if (!handle.startsWith("@")) "@$handle" else handle
 		val split = handle.split("@")
 
-		val username = split.getOrNull(1) ?: return null
-		val host = split.getOrNull(2) ?: return UserService.getByUsername(username)
+		val username = split.getOrNull(1)
+			?: throw IllegalArgumentException("Improperly formatted handle, no discernible username")
+
+		val host = split.getOrNull(2)
+			?: return UserService.getByUsername(username)
+
+		val existing = UserService.get(UserTable.username eq username and (UserTable.host eq host))
+		if (existing != null) return existing
 
 		CoroutineScope(Dispatchers.Default).launch { InstanceService.resolve(host) }
-		val webfingerResponse = jsonConfig.decodeFromString<WellKnown>(
-			jsonConfig.encodeToString(
-				ResolverService.resolveSigned("https://$host/.well-known/webfinger?resource=acct:@$username@$host")
+
+		// Resolver service failure shouldn't be show stopping, they may be cached
+		try {
+			// This is stupid, but for some reason nobody does webfinger right.
+			val webfingerResolve = ResolverService.resolveSigned("https://$host/.well-known/webfinger?resource=acct:$username@$host")
+				?: ResolverService.resolveSigned("https://$host/.well-known/webfinger?resource=acct:@$username@$host")
+				?: throw NullPointerException("Resource can't be found by webfinger")
+
+			val webfingerResponse = jsonConfig.decodeFromString<WellKnown>(
+				jsonConfig.encodeToString(webfingerResolve)
 			)
-		)
 
-		val apId = webfingerResponse.links?.firstOrNull { it.rel == "self" }?.href
-			?: return null
+			val apId = webfingerResponse.links?.firstOrNull { it.rel == "self" }?.href
+				?: return null
 
-		return resolve(apId)
+			return resolve(apId)
+		} catch (_: ResolverException) {
+			return null
+		} catch (_: NullPointerException) {
+			return null
+		}
 	}
 
 	// partials used here since a regular user has the expectation of being real,
