@@ -137,7 +137,7 @@ object InstanceService : Service {
 				nodeinfoHref = href
 		}
 
-		val resolvedNodeinfo = ResolverService.resolveSigned(nodeinfoHref)
+		val resolvedNodeinfo = ResolverService.resolveSigned(nodeinfoHref, "application/json")
 
 		if (resolvedNodeinfo != null && existing == null)
 			return register(toInstance(host, resolvedNodeinfo, existing))

@@ -248,8 +248,8 @@ object NoteService : Service {
 			NoteEntity.new(id) {
 				this.apId = ApIdService.renderNoteApId(id)
 				this.user = user
-				this.cw = if (cw != null) SanitizerService.sanitize(cw, true) else null
-				this.content = SanitizerService.sanitize(content, true)
+				this.cw = if (cw != null) SanitizerService.sanitize(cw) else null
+				this.content = SanitizerService.sanitize(content)
 				this.visibility = visibility
 				this.attachments = driveFiles.map { it.id }
 

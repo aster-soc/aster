@@ -23,7 +23,8 @@ class ApType {
 
 	enum class Tag {
 		Emoji,
-		Hashtag
+		Hashtag,
+		Mention
 	}
 
 	enum class Object {

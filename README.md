@@ -6,6 +6,8 @@
     </picture>
 </h1>
 
+[![Build Status](https://jenkins.remlit.site/buildStatus/icon?job=Aster)](https://jenkins.remlit.site/job/Aster/lastBuild/)
+
 Decentralized social software using ActivityPub, written in Kotlin.
 
 ## Goals

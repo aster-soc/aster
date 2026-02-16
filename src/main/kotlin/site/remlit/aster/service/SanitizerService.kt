@@ -10,22 +10,24 @@ import site.remlit.aster.model.Service
  * @since 2025.5.1.0-SNAPSHOT
  * */
 object SanitizerService : Service {
-	private val policy: PolicyFactory = HtmlPolicyBuilder()
-		.allowElements("p", "a")
-		.disallowAttributes("class", "id", "onclick", "style")
-		.onElements("p", "a")
+	private val allowedElements = arrayOf("a", "p", "span")
+
+	val policy: PolicyFactory = HtmlPolicyBuilder()
+		.allowElements(*allowedElements)
+		.allowAttributes("href").onElements("a")
+		.allowStandardUrlProtocols()
+		.requireRelNofollowOnLinks()
 		.toFactory()
 
 	/**
 	 * Sanitizes user input
 	 *
 	 * @param string String to sanitize
-	 * @param escape Whether to escape instead of sanitizing
 	 *
 	 * @return Sanitized string
 	 * */
-	// todo: escaping
 	@JvmStatic
-	fun sanitize(string: String, escape: Boolean = false): String =
+	fun sanitize(string: String): String =
 		policy.sanitize(string)
+			.replace("&#64;", "@")
 }

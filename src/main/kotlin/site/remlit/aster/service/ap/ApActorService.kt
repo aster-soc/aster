@@ -192,7 +192,7 @@ object ApActorService : Service {
 			id = existing?.id ?: IdentifierService.generate(),
 			apId = existing?.apId ?: extractedId,
 
-			username = SanitizerService.sanitize(extractedPreferredUsername, true),
+			username = SanitizerService.sanitize(extractedPreferredUsername),
 			displayName = extractString { json["name"] },
 
 			host = existing?.host ?: FormatService.toASCII(Url(extractedId).host),
