@@ -8,6 +8,7 @@ import org.jetbrains.exposed.v1.core.eq
 import org.jetbrains.exposed.v1.jdbc.selectAll
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 import site.remlit.aster.common.model.Relationship
+import site.remlit.aster.common.model.RelationshipPair
 import site.remlit.aster.common.model.User
 import site.remlit.aster.common.model.type.NotificationType
 import site.remlit.aster.common.model.type.RelationshipType
@@ -168,11 +169,11 @@ object RelationshipService : Service {
 	 * @param to Relationship target
 	 * @param from Relationship owner
 	 *
-	 * @return Pair of Relationship, where first is to and second is from
+	 * @return Pair of relationships
 	 * */
 	@JvmStatic
-	fun getPair(to: String, from: String): Pair<Relationship?, Relationship?> {
-		return Pair(
+	fun getPair(to: String, from: String): RelationshipPair {
+		return RelationshipPair(
 			this.get(RelationshipTable.to eq from and (RelationshipTable.from eq to)),
 			this.get(RelationshipTable.to eq to and (RelationshipTable.from eq from))
 		)
@@ -199,10 +200,10 @@ object RelationshipService : Service {
 	fun eitherBlocking(to: String, from: String): Boolean {
 		val pair = this.getPair(to, from)
 
-		if (pair.first != null && pair.first?.type == RelationshipType.Block)
+		if (pair.to != null && pair.to?.type == RelationshipType.Block)
 			return true
 
-		if (pair.second != null && pair.first?.type == RelationshipType.Block)
+		if (pair.from != null && pair.from?.type == RelationshipType.Block)
 			return true
 
 		return false
@@ -250,7 +251,11 @@ object RelationshipService : Service {
 	 * @return Relationship pair
 	 * */
 	@JvmStatic
-	fun follow(to: String, from: String, followId: String? = null): Pair<Relationship?, Relationship?> {
+	fun follow(
+		to: String,
+		from: String,
+		followId: String? = null
+	): RelationshipPair {
 		if (eitherBlocking(to, from) || to == from)
 			throw IllegalArgumentException("You cannot follow this user")
 

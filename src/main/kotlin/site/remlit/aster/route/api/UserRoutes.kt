@@ -120,9 +120,7 @@ internal object UserRoutes {
 					if (user == null || !user.activated || user.suspended)
 						throw ApiException(HttpStatusCode.NotFound)
 
-					call.respond(RelationshipService.mapPair(
-						RelationshipService.follow(user.id.toString(), authenticatedUser.id.toString())
-					))
+					call.respond(RelationshipService.follow(user.id.toString(), authenticatedUser.id.toString()))
 				}
 
 				post("/api/user/{id}/report") {
@@ -187,8 +185,7 @@ internal object UserRoutes {
 					val requestingUser = call.attributes[authenticatedUserKey]
 
 					val pair = RelationshipService.getPair(requestingUser.id.toString(), user.id.toString())
-
-					call.respond(RelationshipPair(pair.first, pair.second))
+					call.respond(pair)
 				}
 
 				post("/api/user/totp/register") {
