@@ -23,11 +23,11 @@ internal object AdminDebugRoutes {
 			role = RoleType.Admin
 		) {
 			get("/admin/debug") {
-				val mode = call.request.queryParameters["mode"]
+				val type = call.request.queryParameters["type"]
 				val target = call.request.queryParameters["target"]
 				call.respondHtml(HttpStatusCode.OK) {
 					adminPage(call.route.path) {
-						when (mode) {
+						when (type) {
 							"resolve" -> {
 								if (target == null) {
 									+"No target query parameter specified."
@@ -45,7 +45,7 @@ internal object AdminDebugRoutes {
 
 							null -> {
 								input {
-									type = InputType.text
+									this.type = InputType.text
 									placeholder = "https://example.com/note/000000000"
 								}
 								adminButton({ "" }) {
@@ -54,7 +54,7 @@ internal object AdminDebugRoutes {
 							}
 
 							else -> {
-								+"Unknown mode."
+								+"Unknown type."
 							}
 						}
 					}

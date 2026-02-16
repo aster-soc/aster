@@ -19,6 +19,7 @@ import io.ktor.server.response.*
 import io.ktor.server.websocket.WebSockets
 import kotlinx.coroutines.runBlocking
 import org.jetbrains.annotations.ApiStatus
+import org.slf4j.LoggerFactory
 import site.remlit.aster.common.model.ApiError
 import site.remlit.aster.db.Database
 import site.remlit.aster.event.application.ApplicationBeginShutdownEvent
@@ -42,6 +43,11 @@ import site.remlit.aster.util.jsonConfig
 import site.remlit.aster.util.setJsonConfig
 import site.remlit.effekt.effect
 
+typealias KtorApplication = io.ktor.server.application.Application
+
+private interface Application
+private val logger = LoggerFactory.getLogger(Application::class.java)
+
 /**
  * Entrypoint for Aster
  * */
@@ -53,9 +59,17 @@ internal fun main(args: Array<String>) {
 
 	if (Configuration.debug) CommandLineService.printDebug(args)
 
+	if (Configuration.pauseInbox) {
+		logger.warn("-----------------------------------------------")
+		logger.warn(" !! WARNING !! ")
+		logger.warn(" You are running Aster with the inbox disabled.")
+		logger.warn(" Activities will NOT be processed.")
+		logger.warn("-----------------------------------------------")
+	}
+
 	ApplicationBeginStartEvent().call()
 
-	val server = embeddedServer(Netty, Configuration.port, Configuration.host, module = Application::module)
+	val server = embeddedServer(Netty, Configuration.port, Configuration.host, module = KtorApplication::module)
 
 	addShutdownHook {
 		server.stop()
@@ -67,10 +81,10 @@ internal fun main(args: Array<String>) {
 }
 
 @ApiStatus.Internal
-fun Application.module() {
+fun KtorApplication.module() {
 	addShutdownHook {
 		ApplicationBeginShutdownEvent().call()
-		this.log.info("Shutting down...")
+		logger.info("Shutting down...")
 		PluginRegistry.disableAll()
 		QueueService.stop()
 	}
@@ -137,6 +151,8 @@ fun Application.module() {
 
 	install(StatusPages) {
 		exception<Throwable> { call, cause ->
+			if (Configuration.debug) cause.printStackTrace()
+
 			if (cause is ApiException) {
 				call.respond(
 					cause.status,
@@ -146,6 +162,7 @@ fun Application.module() {
 						cause.stackTrace.joinToString("\n")
 					)
 				)
+				return@exception
 			}
 
 			if (cause is ApValidationException) {
@@ -183,9 +200,6 @@ fun Application.module() {
 					cause.stackTrace.joinToString("\n")
 				)
 			)
-
-			if (Configuration.debug) cause.printStackTrace()
-
 			return@exception
 		}
 	}
@@ -193,7 +207,7 @@ fun Application.module() {
 	configureRouting()
 
 	effect<InternalRouterReloadEvent> {
-		log.warn("Unable to restart router. Please restart for routes to update.")
+		logger.warn("Unable to restart router. Please restart for routes to update.")
 	}
 
 	configureQueue()
