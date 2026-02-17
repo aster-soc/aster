@@ -1,7 +1,10 @@
 package site.remlit.aster.model.ap
 
 import kotlinx.serialization.Serializable
+import org.jetbrains.annotations.ApiStatus
 
-interface ApTag {
-	val type: ApType.Tag
+@Serializable
+@ApiStatus.OverrideOnly
+abstract class ApTag : ApObject {
+	abstract val type: ApType.Tag
 }

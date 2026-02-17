@@ -7,7 +7,9 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
 import site.remlit.aster.model.ap.ApObject
+import site.remlit.aster.model.ap.ApTag
 import site.remlit.aster.registry.ApObjectTypeRegistry
+import site.remlit.aster.registry.ApTagTypeRegistry
 import kotlin.reflect.KClass
 
 /**
@@ -29,6 +31,12 @@ fun setJsonConfig() {
 				for ((klass, serializer) in ApObjectTypeRegistry.apObjectTypes) {
 					@Suppress("UNCHECKED_CAST")
 					subclass(klass as KClass<ApObject>, serializer as KSerializer<ApObject>)
+				}
+			}
+			polymorphic(ApTag::class) {
+				for ((klass, serializer) in ApTagTypeRegistry.apTagTypes) {
+					@Suppress("UNCHECKED_CAST")
+					subclass(klass as KClass<ApTag>, serializer as KSerializer<ApTag>)
 				}
 			}
 		}

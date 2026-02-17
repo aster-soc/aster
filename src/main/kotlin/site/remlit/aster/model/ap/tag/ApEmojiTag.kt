@@ -11,4 +11,4 @@ data class ApEmojiTag(
 	override val type: ApType.Tag = ApType.Tag.Emoji,
 	val name: String,
 	val icon: ApImage,
-) : ApTag
+) : ApTag()
