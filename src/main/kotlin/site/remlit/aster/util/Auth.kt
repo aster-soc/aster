@@ -12,6 +12,7 @@ import site.remlit.aster.common.model.type.RoleType
 import site.remlit.aster.db.entity.UserEntity
 import site.remlit.aster.event.auth.AuthTokenUseEvent
 import site.remlit.aster.model.ApiException
+import site.remlit.aster.model.ap.ApValidationException
 import site.remlit.aster.service.AuthService
 import site.remlit.aster.service.RoleService
 import site.remlit.aster.service.ap.ApValidationService
@@ -44,7 +45,7 @@ private fun internalAuth(
 	if (authorizedFetch) {
 		val viewer = try {
 			runBlocking { ApValidationService.validate(request as RoutingRequest) }
-		} catch (e: Exception) {
+		} catch (e: ApValidationException) {
 			if (!optional) throw e
 			else null
 		}

@@ -99,7 +99,7 @@ object ApActorService : Service {
 			// This is stupid, but for some reason nobody does webfinger right.
 			val webfingerResolve = ResolverService.resolveSigned("https://$host/.well-known/webfinger?resource=acct:$username@$host")
 				?: ResolverService.resolveSigned("https://$host/.well-known/webfinger?resource=acct:@$username@$host")
-				?: throw NullPointerException("Resource can't be found by webfinger")
+				?: throw NullPointerException("Resource can't be found by WebFinger")
 
 			val webfingerResponse = jsonConfig.decodeFromString<WellKnown>(
 				jsonConfig.encodeToString(webfingerResolve)
@@ -243,58 +243,53 @@ object ApActorService : Service {
 	 * */
 	@JvmStatic
 	fun update(user: PartialUser): UserEntity? {
-		try {
-			transaction {
-				UserEntity.findByIdAndUpdate(user.id!!) {
-					it.apId = user.apId!!
+		transaction {
+			UserEntity.findByIdAndUpdate(user.id!!) {
+				it.apId = user.apId!!
 
-					it.username = user.username!!
-					it.displayName = user.displayName
+				it.username = user.username!!
+				it.displayName = user.displayName
 
-					it.host = user.host
+				it.host = user.host
 
-					it.bio = user.bio
-					it.birthday = user.birthday
-					it.location = user.location
+				it.bio = user.bio
+				it.birthday = user.birthday
+				it.location = user.location
 
-					it.avatar = user.avatar
-					it.avatarAlt = user.avatarAlt
-					it.banner = user.banner
-					it.bannerAlt = user.bannerAlt
+				it.avatar = user.avatar
+				it.avatarAlt = user.avatarAlt
+				it.banner = user.banner
+				it.bannerAlt = user.bannerAlt
 
-					it.inbox = user.inbox!!
-					it.outbox = user.outbox
+				it.inbox = user.inbox!!
+				it.outbox = user.outbox
 
-					it.activated = user.activated ?: true
-					it.automated = user.automated ?: false
-					it.suspended = user.suspended ?: false
-					it.sensitive = user.sensitive ?: false
-					it.discoverable = user.discoverable ?: false
-					it.locked = user.locked ?: false
-					it.indexable = user.indexable ?: false
-					it.isCat = user.isCat ?: false
-					it.speakAsCat = user.speakAsCat ?: false
+				it.activated = user.activated ?: true
+				it.automated = user.automated ?: false
+				it.suspended = user.suspended ?: false
+				it.sensitive = user.sensitive ?: false
+				it.discoverable = user.discoverable ?: false
+				it.locked = user.locked ?: false
+				it.indexable = user.indexable ?: false
+				it.isCat = user.isCat ?: false
+				it.speakAsCat = user.speakAsCat ?: false
 
-					it.followersUrl = user.followersUrl
-					it.followingUrl = user.followingUrl
+				it.followersUrl = user.followersUrl
+				it.followingUrl = user.followingUrl
 
-					it.createdAt = (user.createdAt ?: Clock.System.now()).toLocalDateTime()
-					it.updatedAt = user.updatedAt?.toLocalDateTime()
+				it.createdAt = (user.createdAt ?: Clock.System.now()).toLocalDateTime()
+				it.updatedAt = user.updatedAt?.toLocalDateTime()
 
-					it.publicKey = user.publicKey!!
-				}
+				it.publicKey = user.publicKey!!
 			}
-
-			val newUser = UserService.getById(user.id!!)
-
-			if (newUser != null)
-				UserEditEvent(User.fromEntity(newUser)).call()
-
-			return newUser
-		} catch (e: Exception) {
-			logger.error(e.message, e)
-			return null
 		}
+
+		val newUser = UserService.getById(user.id!!)
+
+		if (newUser != null)
+			UserEditEvent(User.fromEntity(newUser)).call()
+
+		return newUser
 	}
 
 	/**
@@ -306,57 +301,52 @@ object ApActorService : Service {
 	 * */
 	@JvmStatic
 	fun register(user: PartialUser): UserEntity? {
-		try {
-			transaction {
-				UserEntity.new(user.id) {
-					this.apId = user.apId!!
+		transaction {
+			UserEntity.new(user.id) {
+				this.apId = user.apId!!
 
-					this.username = user.username!!
-					this.displayName = user.displayName
+				this.username = user.username!!
+				this.displayName = user.displayName
 
-					this.host = user.host
+				this.host = user.host
 
-					this.bio = user.bio
-					this.birthday = user.birthday
-					this.location = user.location
+				this.bio = user.bio
+				this.birthday = user.birthday
+				this.location = user.location
 
-					this.avatar = user.avatar
-					this.avatarAlt = user.avatarAlt
-					this.banner = user.banner
-					this.bannerAlt = user.bannerAlt
+				this.avatar = user.avatar
+				this.avatarAlt = user.avatarAlt
+				this.banner = user.banner
+				this.bannerAlt = user.bannerAlt
 
-					this.inbox = user.inbox!!
-					this.outbox = user.outbox
+				this.inbox = user.inbox!!
+				this.outbox = user.outbox
 
-					this.activated = user.activated ?: true
-					this.automated = user.automated ?: false
-					this.suspended = user.suspended ?: false
-					this.sensitive = user.sensitive ?: false
-					this.discoverable = user.discoverable ?: false
-					this.locked = user.locked ?: false
-					this.indexable = user.indexable ?: false
-					this.isCat = user.isCat ?: false
-					this.speakAsCat = user.speakAsCat ?: false
+				this.activated = user.activated ?: true
+				this.automated = user.automated ?: false
+				this.suspended = user.suspended ?: false
+				this.sensitive = user.sensitive ?: false
+				this.discoverable = user.discoverable ?: false
+				this.locked = user.locked ?: false
+				this.indexable = user.indexable ?: false
+				this.isCat = user.isCat ?: false
+				this.speakAsCat = user.speakAsCat ?: false
 
-					this.followersUrl = user.followersUrl
-					this.followingUrl = user.followingUrl
+				this.followersUrl = user.followersUrl
+				this.followingUrl = user.followingUrl
 
-					this.createdAt = (user.createdAt ?: Clock.System.now()).toLocalDateTime()
-					this.updatedAt = user.updatedAt?.toLocalDateTime()
+				this.createdAt = (user.createdAt ?: Clock.System.now()).toLocalDateTime()
+				this.updatedAt = user.updatedAt?.toLocalDateTime()
 
-					this.publicKey = user.publicKey!!
-				}
+				this.publicKey = user.publicKey!!
 			}
-
-			val newUser = UserService.getById(user.id!!)
-
-			if (newUser != null)
-				UserCreateEvent(User.fromEntity(newUser)).call()
-
-			return newUser
-		} catch (e: Exception) {
-			logger.error(e.message, e)
-			return null
 		}
+
+		val newUser = UserService.getById(user.id!!)
+
+		if (newUser != null)
+			UserCreateEvent(User.fromEntity(newUser)).call()
+
+		return newUser
 	}
 }

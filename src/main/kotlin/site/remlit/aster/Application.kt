@@ -46,7 +46,7 @@ import site.remlit.effekt.effect
 
 typealias KtorApplication = io.ktor.server.application.Application
 
-private interface Application
+private class Application
 private val logger = LoggerFactory.getLogger(Application::class.java)
 
 /**
@@ -94,6 +94,7 @@ fun KtorApplication.module() {
 	Database.connection
 
 	MigrationService.isUpToDate()
+
 	ApObjectTypeRegistry.registerInternal()
 	ApTagTypeRegistry.registerInternal()
 

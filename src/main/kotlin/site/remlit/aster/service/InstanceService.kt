@@ -201,33 +201,29 @@ object InstanceService : Service {
 	 * @return Updated instance
 	 * */
 	@JvmStatic
-	fun update(instance: PartialInstance): InstanceEntity? {
-		try {
-			transaction {
-				InstanceEntity.findByIdAndUpdate(instance.id!!) {
-					it.host = instance.host!!
+	fun update(instance: PartialInstance): InstanceEntity {
+		transaction {
+			InstanceEntity.findByIdAndUpdate(instance.id!!) {
+				it.host = instance.host!!
 
-					it.name = instance.name
-					it.description = instance.description
-					if (instance.color != null)
-						it.color = instance.color!!
-					it.icon = instance.icon
+				it.name = instance.name
+				it.description = instance.description
+				if (instance.color != null)
+					it.color = instance.color!!
+				it.icon = instance.icon
 
-					it.software = instance.software
-					it.version = instance.version
-					it.contact = instance.contact
+				it.software = instance.software
+				it.version = instance.version
+				it.contact = instance.contact
 
-					it.updatedAt = instance.updatedAt?.toLocalDateTime()
-				}
+				it.updatedAt = instance.updatedAt?.toLocalDateTime()
 			}
-
-			val instance = getById(instance.id!!)!!
-			InstanceEditEvent(Instance.fromEntity(instance)).call()
-
-			return instance
-		} catch (_: Exception) {
-			return null
 		}
+
+		val instance = getById(instance.id!!)!!
+		InstanceEditEvent(Instance.fromEntity(instance)).call()
+
+		return instance
 	}
 
 	/**
@@ -239,31 +235,27 @@ object InstanceService : Service {
 	 * */
 	@JvmStatic
 	fun register(instance: PartialInstance): InstanceEntity? {
-		try {
-			transaction {
-				InstanceEntity.new(instance.id) {
-					this.host = instance.host!!
+		transaction {
+			InstanceEntity.new(instance.id) {
+				this.host = instance.host!!
 
-					this.name = instance.name
-					this.description = instance.description
-					if (instance.color != null)
-						this.color = instance.color!!
-					this.icon = instance.icon
+				this.name = instance.name
+				this.description = instance.description
+				if (instance.color != null)
+					this.color = instance.color!!
+				this.icon = instance.icon
 
-					this.software = instance.software
-					this.version = instance.version
-					this.contact = instance.contact
+				this.software = instance.software
+				this.version = instance.version
+				this.contact = instance.contact
 
-					this.updatedAt = instance.updatedAt?.toLocalDateTime()
-				}
+				this.updatedAt = instance.updatedAt?.toLocalDateTime()
 			}
-
-			val instance = getById(instance.id!!)!!
-			InstanceDiscoverEvent(Instance.fromEntity(instance)).call()
-
-			return instance
-		} catch (_: Exception) {
-			return null
 		}
+
+		val instance = getById(instance.id!!)!!
+		InstanceDiscoverEvent(Instance.fromEntity(instance)).call()
+
+		return instance
 	}
 }

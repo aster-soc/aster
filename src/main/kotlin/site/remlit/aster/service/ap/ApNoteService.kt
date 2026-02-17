@@ -226,41 +226,35 @@ object ApNoteService : Service {
 	 * */
 	@JvmStatic
 	fun update(note: PartialNote): Note? {
-		try {
-			transaction {
-				NoteEntity.findByIdAndUpdate(note.id!!) {
-					it.apId = note.apId!!
-					it.user = UserService.getById(note.user?.id!!)!!
-					it.cw = note.cw
-					// todo: note nullability
-					it.content = note.content.orEmpty()
-					it.visibility = note.visibility ?: Visibility.Direct
+		transaction {
+			NoteEntity.findByIdAndUpdate(note.id!!) {
+				it.apId = note.apId!!
+				it.user = UserService.getById(note.user?.id!!)!!
+				it.cw = note.cw
+				// todo: note nullability
+				it.content = note.content.orEmpty()
+				it.visibility = note.visibility ?: Visibility.Direct
 
-					it.replyingTo = if (note.replyingTo != null)
-						transaction { NoteEntity[note.replyingTo!!.id] }
-					else null
-					it.attachments = note.attachments?.map { a -> a.id } ?: emptyList()
+				it.replyingTo = if (note.replyingTo != null)
+					transaction { NoteEntity[note.replyingTo!!.id] }
+				else null
+				it.attachments = note.attachments?.map { a -> a.id } ?: emptyList()
 
-					// todo: to
-					it.to = note.to.orEmpty()
-					// todo: tags
-					// todo: emojis
-					// todo: repeat
+				// todo: to
+				it.to = note.to.orEmpty()
+				// todo: tags
+				// todo: emojis
+				// todo: repeat
 
-					it.createdAt = note.createdAt!!.toLocalDateTime()
-					it.updatedAt = note.updatedAt?.toLocalDateTime()
-				}
+				it.createdAt = note.createdAt!!.toLocalDateTime()
+				it.updatedAt = note.updatedAt?.toLocalDateTime()
 			}
-
-			val newNote = NoteService.getById(note.id!!) ?: return null
-
-			NoteEditEvent(newNote).call()
-
-			return newNote
-		} catch (e: Exception) {
-			logger.error(e.message, e)
-			return null
 		}
+
+		val newNote = NoteService.getById(note.id!!) ?: return null
+		NoteEditEvent(newNote).call()
+
+		return newNote
 	}
 
 	/**
@@ -272,39 +266,34 @@ object ApNoteService : Service {
 	 * */
 	@JvmStatic
 	fun register(note: PartialNote): Note? {
-		try {
-			transaction {
-				NoteEntity.new(note.id!!) {
-					this.apId = note.apId!!
-					this.user = UserService.getById(note.user?.id!!)!!
-					this.cw = note.cw
-					// todo: note nullability
-					this.content = note.content.orEmpty()
-					this.visibility = note.visibility ?: Visibility.Direct
+		transaction {
+			NoteEntity.new(note.id!!) {
+				this.apId = note.apId!!
+				this.user = UserService.getById(note.user?.id!!)!!
+				this.cw = note.cw
+				// todo: note nullability
+				this.content = note.content.orEmpty()
+				this.visibility = note.visibility ?: Visibility.Direct
 
-					this.replyingTo = if (note.replyingTo != null)
-						transaction { NoteEntity[note.replyingTo!!.id] }
-					else null
-					this.attachments = note.attachments?.map { a -> a.id } ?: emptyList()
+				this.replyingTo = if (note.replyingTo != null)
+					transaction { NoteEntity[note.replyingTo!!.id] }
+				else null
+				this.attachments = note.attachments?.map { a -> a.id } ?: emptyList()
 
-					// todo: to
-					this.to = note.to.orEmpty()
-					// todo: tags
-					// todo: emojis
-					// todo: repeat
+				// todo: to
+				this.to = note.to.orEmpty()
+				// todo: tags
+				// todo: emojis
+				// todo: repeat
 
-					this.createdAt = note.createdAt!!.toLocalDateTime()
-				}
+				this.createdAt = note.createdAt!!.toLocalDateTime()
 			}
-
-			val note = NoteService.getById(note.id!!) ?: return null
-
-			NoteCreateEvent(note).call()
-
-			return note
-		} catch (e: Exception) {
-			logger.error(e.message, e)
-			return null
 		}
+
+		val note = NoteService.getById(note.id!!) ?: return null
+
+		NoteCreateEvent(note).call()
+
+		return note
 	}
 }

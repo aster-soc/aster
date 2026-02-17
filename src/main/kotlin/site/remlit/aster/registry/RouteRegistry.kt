@@ -125,7 +125,7 @@ object RouteRegistry {
 		StreamingRoutes.register()
 		UploadRoutes.register()
 
-		DocumentationRoutes.register()
+		//DocumentationRoutes.register()
 	}
 
 	/**

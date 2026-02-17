@@ -44,8 +44,7 @@ some environment variables that are important.
 Code contributions are welcome, but Aster is in early development and I may have plans for how to do things already. You
 should contact me before opening a pull request or working on anything so we can get on the same page.
 
-Contributing by reporting bugs is also welcome, too! Aster's issue tracker can be
-found [here](https://youtrack.remlit.site/projects/AS/issues).
+Contributing by reporting bugs is also welcome, too!
 
 ### Project Breakdown
 

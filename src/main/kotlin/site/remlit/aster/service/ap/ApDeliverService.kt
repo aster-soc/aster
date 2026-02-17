@@ -185,7 +185,7 @@ object ApDeliverService {
 				logger.info("${response.status} ${response.request.method} - ${response.request.url}")
 				QueueService.completeDeliverJob(job)
 			}
-		} catch (e: Exception) {
+		} catch (e: Throwable) {
 			QueueService.errorDeliverJob(job, e)
 		}
 	}
