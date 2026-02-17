@@ -4,18 +4,13 @@ import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.server.http.*
-import kotlinx.serialization.serializer
-import kotlinx.serialization.serializerOrNull
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 import org.slf4j.LoggerFactory
 import site.remlit.aster.common.model.type.PolicyType
 import site.remlit.aster.db.entity.DeliverQueueEntity
-import site.remlit.aster.db.entity.InboxQueueEntity
 import site.remlit.aster.db.entity.UserEntity
 import site.remlit.aster.exception.ResolverException
 import site.remlit.aster.model.ap.DeliverPreprocessor
-import site.remlit.aster.registry.InboxHandlerRegistry
-import site.remlit.aster.registry.InboxHandlerRegistry.inboxPreprocessors
 import site.remlit.aster.service.KeypairService
 import site.remlit.aster.service.PolicyService
 import site.remlit.aster.service.QueueService
@@ -26,7 +21,6 @@ import site.remlit.aster.service.UserService
 import site.remlit.aster.util.jsonConfig
 import java.time.LocalDateTime
 import java.time.ZoneId
-import kotlin.math.log
 import kotlin.reflect.full.createInstance
 
 /**
@@ -185,7 +179,7 @@ object ApDeliverService {
 				logger.info("${response.status} ${response.request.method} - ${response.request.url}")
 				QueueService.completeDeliverJob(job)
 			}
-		} catch (e: Throwable) {
+		} catch (e: Exception) {
 			QueueService.errorDeliverJob(job, e)
 		}
 	}

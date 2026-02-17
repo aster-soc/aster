@@ -37,6 +37,7 @@ import site.remlit.aster.registry.PluginRegistry
 import site.remlit.aster.service.CommandLineService
 import site.remlit.aster.service.IdentifierService
 import site.remlit.aster.service.MigrationService
+import site.remlit.aster.service.NoteService
 import site.remlit.aster.service.QueueService
 import site.remlit.aster.service.SetupService
 import site.remlit.aster.util.addShutdownHook
@@ -99,6 +100,8 @@ fun KtorApplication.module() {
 	ApTagTypeRegistry.registerInternal()
 
 	setJsonConfig()
+
+	NoteService.registerEffects()
 
 	SetupService.setup()
 	PluginRegistry.initialize()

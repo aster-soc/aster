@@ -291,7 +291,6 @@ object ApNoteService : Service {
 		}
 
 		val note = NoteService.getById(note.id!!) ?: return null
-
 		NoteCreateEvent(note).call()
 
 		return note

@@ -1,6 +1,7 @@
 package site.remlit.aster.service
 
 import kotlinx.coroutines.runBlocking
+import org.jetbrains.annotations.ApiStatus
 import org.jetbrains.exposed.v1.core.JoinType
 import org.jetbrains.exposed.v1.core.Op
 import org.jetbrains.exposed.v1.core.alias
@@ -53,6 +54,7 @@ import site.remlit.aster.util.detached
 import site.remlit.aster.util.model.fromEntities
 import site.remlit.aster.util.model.fromEntity
 import site.remlit.aster.util.sanitizeOrNull
+import site.remlit.effekt.effect
 import site.remlit.mfmkt.MfmKt
 import site.remlit.mfmkt.model.MfmMention
 
@@ -644,4 +646,29 @@ object NoteService : Service {
 	 * */
 	@JvmStatic
 	fun deleteByApId(apId: String) = delete(NoteTable.id eq apId)
+
+	@JvmStatic
+	@ApiStatus.Internal
+	fun registerEffects() {
+		effect<NoteCreateEvent> {
+			val mentionedUsers = mutableListOf<UserEntity>()
+
+			if (it.note.replyingTo != null)
+				mentionedUsers.add(UserEntity[it.note.replyingTo!!.user.id])
+
+			if (it.note.to != null)
+				it.note.to!!.forEach { to -> mentionedUsers.add(UserEntity[to]) }
+
+			val author = it.note.user
+
+			mentionedUsers.forEach { user ->
+				NotificationService.create(
+					NotificationType.Mention,
+					user,
+					UserEntity[author.id],
+					it.note
+				)
+			}
+		}
+	}
 }

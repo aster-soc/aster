@@ -38,5 +38,6 @@ class ApType {
 		Collection,
 		OrderedCollection,
 		UnorderedCollection,
+		CollectionPage
 	}
 }
