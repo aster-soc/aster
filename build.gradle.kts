@@ -257,7 +257,7 @@ publishing {
 
 			pom {
 				name = "aster"
-				url = "https://git.remlit.site/aster/aster"
+				url = "https://git.gay/aster/aster"
 
 				licenses {
 					license {
@@ -275,9 +275,9 @@ publishing {
 				}
 
 				scm {
-					connection = "scm:git:git://git.remlit.site/aster/aster.git"
-					developerConnection = "scm:git:ssh://git.remlit.site/aster/aster.git"
-					url = "https://git.remlit.site/aster/aster"
+					connection = "scm:git:git://git.gay/aster/aster.git"
+					developerConnection = "scm:git:ssh://git.gay/aster/aster.git"
+					url = "https://git.gay/aster/aster"
 				}
 			}
 		}
