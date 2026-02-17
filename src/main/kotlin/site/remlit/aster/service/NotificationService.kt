@@ -20,6 +20,7 @@ import site.remlit.aster.db.table.NotificationTable
 import site.remlit.aster.db.table.RelationshipTable
 import site.remlit.aster.db.table.UserTable
 import site.remlit.aster.event.notification.NotificationCreateEvent
+import site.remlit.aster.event.notification.NotificationDeleteEvent
 import site.remlit.aster.model.Configuration
 import site.remlit.aster.model.Service
 import site.remlit.aster.util.model.fromEntities
@@ -328,11 +329,11 @@ object NotificationService : Service {
 				NotificationEntity::from,
 				NotificationEntity::note,
 				NotificationEntity::relationship
-			)
-		if (entity == null) return@transaction
+			) ?: return@transaction
+		val model = Notification.fromEntity(entity)
 
-		// notif delete event
 		entity.delete()
+		NotificationDeleteEvent(model).call()
 	}
 
 }

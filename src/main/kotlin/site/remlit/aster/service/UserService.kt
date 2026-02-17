@@ -4,18 +4,20 @@ import org.jetbrains.exposed.v1.core.Op
 import org.jetbrains.exposed.v1.core.and
 import org.jetbrains.exposed.v1.core.eq
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
-import site.remlit.aster.common.model.DriveFile
 import site.remlit.aster.common.model.User
 import site.remlit.aster.db.entity.UserEntity
 import site.remlit.aster.db.entity.UserPrivateEntity
 import site.remlit.aster.db.table.UserPrivateTable
 import site.remlit.aster.db.table.UserTable
+import site.remlit.aster.event.user.UserDeleteEvent
 import site.remlit.aster.event.user.UserEditEvent
 import site.remlit.aster.exception.SetupException
 import site.remlit.aster.model.Configuration
 import site.remlit.aster.model.Service
 import site.remlit.aster.model.ap.ApActor
 import site.remlit.aster.model.ap.ApIdOrObject
+import site.remlit.aster.model.ap.ApTombstone
+import site.remlit.aster.model.ap.activity.ApDeleteActivity
 import site.remlit.aster.model.ap.activity.ApUpdateActivity
 import site.remlit.aster.service.ap.ApDeliverService
 import site.remlit.aster.service.ap.ApIdService
@@ -250,5 +252,25 @@ object UserService : Service {
 	 * @param where Query to find user
 	 * */
 	@JvmStatic
-	fun delete(where: Op<Boolean>) = get(where)?.delete()
+	fun delete(where: Op<Boolean>) = transaction {
+		val entity = get(where) ?: return@transaction
+		val model = User.fromEntity(entity)
+
+		if (entity.isLocal())
+			ApDeliverService.deliverToFollowers<ApDeleteActivity>(
+				ApDeleteActivity(
+					entity.apId + "/delete",
+					actor = entity.apId,
+					`object` = ApIdOrObject.createObject {
+						ApTombstone(
+							entity.apId
+						)
+					}
+				),
+				entity
+			)
+
+		entity.delete()
+		UserDeleteEvent(model).call()
+	}
 }

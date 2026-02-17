@@ -595,10 +595,8 @@ object NoteService : Service {
 	fun delete(where: Op<Boolean>) = transaction {
 		val entity = NoteEntity
 			.find { where }
-			.singleOrNull()
-		if (entity == null) return@transaction
-
-		NoteDeleteEvent(Note.fromEntity(entity)).call()
+			.singleOrNull() ?: return@transaction
+		val model = Note.fromEntity(entity)
 
 		if (entity.user.isLocal())
 			ApDeliverService.deliverToFollowers<ApDeleteActivity>(
@@ -615,6 +613,7 @@ object NoteService : Service {
 			)
 
 		entity.delete()
+		NoteDeleteEvent(model).call()
 	}
 
 	/**
