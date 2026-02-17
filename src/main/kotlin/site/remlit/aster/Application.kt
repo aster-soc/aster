@@ -44,6 +44,7 @@ import site.remlit.aster.util.addShutdownHook
 import site.remlit.aster.util.jsonConfig
 import site.remlit.aster.util.setJsonConfig
 import site.remlit.effekt.effect
+import kotlin.system.exitProcess
 
 typealias KtorApplication = io.ktor.server.application.Application
 
@@ -61,6 +62,16 @@ internal fun main(args: Array<String>) {
 
 	if (Configuration.debug) CommandLineService.printDebug(args)
 
+	if (System.getProperty("user.name") == "root" && System.getenv("ASTER_ALLOW_ROOT") != "1") {
+		logger.error("-----------------------------------------------")
+		logger.error(" !! WARNING !! ")
+		logger.error(" You are running Aster as root.")
+		logger.error(" This is dangerous. Installed plugins will have root permissions on your server.")
+		logger.error(" If you know what you're doing and understand the risk, set ASTER_ALLOW_ROOT=1.")
+		logger.error("-----------------------------------------------")
+		exitProcess(1)
+	}
+
 	if (Configuration.pauseInbox) {
 		logger.warn("-----------------------------------------------")
 		logger.warn(" !! WARNING !! ")
@@ -77,6 +88,8 @@ internal fun main(args: Array<String>) {
 		server.stop()
 		Database.dataSource.close()
 		ApplicationFinishShutdownEvent().call()
+		logger.info("Goodbye!")
+		return@addShutdownHook
 	}
 
 	server.start(wait = true)
