@@ -13,6 +13,7 @@ import site.remlit.aster.service.PasswordResetService
 import site.remlit.aster.service.UserService
 import site.remlit.aster.util.authenticatedUserKey
 import site.remlit.aster.util.authentication
+import site.remlit.aster.util.user
 
 object PasswordResetRoutes {
 	@Serializable
@@ -33,7 +34,7 @@ object PasswordResetRoutes {
 				role = RoleType.Mod,
 			) {
 				post("/api/mod/password-reset") {
-					val authenticatedUser = call.attributes[authenticatedUserKey]
+					val authenticatedUser = call.user()
 					val body = call.receive<PasswordResetCodeRequest>()
 					val user = UserService.getById(body.user)
 						?: throw ApiException(HttpStatusCode.NotFound, "User not found")

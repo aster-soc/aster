@@ -15,6 +15,7 @@ import site.remlit.aster.service.DriveService
 import site.remlit.aster.service.TimelineService
 import site.remlit.aster.util.authenticatedUserKey
 import site.remlit.aster.util.authentication
+import site.remlit.aster.util.user
 
 internal object DriveRoutes {
 	fun register() =
@@ -23,7 +24,7 @@ internal object DriveRoutes {
 				required = true
 			) {
 				get("/api/drive") {
-					val authenticatedUser = call.attributes[authenticatedUserKey]
+					val authenticatedUser = call.user()
 					val since = TimelineService.normalizeSince(call.parameters["since"])
 					val take = TimelineService.normalizeTake(call.parameters["take"]?.toIntOrNull())
 
@@ -40,7 +41,7 @@ internal object DriveRoutes {
 				}
 
 				get("/api/drive/file/{id}") {
-					val authenticatedUser = call.attributes[authenticatedUserKey]
+					val authenticatedUser = call.user()
 
 					val file = DriveService.getById(call.parameters.getOrFail("id"))
 
@@ -53,7 +54,7 @@ internal object DriveRoutes {
 				}
 
 				delete("/api/drive/file/{id}") {
-					val authenticatedUser = call.attributes[authenticatedUserKey]
+					val authenticatedUser = call.user()
 
 					val file = DriveService.getById(call.parameters.getOrFail("id"))
 

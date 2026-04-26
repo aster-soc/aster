@@ -13,6 +13,7 @@ import site.remlit.aster.service.NotificationService
 import site.remlit.aster.service.TimelineService
 import site.remlit.aster.util.authenticatedUserKey
 import site.remlit.aster.util.authentication
+import site.remlit.aster.util.user
 
 internal object NotificationRoutes {
 	fun register() =
@@ -21,7 +22,7 @@ internal object NotificationRoutes {
 				required = true,
 			) {
 				get("/api/notifications") {
-					val authenticatedUser = call.attributes[authenticatedUserKey]
+					val authenticatedUser = call.user()
 					val since = TimelineService.normalizeSince(call.parameters["since"])
 					val take = TimelineService.normalizeTake(call.parameters["take"]?.toIntOrNull())
 

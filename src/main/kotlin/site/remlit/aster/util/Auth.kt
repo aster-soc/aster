@@ -22,6 +22,10 @@ val authenticatedUserKey = AttributeKey<UserEntity>("authenticatedUser")
 val authenticatedUserRoleKey = AttributeKey<RoleType>("authenticatedUserRole")
 val authorizedFetchUserKey = AttributeKey<UserEntity>("authorizedFetchUser")
 
+fun ApplicationCall.user() = attributes[authenticatedUserKey]
+fun ApplicationCall.userOrNull() = attributes.getOrNull(authenticatedUserKey)
+
+
 /**
  * Internal shared logic for authentication plugins.
  *

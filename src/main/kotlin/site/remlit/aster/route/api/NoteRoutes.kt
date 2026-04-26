@@ -21,17 +21,18 @@ import site.remlit.aster.service.NotificationService
 import site.remlit.aster.service.ReportService
 import site.remlit.aster.service.RoleService
 import site.remlit.aster.service.VisibilityService
-import site.remlit.aster.util.authenticatedUserKey
 import site.remlit.aster.util.authentication
 import site.remlit.aster.util.model.findReplies
 import site.remlit.aster.util.model.fromEntity
+import site.remlit.aster.util.user
+import site.remlit.aster.util.userOrNull
 
 internal object NoteRoutes {
 	fun register() =
 		RouteRegistry.registerRoute {
 			authentication {
 				get("/api/note/{id}") {
-					val authenticatedUser = call.attributes.getOrNull(authenticatedUserKey)
+					val authenticatedUser = call.userOrNull()
 					val note = NoteService.getById(call.parameters.getOrFail("id"))
 						?: throw ApiException(HttpStatusCode.NotFound, "Note not found")
 
@@ -52,7 +53,7 @@ internal object NoteRoutes {
 				}
 
 				get("/api/note/{id}/replies") {
-					val authenticatedUser = call.attributes.getOrNull(authenticatedUserKey)
+					val authenticatedUser = call.userOrNull()
 					val note = NoteService.getById(call.parameters.getOrFail("id"))
 						?: throw ApiException(HttpStatusCode.NotFound, "Note not found")
 
@@ -79,7 +80,7 @@ internal object NoteRoutes {
 				required = true,
 			) {
 				delete("/api/note/{id}") {
-					val authenticatedUser = call.attributes[authenticatedUserKey]
+					val authenticatedUser = call.user()
 					val id = call.parameters.getOrFail("id")
 
 					val note = NoteService.getById(id)
@@ -96,7 +97,7 @@ internal object NoteRoutes {
 				}
 
 				post("/api/note/{id}") {
-					val authenticatedUser = call.attributes[authenticatedUserKey]
+					val authenticatedUser = call.user()
 					val id = call.parameters.getOrFail("id")
 
 					val note = NoteService.getById(id)
@@ -117,7 +118,7 @@ internal object NoteRoutes {
 				}
 
 				post("/api/note") {
-					val authenticatedUser = call.attributes[authenticatedUserKey]
+					val authenticatedUser = call.user()
 
 					val body = call.receive<CreateNoteRequest>()
 
@@ -138,7 +139,7 @@ internal object NoteRoutes {
 				}
 
 				post("/api/note/{id}/repeat") {
-					val authenticatedUser = call.attributes[authenticatedUserKey]
+					val authenticatedUser = call.user()
 					val id = call.parameters.getOrFail("id")
 
 					val body = call.receive<CreateNoteRequest>()
@@ -155,7 +156,7 @@ internal object NoteRoutes {
 				}
 
 				post("/api/note/{id}/like") {
-					val authenticatedUser = call.attributes[authenticatedUserKey]
+					val authenticatedUser = call.user()
 					val id = call.parameters.getOrFail("id")
 
 					NoteService.like(
@@ -172,7 +173,7 @@ internal object NoteRoutes {
 				}
 
 				post("/api/note/{id}/bookmark") {
-					val authenticatedUser = call.attributes[authenticatedUserKey]
+					val authenticatedUser = call.user()
 					val note = NoteService.getById(call.parameters.getOrFail("id"))
 
 					if (
@@ -193,7 +194,7 @@ internal object NoteRoutes {
 				}
 
 				post("/api/note/{id}/bite") {
-					val authenticatedUser = call.attributes[authenticatedUserKey]
+					val authenticatedUser = call.user()
 					val note = NoteService.getById(call.parameters.getOrFail("id"))
 
 					if (
@@ -217,7 +218,7 @@ internal object NoteRoutes {
 				}
 
 				post("/api/note/{id}/report") {
-					val authenticatedUser = call.attributes[authenticatedUserKey]
+					val authenticatedUser = call.user()
 					val note = NoteService.getById(call.parameters.getOrFail("id"))
 					val body = call.receive<ReportRequest>()
 

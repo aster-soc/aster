@@ -26,12 +26,14 @@ import site.remlit.aster.service.VisibilityService
 import site.remlit.aster.util.authenticatedUserKey
 import site.remlit.aster.util.authentication
 import site.remlit.aster.util.sql.arrayContains
+import site.remlit.aster.util.user
+import site.remlit.aster.util.userOrNull
 
 internal object TimelineRoutes {
 	fun register() =
 		RouteRegistry.registerRoute {
 			get("/api/user/{id}/timeline") {
-				val authenticatedUser = call.attributes.getOrNull(authenticatedUserKey)
+				val authenticatedUser = call.userOrNull()
 				val id = call.parameters.getOrFail("id")
 
 				val user = UserService.getById(id)
@@ -67,7 +69,7 @@ internal object TimelineRoutes {
 				required = true,
 			) {
 				get("/api/bookmarks") {
-					val authenticatedUser = call.attributes[authenticatedUserKey]
+					val authenticatedUser = call.user()
 					val since = TimelineService.normalizeSince(call.parameters["since"])
 					val take = TimelineService.normalizeTake(call.parameters["take"]?.toIntOrNull())
 
@@ -84,7 +86,7 @@ internal object TimelineRoutes {
 				}
 
 				get("/api/timeline/home") {
-					val authenticatedUser = call.attributes[authenticatedUserKey]
+					val authenticatedUser = call.user()
 					val since = TimelineService.normalizeSince(call.parameters["since"])
 					val take = TimelineService.normalizeTake(call.parameters["take"]?.toIntOrNull())
 

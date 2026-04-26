@@ -24,13 +24,15 @@ import site.remlit.aster.service.ap.ApActorService
 import site.remlit.aster.util.authenticatedUserKey
 import site.remlit.aster.util.authentication
 import site.remlit.aster.util.model.fromEntity
+import site.remlit.aster.util.user
+import site.remlit.aster.util.userOrNull
 
 internal object UserRoutes {
 	fun register() =
 		RouteRegistry.registerRoute {
 			authentication {
 				get("/api/lookup/{handle}") {
-					val authenticatedUser = call.attributes.getOrNull(authenticatedUserKey)
+					val authenticatedUser = call.userOrNull()
 					val handle = call.parameters.getOrFail("handle").removePrefix("@")
 
 					val user = ApActorService.resolveHandle(handle)
@@ -44,7 +46,7 @@ internal object UserRoutes {
 			}
 
 			get("/api/user/{id}") {
-				val authenticatedUser = call.attributes.getOrNull(authenticatedUserKey)
+				val authenticatedUser = call.userOrNull()
 				val user = UserService.getById(call.parameters.getOrFail("id"))
 
 				if (user == null || !user.activated || user.suspended ||
@@ -58,7 +60,7 @@ internal object UserRoutes {
 				required = true,
 			) {
 				post("/api/user/{id}") {
-					val authenticatedUser = call.attributes[authenticatedUserKey]
+					val authenticatedUser = call.user()
 					val user = UserService.getById(call.parameters.getOrFail("id"))
 
 					if (user == null || !user.activated || user.suspended)
@@ -96,7 +98,7 @@ internal object UserRoutes {
 				}
 
 				post("/api/user/{id}/bite") {
-					val authenticatedUser = call.attributes[authenticatedUserKey]
+					val authenticatedUser = call.user()
 					val user = UserService.getById(call.parameters.getOrFail("id"))
 
 					if (user == null || !user.activated || user.suspended)
@@ -114,7 +116,7 @@ internal object UserRoutes {
 				}
 
 				post("/api/user/{id}/follow") {
-					val authenticatedUser = call.attributes[authenticatedUserKey]
+					val authenticatedUser = call.user()
 					val user = UserService.getById(call.parameters.getOrFail("id"))
 
 					if (user == null || !user.activated || user.suspended)
@@ -124,7 +126,7 @@ internal object UserRoutes {
 				}
 
 				post("/api/user/{id}/report") {
-					val authenticatedUser = call.attributes[authenticatedUserKey]
+					val authenticatedUser = call.user()
 					val user = UserService.getById(call.parameters.getOrFail("id"))
 					val body = call.receive<ReportRequest>()
 
@@ -189,7 +191,7 @@ internal object UserRoutes {
 				}
 
 				post("/api/user/totp/register") {
-					val authenticatedUser = call.attributes[authenticatedUserKey]
+					val authenticatedUser = call.user()
 
 					val private = UserService.getPrivateById(authenticatedUser.id.toString())
 
@@ -202,7 +204,7 @@ internal object UserRoutes {
 				}
 
 				post("/api/user/totp/confirm") {
-					val authenticatedUser = call.attributes[authenticatedUserKey]
+					val authenticatedUser = call.user()
 					val body = call.receive<TotpConfirmRequest>()
 
 					if (!AuthService.confirmTotp(authenticatedUser.id.toString(), body.code))
@@ -212,7 +214,7 @@ internal object UserRoutes {
 				}
 
 				post("/api/user/totp/unregister") {
-					val authenticatedUser = call.attributes[authenticatedUserKey]
+					val authenticatedUser = call.user()
 					AuthService.removeTotp(authenticatedUser.id.toString())
 					call.respond(HttpStatusCode.OK)
 				}

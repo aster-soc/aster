@@ -12,11 +12,10 @@ import site.remlit.aster.db.table.RelationshipTable
 import site.remlit.aster.db.table.UserTable
 import site.remlit.aster.model.ApiException
 import site.remlit.aster.registry.RouteRegistry
-import site.remlit.aster.service.BookmarkService
 import site.remlit.aster.service.RelationshipService
 import site.remlit.aster.service.TimelineService
-import site.remlit.aster.util.authenticatedUserKey
 import site.remlit.aster.util.authentication
+import site.remlit.aster.util.user
 
 internal object FollowRequestRoutes {
 	fun register() =
@@ -27,7 +26,7 @@ internal object FollowRequestRoutes {
 				get("/api/follow-requests") {
 					val since = TimelineService.normalizeSince(call.parameters["since"])
 					val take = TimelineService.normalizeTake(call.parameters["take"]?.toIntOrNull())
-					val authenticatedUser = call.attributes[authenticatedUserKey]
+					val authenticatedUser = call.user()
 
 					val followRequests = RelationshipService.getMany(
 						where = RelationshipService.userToAlias[UserTable.id] eq authenticatedUser.id and (
@@ -45,7 +44,7 @@ internal object FollowRequestRoutes {
 				get("/api/follow-requests/sent") {
 					val since = TimelineService.normalizeSince(call.parameters["since"])
 					val take = TimelineService.normalizeTake(call.parameters["take"]?.toIntOrNull())
-					val authenticatedUser = call.attributes[authenticatedUserKey]
+					val authenticatedUser = call.user()
 
 					val followRequests = RelationshipService.getMany(
 						where = RelationshipService.userFromAlias[UserTable.id] eq authenticatedUser.id and (
@@ -62,7 +61,7 @@ internal object FollowRequestRoutes {
 
 				post("/api/follow-request/{id}/accept") {
 					val id = call.parameters.getOrFail("id")
-					val authenticatedUser = call.attributes[authenticatedUserKey]
+					val authenticatedUser = call.user()
 
 					val relationship = RelationshipService.getById(id)
 
@@ -77,7 +76,7 @@ internal object FollowRequestRoutes {
 
 				post("/api/follow-request/{id}/reject") {
 					val id = call.parameters.getOrFail("id")
-					val authenticatedUser = call.attributes[authenticatedUserKey]
+					val authenticatedUser = call.user()
 
 					val relationship = RelationshipService.getById(id)
 

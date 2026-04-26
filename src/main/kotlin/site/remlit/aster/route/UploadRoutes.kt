@@ -16,6 +16,7 @@ import site.remlit.aster.service.DriveService
 import site.remlit.aster.service.IdentifierService
 import site.remlit.aster.util.authenticatedUserKey
 import site.remlit.aster.util.authentication
+import site.remlit.aster.util.user
 import java.nio.file.Files
 import kotlin.io.path.Path
 import kotlin.io.path.absolutePathString
@@ -31,7 +32,7 @@ internal object UploadRoutes {
 			required = true,
 		) {
 			post("/upload") {
-				val authenticatedUser = call.attributes[authenticatedUserKey]
+				val authenticatedUser = call.user()
 				// mb value * 1mb in bytes = max upload value in bytes
 				val maxUploadSize = Configuration.fileStorage.maxUploadSize * 1000000L
 

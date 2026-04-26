@@ -14,6 +14,7 @@ import site.remlit.aster.service.InviteService
 import site.remlit.aster.service.RandomService
 import site.remlit.aster.util.authenticatedUserKey
 import site.remlit.aster.util.authentication
+import site.remlit.aster.util.user
 
 internal object InviteRoutes {
 	fun register() =
@@ -30,7 +31,7 @@ internal object InviteRoutes {
 				}
 
 				post("/api/mod/invite") {
-					val authenticatedUser = call.attributes[authenticatedUserKey]
+					val authenticatedUser = call.user()
 
 					val id = IdentifierService.generate()
 					val code = RandomService.generateString()
